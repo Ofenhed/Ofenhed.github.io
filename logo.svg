@@ -31,11 +31,11 @@
       </feFlood>
       <feFlood class="on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform2">
         <animate attributeName="y" values="0px; 50%; 20%; 40%; 0px" dur="11s" repeatCount="indefinite" begin="0" />
-        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0%; 10%" dur="3s" repeatCount="indefinite" begin="0" />
+        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0px; 10%" dur="3s" repeatCount="indefinite" begin="0" />
       </feFlood>
       <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(125, 127, 0)" result="glitch">
         <animate attributeName="y" values="0%; 55%; 21%; 100%; 47%; 70%; 40%; 100%" dur="13s" repeatCount="indefinite" begin="0" />
-        <animate attributeName="height" values="0%; 2%; 1%; 1%; 0%; 0%; 1%; 1%; 0%" dur="2s" repeatCount="indefinite" begin="0" />
+        <animate attributeName="height" values="1px; 2%; 1%; 1%; 1px; 1px; 1%; 1%; 1px" dur="2s" repeatCount="indefinite" begin="0" />
       </feFlood>
       <feMerge result="displacement">
         <feMergeNode in="background" />
