@@ -25,17 +25,17 @@
       <feFlood class="raced" x="50%" y="0" width="50%" height="54%" flood-color="rgb(0, 127, 0)" result="top-c">
       </feFlood>
 
-      <feFlood class="on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform">
-        <animate attributeName="y" values="0px; 22%; 19%; 45%; 17%; 5%; 60%" dur="7s" repeatCount="indefinite" begin="0" />
-        <animate attributeName="height" values="12%; 2%; 7%; 5%; 20%; 0%; 10%; 12%" dur="5s" repeatCount="indefinite" begin="0" />
+      <feFlood class="not_on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform">
+        <animate attributeName="y" values="60%; 22%; 19%; 45%; 17%; 5%; 0%" dur="7s" repeatCount="indefinite" begin="ConditionRaise.blur" />
+        <animate attributeName="height" values="12%; 2%; 7%; 5%; 20%; 0%; 10%; 12%" dur="5s" repeatCount="indefinite" begin="ConditionRaise.blur" />
       </feFlood>
-      <feFlood class="on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform2">
-        <animate attributeName="y" values="0px; 50%; 20%; 40%; 0px" dur="11s" repeatCount="indefinite" begin="0" />
-        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0px; 10%" dur="3s" repeatCount="indefinite" begin="0" />
+      <feFlood class="not_on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform2">
+        <animate attributeName="y" values="0px; 50%; 20%; 40%; 0px" dur="11s" repeatCount="indefinite" begin="ConditionRaise.blur" />
+        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0px; 10%" dur="3s" repeatCount="indefinite" begin="ConditionRaise.blur" />
       </feFlood>
-      <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(125, 127, 0)" result="glitch">
-        <animate attributeName="y" values="0%; 55%; 21%; 100%; 47%; 70%; 40%; 100%" dur="13s" repeatCount="indefinite" begin="0" />
-        <animate attributeName="height" values="1px; 2%; 1%; 1%; 1px; 1px; 1%; 1%; 1px" dur="2s" repeatCount="indefinite" begin="0" />
+      <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(126, 127, 0)" result="glitch">
+        <animate attributeName="y" calcMode="linear" values="0%; 55%; 21%; 100%; 47%; 70%; 40%; 100%" dur="13s" repeatCount="indefinite" begin="0" />
+        <animate attributeName="height" calcMode="linear" values="1px; 2%; 1%; 1%; 1px; 1px; 1%; 1%; 1px" dur="2s" repeatCount="indefinite" begin="0" />
       </feFlood>
       <feMerge result="displacement">
         <feMergeNode in="background" />
