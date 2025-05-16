@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="ConditionRaise"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <style>
+    svg:not(:hover) .on_hover {
+        display: none;
+    }
+    svg:active .raced {
+        display: none;
+    }
+  </style>
+  <defs
+     id="defs">
+    <filter id="raceGlitch" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB" preserveAspectRatio="none">
+      <feFlood x="0" y="0" width="100%" height="100%" flood-color="rgb(127, 127, 127)" result="background" />
+      <feFlood class="raced" x="0" y="0" width="50%" height="54%" flood-color="rgb(254, 127, 0)" result="top-r">
+      </feFlood>
+      <feFlood class="raced" x="50%" y="0" width="50%" height="54%" flood-color="rgb(0, 127, 0)" result="top-c">
+      </feFlood>
+
+      <feFlood class="on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform">
+        <animate attributeName="y" values="0px; 22%; 19%; 45%; 17%; 5%; 60%" dur="7s" repeatCount="indefinite" begin="0" />
+        <animate attributeName="height" values="12%; 2%; 7%; 5%; 20%; 0%; 10%; 12%" dur="5s" repeatCount="indefinite" begin="0" />
+      </feFlood>
+      <feFlood class="on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform2">
+        <animate attributeName="y" values="0px; 50%; 20%; 40%; 0px" dur="11s" repeatCount="indefinite" begin="0" />
+        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0%; 10%" dur="3s" repeatCount="indefinite" begin="0" />
+      </feFlood>
+      <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(125, 127, 0)" result="glitch">
+        <animate attributeName="y" values="0%; 55%; 21%; 100%; 47%; 70%; 40%; 100%" dur="13s" repeatCount="indefinite" begin="0" />
+        <animate attributeName="height" values="0%; 2%; 1%; 1%; 0%; 0%; 1%; 1%; 0%" dur="2s" repeatCount="indefinite" begin="0" />
+      </feFlood>
+      <feMerge result="displacement">
+        <feMergeNode in="background" />
+        <feMergeNode in="top-c"/>
+        <feMergeNode in="top-r"/>
+        <feMergeNode in="glitch"/>
+        <feMergeNode in="reset-transform"/>
+        <feMergeNode in="reset-transform2"/>
+      </feMerge>
+      <feDisplacementMap in="SourceGraphic" in2="displacement" scale="555" xChannelSelector="R" yChannelSelector="G">
+      </feDisplacementMap>
+    </filter>
+  </defs>
+  <g
+     id="LogoText"
+     style="filter: url(#raceGlitch)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:calc(512px*0.8);font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.94002"
+       id="CR"
+       x="55%"
+       y="50%"
+       dominant-baseline="middle"
+       text-anchor="middle"
+       transform="scale(0.9,1.2)">CR</text>
+  </g>
+</svg>
