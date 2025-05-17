@@ -9,9 +9,6 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
   <style>
-    svg:not(:hover) .on_hover {
-        display: none;
-    }
     svg:active .raced {
         display: none;
     }
@@ -25,13 +22,13 @@
       <feFlood class="raced" x="50%" y="0" width="50%" height="54%" flood-color="rgb(0, 127, 0)" result="top-c">
       </feFlood>
 
-      <feFlood class="not_on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform">
-        <animate attributeName="y" values="60%; 22%; 19%; 45%; 17%; 5%; 0%" dur="7s" repeatCount="indefinite" begin="ConditionRaise.mouseout" />
-        <animate attributeName="height" values="12%; 2%; 7%; 5%; 20%; 0%; 10%; 12%" dur="5s" repeatCount="indefinite" begin="ConditionRaise.mouseout" />
+      <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform">
+        <animate attributeName="y" values="60%; 22%; 19%; 45%; 17%; 5%; 0%" dur="7s" repeatCount="indefinite" begin="30s;ConditionRaise.blur;ConditionRaise.auxclick" restart="whenNotActive" />
+        <animate attributeName="height" values="12%; 2%; 7%; 5%; 20%; 0%; 10%; 12%" dur="5s" repeatCount="indefinite" begin="30s;ConditionRaise.blur;ConditionRaise.auxclick" restart="whenNotActive" />
       </feFlood>
-      <feFlood class="not_on_hover" x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform2">
-        <animate attributeName="y" values="0px; 50%; 20%; 40%; 0px" dur="11s" repeatCount="indefinite" begin="ConditionRaise.mouseout" />
-        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0px; 10%" dur="3s" repeatCount="indefinite" begin="ConditionRaise.mouseout" />
+      <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(127, 127, 0)" result="reset-transform2">
+        <animate attributeName="y" values="0px; 50%; 20%; 40%; 0px" dur="11s" repeatCount="indefinite" begin="25s;ConditionRaise.blur;ConditionRaise.auxclick" restart="whenNotActive" />
+        <animate attributeName="height" values="10%; 2%; 5%; 20%; 0px; 10%" dur="3s" repeatCount="indefinite" begin="25s;ConditionRaise.blur;ConditionRaise.auxclick" restart="whenNotActive" />
       </feFlood>
       <feFlood x="0%" width="100%" height="10" y="0" flood-color="rgb(126, 127, 0)" result="glitch">
         <animate attributeName="y" calcMode="linear" values="0%; 55%; 21%; 100%; 47%; 70%; 40%; 100%" dur="13s" repeatCount="indefinite" begin="0" />
@@ -49,9 +46,7 @@
       </feDisplacementMap>
     </filter>
   </defs>
-  <g
-     id="LogoText"
-     style="filter: url(#raceGlitch)">
+  <g id="LogoText" style="filter: url(#raceGlitch)">
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:calc(512px*0.8);font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.94002"
