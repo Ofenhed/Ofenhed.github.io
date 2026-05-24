@@ -1,8 +1,5 @@
 @use 'defines.scss';
-//@use 'hamburger.scss';
-nav {
-  display: none;
-}
+@use 'hamburger.scss';
 
 nav {
   a {

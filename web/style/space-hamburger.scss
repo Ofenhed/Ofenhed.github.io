@@ -19,20 +19,6 @@ body:has(main[path^="/clog"]) {
     z-index: 5;
     top: 0;
     left: 0;
-    //&::before {
-    //  content: '';
-    //  top: calc(-1em - var(--button-margin));
-    //  left: calc(-1em - var(--button-margin));
-    //  width: var(--top-left-rounding);
-    //  height: var(--top-left-rounding);
-    //  display: block;
-    //  z-index: 5;
-    //  position: relative;
-    //  background: var(--space-main-background);
-    //  border-radius: var(--top-left-rounding) 0 var(--top-left-rounding) 0;
-    //  border: var(--button-margin) solid #000;
-    //  border-width: var(--button-margin) 0 0 var(--button-margin);
-    //}
   }
   &:has(nav#navigation #hamburger-toggle:checked) {
     grid-template-columns: max-content var(--space-padding) auto var(--space-padding);
