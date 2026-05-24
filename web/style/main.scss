@@ -73,6 +73,9 @@ main ~ #navigation #hamburger-toggle:checked {
 }
 
 #navigation {
+  & * {
+    display: none;
+  }
   position: absolute;
   top: 0;
   left: 0;
