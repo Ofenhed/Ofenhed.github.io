@@ -22,6 +22,16 @@ body {
   grid-auto-flow: column;
   grid-template-columns: 0px 0px auto 0px;
   grid-template-rows: 0px auto 0px;
+  @media print {
+    grid-template-columns: 0px 0px auto 0px !important;
+    grid-template-rows: 0px auto 0px !important;
+    nav { display: none };
+    main {
+      border-radius: 0 !important;
+      background: #fff !important;
+      text-color: #000;
+    }
+  }
   transition: var(--nav-transition);
   height: 100vh;
   main {
@@ -70,10 +80,20 @@ div.contact {
     &, img, canvas {
       image-rendering: pixelated;
     }
+    img, div#canvasHolder {
+      width: calc(min(var(--qr-size), 100vh));
+    }
+    noscript > img::after {
+      content: '';
+      width: 0;
+      height: 0;
+      clear: both;
+      display: block;
+    }
     div#canvasHolder {
+      clear: both;
       display: inline-block;
       position: relative;
-      width: calc(min(var(--qr-size), 100vh));
       canvas {
         top: 0;
         left: 0;
