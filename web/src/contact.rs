@@ -329,7 +329,7 @@ pub fn Contact() -> impl IntoView {
         let content = STANDARD.encode(VCARD.as_bytes());
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
     });
-    let mut counter = RwSignal::new(0);
+    let counter = RwSignal::new(0);
     let maybe_activate_nav = Action::new(move |_| {
         let mut value = 0;
         counter.update(|x| {
