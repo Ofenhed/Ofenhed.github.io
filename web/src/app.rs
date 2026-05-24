@@ -65,7 +65,7 @@ pub fn App() -> impl IntoView {
         provide_context(save_logo_status);
     }
     view! {
-        <Title text="The one I saw told me exactly when and how I was gonna die" />
+        <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
         <Router>
             <nav id="navigation">
