@@ -7,6 +7,8 @@ async fn main() {
     use tokio::{pin, select};
 
     let conf = get_configuration(None).unwrap();
+    #[cfg(feature = "dev")]
+    let addr = conf.leptos_options.site_addr;
     let leptos_options = conf.leptos_options;
     // Generate the list of routes in your Leptos App
     let (_routes, static_routes) = generate_route_list_with_ssg({
@@ -43,6 +45,7 @@ async fn main() {
     #[cfg(feature = "dev")]
     {
         use axum::Router;
+        use leptos_axum::LeptosRoutes;
         let app = Router::new()
             .leptos_routes(&leptos_options, _routes, {
                 let leptos_options = leptos_options.clone();
