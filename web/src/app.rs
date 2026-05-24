@@ -10,8 +10,11 @@ use leptos_router::{
 
 use crate::{
     blog::Blog,
-    contact::{Contact, QrLogo},
+    contact::{AnimateQrLogo, Contact},
 };
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct ShowNavigation(pub bool);
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     provide_meta_context();
@@ -60,16 +63,25 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
 #[component]
 pub fn App() -> impl IntoView {
     let fallback = || view! { "Something hilarious about monkeys" }.into_view();
-    {
-        let (get_logo_status, save_logo_status) = signal(QrLogo::Hidden);
+    let show_navigation = {
+        let (get_logo_status, save_logo_status) = signal(AnimateQrLogo(true));
         provide_context(get_logo_status);
         provide_context(save_logo_status);
-    }
+        let (should_show_navigation, set_show_navigation) = signal(ShowNavigation(false));
+        provide_context(set_show_navigation);
+        Signal::derive(move || {
+            if ShowNavigation(true) == should_show_navigation.get() {
+                None
+            } else {
+                Some("none")
+            }
+        })
+    };
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
         <Router>
-            <nav id="navigation">
+            <nav id="navigation" style:display=show_navigation>
                 <input type="checkbox" id="hamburger-toggle" aria-label="hamburger" aria-controls="menu" aria-expanded="false" />
                 <label for="hamburger-toggle" id="hamburger" aria-hidden="true">
                   <span class="slice" />

@@ -1,5 +1,7 @@
 use leptos::{html, prelude::*};
 
+use crate::app::ShowNavigation;
+
 #[cfg(not(feature = "ssr"))]
 mod qr_settings {
     pub const MIN_INITIAL_DELAY: f64 = 0.250;
@@ -98,10 +100,7 @@ pub fn Email() -> impl IntoView {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum QrLogo {
-    Hidden,
-    Initiated,
-}
+pub struct AnimateQrLogo(pub bool);
 
 #[component]
 pub fn Contact() -> impl IntoView {
@@ -127,8 +126,8 @@ pub fn Contact() -> impl IntoView {
 
         let worm_delay = 2.5f64;
         let animate_logo = {
-            if let Some(c) = use_context::<ReadSignal<QrLogo>>() {
-                c.get_untracked() == QrLogo::Hidden
+            if let Some(c) = use_context::<ReadSignal<AnimateQrLogo>>() {
+                c.get_untracked() == AnimateQrLogo(true)
             } else {
                 true
             }
@@ -242,14 +241,14 @@ pub fn Contact() -> impl IntoView {
                 });
             }
         }
-        if let Some(setter) = use_context::<WriteSignal<QrLogo>>() {
+        if let Some(setter) = use_context::<WriteSignal<AnimateQrLogo>>() {
             set_scoped_timeout(
                 std::time::Duration::from_secs_f64(
                     MAX_INITIAL_DELAY
                         + MAX_SHADE_INTERVAL * (0xff as f64) / (SHADE_STEP_SIZE as f64),
                 ),
                 move || {
-                    setter.set(QrLogo::Initiated);
+                    setter.set(AnimateQrLogo(false));
                 },
             );
         }
@@ -335,6 +334,22 @@ pub fn Contact() -> impl IntoView {
         let content = STANDARD.encode(VCARD.as_bytes());
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
     });
+    let mut counter = RwSignal::new(0);
+    let maybe_activate_nav = Action::new(move |_| {
+        let mut value = 0;
+        counter.update(|x| {
+            *x += 1;
+            value = *x;
+        });
+        async move {
+            if value > 5 {
+                let Some(signal) = use_context::<WriteSignal<ShowNavigation>>() else {
+                    return;
+                };
+                signal.set(ShowNavigation(true));
+            }
+        }
+    });
     view! {
         <div class="contact">
             <div class="qr-code">
@@ -352,7 +367,7 @@ pub fn Contact() -> impl IntoView {
                     Marcus Ofenhed
                 </a>
             </p>
-            <p>
+            <p on:click=move |_| { maybe_activate_nav.dispatch(()); }>
                 Senior IT Security Consultant
             </p>
             <Email />
