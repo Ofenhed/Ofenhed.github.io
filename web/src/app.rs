@@ -1,8 +1,9 @@
-use leptos::prelude::*;
+use leptos::{attr::custom::custom_attribute, prelude::*};
 use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
     SsrMode,
     components::{A, Route, Router, Routes},
+    hooks::use_location,
     path,
     static_routes::StaticRoute,
 };
@@ -84,7 +85,7 @@ pub fn App() -> impl IntoView {
                   </li>
                 </ul>
             </nav>
-            <main>
+            <main {..custom_attribute("path", use_location().pathname)}>
             <Routes fallback>
                 <Route
                   path=path!("/")
