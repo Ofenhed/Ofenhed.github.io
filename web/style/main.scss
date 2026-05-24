@@ -1,7 +1,9 @@
-:root {
-  --hamburger-size: clamp(16px, 10vmin, 32px);
-  --hamburger-padding: 0.5rem;
+@use 'defines.scss';
+//@use 'hamburger.scss';
+nav {
+  display: none;
 }
+
 nav {
   a {
     color: #000;
@@ -13,8 +15,43 @@ nav {
   }
 }
 
-body, main {
-  background: light-dark(#ffffff, #222222);
+body {
+  display: grid;
+  margin: 0px;
+  grid-template-areas:
+    "menu border-sw border-s border-se"
+    "menu border-w  main     border-e"
+    "menu border-nw border-n border-ne";
+  grid-auto-flow: column;
+  grid-template-columns: 0px 0px auto 0px;
+  grid-template-rows: 0px auto 0px;
+  transition: var(--nav-transition);
+  height: 100vh;
+  main {
+    width: calc(100% - 1em * 2);
+    height: calc(100% - 1em * 2);
+    grid-area: main;
+    padding: 1em;
+    transition: var(--nav-transition);
+  }
+  &:has(main[path="/"]) {
+    &, main {
+      background: light-dark(#ffffff, #222222);
+    }
+  }
+  &:has(main[path^="/clog"]) {
+    grid-template-columns: 0px var(--space-padding) auto var(--space-padding);
+    background: #000000;
+    main {
+      background: light-dark(#bbbbbb, #000000);
+    }
+  }
+}
+
+main {
+  @media (max-width: var(--qr-width)) {
+    padding-top: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
+  }
 }
 
 img[wasm-fallback-src] {
@@ -30,7 +67,7 @@ div.contact {
     width: 100%;
     display: block;
     img, canvas {
-      width: 308px;
+      width: 100%;
       aspect-ratio: 1/1;
     }
     &, img, canvas {
@@ -39,6 +76,7 @@ div.contact {
     div#canvasHolder {
       display: inline-block;
       position: relative;
+      width: calc(min(var(--qr-size), 100vh));
       canvas {
         top: 0;
         left: 0;
@@ -68,113 +106,6 @@ div.contact {
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
         margin-right: 0.5ex;
       }
-    }
-  }
-}
-
-main ~ #navigation #hamburger-toggle:checked {
-  margin-left: 20vw;
-}
-
-#navigation {
-  display: none;
-
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  padding: 0;
-  margin: 0;
-  height: 100vh;
-  #menu {
-    visibility: hidden;
-    position: absolute;
-    --menu-padding: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
-    padding-top: var(--menu-padding);
-    top: 0;
-    left: 0;
-    padding-left: 0;
-    width: fit-content;
-    height: calc(100% - var(--menu-padding));
-    z-index: 100;
-    background: #badbad;
-    z-index: -10;
-    margin: 0;
-
-    transform-origin: top left;
-    transform: rotateY(-90deg);
-    opacity: 0.3;
-    transition: 150ms all 100ms ease-out;
-    border-right: 1px solid gray;
-    li {
-      list-style: none;
-      a {
-        display: block;
-        padding: 1rem;
-        text-decoration: none;
-      }
-    }
-  }
-  #hamburger-toggle {
-    opacity: 0;
-    margin: 0;
-    width: 0;
-    height: 0;
-    overflow: visible;
-    cursor: pointer;
-    position: absolute;
-    &:checked {
-      & ~ #menu {
-        visibility: visible;
-        transform: rotateX(0deg);
-        opacity: 1;
-      }
-      & ~ #hamburger .slice {
-        background-color: #fff;
-        --border-size: 2px;
-        &:nth-child(1) {
-          top: calc(50% - 33% + var(--slice-height) / 2);
-          transform: rotate(45deg);
-        }
-        &:nth-child(2) {
-          z-index: -1;
-          border: var(--border-size) solid #aacb9d;
-          border-radius: var(--hamburger-size);
-          background-color: rgba(0, 0, 0, 0);
-          top: calc(-50% - var(--border-size) - var(--slice-height) / 2);
-          left: calc(0px - var(--border-size));
-          transform: rotate(90deg);
-          height: var(--hamburger-size);
-        }
-        &:nth-child(3) {
-          top: calc(-50% - var(--hamburger-size) - var(--border-size) + var(--slice-height) / 2);
-          transform: rotate(-45deg);
-        }
-      }
-    }
-  }
-  #hamburger {
-    z-index: 1100;
-    display: block;
-    padding: var(--hamburger-padding);
-    cursor: pointer;
-    width: var(--hamburger-size);
-    height: var(--hamburger-size);
-    box-sizing: content-box;
-    transition: transform 0.2s ease;
-    .slice {
-      --slice-height: 2px;
-      display: block;
-      position: relative;
-      width: 100%;
-      height: var(--slice-height, 2px);
-      border-radius: var(--slice-height);
-      transition: all 0.2s ease;
-      background-color: #000;
-      opacity: 90%;
-      margin-top: 22%;
-      margin-top: calc(33% - var(--slice-height));
-      top: calc((33% - var(--slice-height))/-2);
     }
   }
 }

@@ -1,0 +1,150 @@
+@use 'defines.scss';
+
+:root {
+  --button-margin: 3px;
+  --open-burger-leak-down: 1cm;
+  --open-burger-leak-right: 5cm;
+  --top-left-rounding: 1cm;
+  --burger-background: #c9f;
+  --space-main-background: light-dark(#bbbbbb, #000000);
+}
+
+body:has(main[path^="/clog"]) {
+  grid-template-rows: calc(var(--hamburger-size) + var(--button-margin) * 2) auto 0px;
+  main {
+    background: var(--space-main-background);
+    border-radius: var(--top-left-rounding) var(--top-left-rounding) 0 0;
+    border: var(--button-margin) solid #000;
+    position: relative;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    //&::before {
+    //  content: '';
+    //  top: calc(-1em - var(--button-margin));
+    //  left: calc(-1em - var(--button-margin));
+    //  width: var(--top-left-rounding);
+    //  height: var(--top-left-rounding);
+    //  display: block;
+    //  z-index: 5;
+    //  position: relative;
+    //  background: var(--space-main-background);
+    //  border-radius: var(--top-left-rounding) 0 var(--top-left-rounding) 0;
+    //  border: var(--button-margin) solid #000;
+    //  border-width: var(--button-margin) 0 0 var(--button-margin);
+    //}
+  }
+  &:has(nav#navigation #hamburger-toggle:checked) {
+    grid-template-columns: max-content var(--space-padding) auto var(--space-padding);
+  }
+  nav#navigation {
+    &:has(#hamburger-toggle:checked) {
+      background: #000;
+    }
+    #hamburger {
+      .slice {
+        background: var(--burger-background);
+      }
+    }
+    #hamburger-toggle:checked {
+      & ~ #hamburger {
+        width: 3cm;
+        position: relative;
+        width: calc(100% + var(--open-burger-leak-right));
+        padding: 0;
+        margin: var(--button-margin);
+        .slice {
+          position: absolute;
+          transform: none;
+          background: var(--burger-background);
+          border-radius: 0;
+          margin: 0;
+          opacity: 1;
+          --button-width: calc(100% - var(--open-burger-leak-right) - var(--button-margin) * 2);
+          &:nth-child(1) {
+            transform: none;
+            width: var(--open-burger-leak-right);
+            height: var(--hamburger-size);
+            position: absolute;
+            border-radius: 0 0 2cm 0;
+            top: 0;
+            left: var(--button-width);
+            &::after {
+              content: 'Captains log';
+              width: 100%;
+              height: 100%;
+              margin-top: calc(((var(--hamburger-size)) - 1em) / 2);
+              display: block;
+              text-align: center;
+              vertical-align: center;
+            }
+          }
+          &:nth-child(2) {
+            border-radius: 2cm 0 0 0;
+            transform: rotate(-90deg);
+            top: 0;
+            left: 0;
+            border: 0px solid;
+            position: relative;
+            width: var(--button-width);
+            height: calc(var(--hamburger-size) + var(--open-burger-leak-down));
+            margin: 0;
+            //display: inline-block;
+            background: var(--burger-background);
+            transform: rotate(0deg);
+          }
+          &:nth-child(3) {
+            background: linear-gradient(to bottom right, var(--burger-background) 50%, rgba(0, 0, 0, 0) 50%);
+            z-index: -100;
+            display: block;
+            width: var(--top-left-rounding);
+            height: var(--top-left-rounding);
+            top: 100%;
+            left: var(--button-width);
+            &::after {
+              content: '';
+              width: var(--top-left-rounding);
+              height: var(--top-left-rounding);
+              display: block;
+              z-index: -4;
+              position: relative;
+              //background: linear-gradient(to bottom right, var(--burger-background) 50%, rgba(1, 1, 1, 0) 50%);
+              background: linear-gradient(to bottom right, var(--burger-background) 50%, rgba(1, 1, 1, 0) 50%);
+              border-radius: var(--top-left-rounding) 0 var(--top-left-rounding) 0;
+              border-color: var(--burger-background) var(--burger-background) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
+              border-width: var(--button-margin) 0 0 var(--button-margin);
+              mix-blend-mode: difference;
+            }
+          }
+        }
+      }
+    }
+    #menu {
+      margin-top: calc(var(--open-burger-leak-down) + var(--button-margin));
+      background: #000;
+      li {
+        margin: var(--button-margin);
+        text-align: right;
+        vertical-align: bottom;
+        a {
+          margin: 0;
+        }
+        &:nth-child(1) {
+          background: #89f;
+        }
+        &:nth-child(2) {
+          background: #cf4f4f;
+        }
+      }
+      &::after {
+        content: '';
+        background: #f80;
+        margin: var(--button-margin);
+        display: block;
+        width: calc(100% - var(--button-margin) * 2);
+        height: 3cm;
+        border-radius: 0 0 2cm 0;
+      }
+    }
+  }
+}
