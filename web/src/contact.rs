@@ -351,9 +351,9 @@ pub fn Contact() -> impl IntoView {
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
                     <noscript><img src="qrcode.png" /></noscript>
                     <img wasm-fallback-src="qrcode.png" />
-                    <div id="canvasHolder">
-                        <canvas node_ref=canvas_ref style:display=show_canvas width=width height=height />
-                        <canvas node_ref=worm_canvas_ref style:display=show_canvas width=width height=height />
+                    <div id="canvasHolder" style:display=show_canvas>
+                        <canvas node_ref=canvas_ref width=width height=height />
+                        <canvas node_ref=worm_canvas_ref width=width height=height />
                     </div>
                 </a>
             </div>
