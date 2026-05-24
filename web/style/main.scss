@@ -13,6 +13,10 @@ nav {
   }
 }
 
+body, main {
+  background: light-dark(#ffffff, #222222);
+}
+
 img[wasm-fallback-src] {
   display: none;
 }
@@ -53,7 +57,7 @@ div.contact {
     font-weight: bold;
     & > a {
       text-decoration: none;
-      color: #000000;
+      color: light-dark(#000000, #ffffff);
       &:before {
         content: "in";
         display: inline-block;
