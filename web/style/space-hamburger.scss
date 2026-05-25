@@ -8,6 +8,7 @@
   --top-left-rounding: 1cm;
   --burger-background: #c9f;
   --space-main-background: light-dark(#bbbbbb, #000000);
+  --space-body-background: light-dark(#000000, #222222);
 }
 
 @include nav.with-path-prefix("/clog") {
@@ -26,7 +27,7 @@
   }
   nav#navigation {
     @include nav.open($selector: &) {
-      background: #000;
+      background: none;
     }
     #hamburger {
       .slice {
@@ -79,34 +80,24 @@
             transform: rotate(0deg);
           }
           &:nth-child(3) {
-            background: linear-gradient(to bottom right, var(--burger-background) 50%, rgba(0, 0, 0, 0) 50%);
+            background: var(--burger-background);
             z-index: -100;
             display: block;
             width: var(--top-left-rounding);
             height: var(--top-left-rounding);
             top: 100%;
             left: var(--button-width);
-            &::after {
-              content: '';
-              width: var(--top-left-rounding);
-              height: var(--top-left-rounding);
-              display: block;
-              z-index: -4;
-              position: relative;
-              //background: linear-gradient(to bottom right, var(--burger-background) 50%, rgba(1, 1, 1, 0) 50%);
-              background: linear-gradient(to bottom right, var(--burger-background) 50%, rgba(1, 1, 1, 0) 50%);
-              border-radius: var(--top-left-rounding) 0 var(--top-left-rounding) 0;
-              border-color: var(--burger-background) var(--burger-background) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0);
-              border-width: var(--button-margin) 0 0 var(--button-margin);
-              mix-blend-mode: difference;
-            }
+            clip-path: shape(
+              from 0px 0px,
+              line to var(--top-left-rounding) 0px,
+              curve to 0px var(--top-left-rounding) with 0px 0px
+              );
           }
         }
       }
     }
     #menu {
       margin-top: calc(var(--open-burger-leak-down) + var(--button-margin));
-      background: #000;
       li {
         margin: var(--button-margin);
         text-align: right;
