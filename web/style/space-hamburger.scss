@@ -7,16 +7,17 @@
   --open-burger-leak-right: 5cm;
   --top-left-rounding: 1cm;
   --burger-background: #c9f;
-  --space-main-background: light-dark(#bbbbbb, #000000);
+  --space-main-background: light-dark(#ffffff, #000000);
   --space-body-background: light-dark(#000000, #222222);
 }
 
-@include nav.with-path-prefix("/clog") {
+@include nav.with-path-prefix("/clog", $base: body) {
+  background: var(--space-body-background);
   grid-template-rows: calc(var(--hamburger-size) + var(--button-margin) * 2) auto 0px;
+  grid-template-columns: 0px var(--space-padding) auto var(--space-padding);
   main {
     background: var(--space-main-background);
     border-radius: var(--top-left-rounding) var(--top-left-rounding) 0 0;
-    border: var(--button-margin) solid #000;
     position: relative;
     z-index: 5;
     top: 0;
@@ -26,37 +27,69 @@
     grid-template-columns: max-content var(--space-padding) auto var(--space-padding);
   }
   nav#navigation {
+
     @include nav.open($selector: &) {
       background: none;
     }
     #hamburger {
       .slice {
         background: var(--burger-background);
+        &:nth-child(2) {
+          $top_height: var(--hamburger-size);
+          transform: rotate(-180deg);
+          clip-path: shape(
+            from 100% 0px,
+            curve to calc(100% - var(--top-left-rounding)) $top_height with 100% $top_height,
+            line to var(--hamburger-size) $top_height,
+            line to calc(100% - var(--open-burger-leak-right) + var(--top-left-rounding)) calc(100% - var(--open-burger-leak-down)),
+            curve to calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down) + var(--top-left-rounding)) with calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down)),
+            line to 0 100%,
+            line to 0 0,
+            //line to 0 2cm,
+            //curve to 2cm 0 with 0 0,
+            );
+          }
       }
       @include nav.open($selector: &) {
         width: 3cm;
         position: relative;
-        width: calc(100% + var(--open-burger-leak-right));
+        width: calc(100% + var(--open-burger-leak-right) - var(--button-margin)*2);
         padding: 0;
         margin: var(--button-margin);
         .slice {
           position: absolute;
-          transform: none;
-          background: var(--burger-background);
-          border-radius: 0;
-          margin: 0;
-          opacity: 1;
+          mix-blend-mode: darken;
+          background: #000;
           --button-width: calc(100% - var(--open-burger-leak-right) - var(--button-margin) * 2);
-          &:nth-child(1) {
+          &:nth-child(1), &:nth-child(3) {
+            top: calc(100% + var(--hamburger-size) - 0.5cm);
+            left: calc(100% - var(--open-burger-leak-right) - 0.5cm);
+            padding: 0;
+            height: 2px;
+            margin: 0px;
+            opacity: 0.2;
+            width: 0.5cm;
+          }
+          &:nth-child(2) {
             transform: none;
-            width: var(--open-burger-leak-right);
-            height: var(--hamburger-size);
-            position: absolute;
-            border-radius: 0 0 2cm 0;
+            background: var(--burger-background);
+            border-radius: 0;
+            margin: 0;
+            opacity: 1;
+            border-radius: 2cm 0 0 0;
+            //transform: rotate(-90deg);
             top: 0;
-            left: var(--button-width);
+            left: 0;
+            border: 0px solid;
+            $width: calc(100% + var(--open-burger-leak-right) - var(--button-margin) * 2);
+            $height: calc(var(--hamburger-size) + var(--open-burger-leak-down));
+            height: $height;
+            margin: 0;
+            background: var(--burger-background);
+            $top_height: var(--hamburger-size);
             &::after {
               content: 'Captains log';
+              color: #000;
               width: 100%;
               height: 100%;
               margin-top: calc(((var(--hamburger-size)) - 1em) / 2);
@@ -64,34 +97,6 @@
               text-align: center;
               vertical-align: center;
             }
-          }
-          &:nth-child(2) {
-            border-radius: 2cm 0 0 0;
-            transform: rotate(-90deg);
-            top: 0;
-            left: 0;
-            border: 0px solid;
-            position: relative;
-            width: var(--button-width);
-            height: calc(var(--hamburger-size) + var(--open-burger-leak-down));
-            margin: 0;
-            //display: inline-block;
-            background: var(--burger-background);
-            transform: rotate(0deg);
-          }
-          &:nth-child(3) {
-            background: var(--burger-background);
-            z-index: -100;
-            display: block;
-            width: var(--top-left-rounding);
-            height: var(--top-left-rounding);
-            top: 100%;
-            left: var(--button-width);
-            clip-path: shape(
-              from 0px 0px,
-              line to var(--top-left-rounding) 0px,
-              curve to 0px var(--top-left-rounding) with 0px 0px
-              );
           }
         }
       }
