@@ -40,7 +40,6 @@
           clip-path: shape(
             from 100% 0px,
             curve to calc(100% - var(--top-left-rounding)) $top_height with 100% $top_height,
-            line to var(--hamburger-size) $top_height,
             line to calc(100% - var(--open-burger-leak-right) + var(--top-left-rounding)) calc(100% - var(--open-burger-leak-down)),
             curve to calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down) + var(--top-left-rounding)) with calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down)),
             line to 0 100%,
