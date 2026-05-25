@@ -12,6 +12,10 @@ nav {
   }
 }
 
+* {
+  transition: var(--default-transition);
+}
+
 body {
   display: grid;
   margin: 0px;
@@ -32,14 +36,12 @@ body {
       text-color: #000;
     }
   }
-  transition: var(--nav-transition);
   height: 100vh;
   main {
     width: calc(100% - 1em * 2);
     height: calc(100% - 1em * 2);
     grid-area: main;
     padding: 1em;
-    transition: var(--nav-transition);
   }
   &:has(main[path="/"]) {
     &, main {

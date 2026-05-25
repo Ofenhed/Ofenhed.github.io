@@ -2,7 +2,6 @@
   --hamburger-size: clamp(16px, 10vmin, 32px);
   --hamburger-padding: 0.5rem;
   --qr-size: 308px;
-  --nav-transition: all 0.5s ease-in-out;
+  --default-transition: all 0.5s ease-in-out;
   --space-padding: calc((100% - min(21cm, 100%)) / 2);
 }
-

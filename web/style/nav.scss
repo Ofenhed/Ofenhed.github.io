@@ -1,0 +1,59 @@
+@use 'sass:list';
+@use 'sass:meta';
+@use 'sass:selector';
+@use 'sass:string';
+
+@mixin with-navigation($selector: (), $path: null, $path-match: null, $base: null, $navigator: null) {
+  @if $base == null {
+    $base: body;
+  }
+  $s: #{$base};
+  @if $navigator != null {
+    $nav: ":has(> nav#navigation > #hamburger-toggle:checked)";
+    @if not $navigator {
+      $nav: ":not(#{$nav})"
+    }
+    $s: selector.append($s, $nav);
+  }
+  @if $path != null {
+    $p: string.quote(#{$path});
+    $s: selector.append($s, ":has(main[path#{$path-match}=\"#{$p}\"])");
+  }
+
+  @if list.length($selector) > 0 {
+    $new: selector.replace($selector, $base, $s);
+    @if $new != $selector {
+      $s: $new;
+    }
+    @else {
+      $s: selector.nest($s, #{$selector});
+    }
+  }
+  @at-root #{$s} {
+    @content
+  }
+}
+
+@mixin with-path-prefix($path, $args...) {
+  @include with-navigation($path: $path, $path-match: '^', $args...) {
+    @content
+  }
+}
+
+@mixin with-path($path, $args...) {
+  @include with-navigation($path: $path, $args...) {
+    @content
+  }
+}
+
+@mixin open($args...) {
+  @include with-navigation($navigator: true, $args...) {
+    @content
+  }
+}
+
+@mixin closed($args...) {
+  @include with-navigation($navigator: false, $args...) {
+    @content
+  }
+}

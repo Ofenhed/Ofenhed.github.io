@@ -1,7 +1,8 @@
 @use 'defines.scss';
+@use 'nav.scss';
 @use 'space-hamburger.scss';
 
-body:has(nav#navigation #hamburger-toggle:checked) {
+@include nav.open() {
   grid-template-columns: max-content 8px auto 8px;
 }
 
@@ -14,10 +15,10 @@ body:has(nav#navigation #hamburger-toggle:checked) {
   margin: 0;
   height: 100vh;
   width: fit-content;
-  &:has(#hamburger-toggle:checked) {
+  @include nav.open(&) {
     background: #badbad;
   }
-  &:not(:has(#hamburger-toggle:checked)) {
+  @include nav.closed($selector: &) {
     transform-origin: top left;
     transition: 150ms all 100ms ease-out;
     #hamburger {
@@ -26,18 +27,11 @@ body:has(nav#navigation #hamburger-toggle:checked) {
     }
     --menu-padding: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
     #menu {
-      //margin-top: var(--hamburger-size);
       opacity: 0.3;
     }
-    // #hamburger-toggle {
-    //   height: var(--hamburger-size);
-    //   width: var(--hamburger-size);
-    //   padding: var(--hamburger-padding);
-    // }
   }
   #menu {
     visibility: hidden;
-    //position: absolute;
 
     top: 0;
     left: 0;
@@ -52,10 +46,8 @@ body:has(nav#navigation #hamburger-toggle:checked) {
     opacity: 0.3;
     transition: 150ms all 100ms ease-out;
     li {
-      transition: var(--nav-transition);
       list-style: none;
       a {
-        transition: var(--nav-transition);
         display: block;
         padding: 1rem;
         text-decoration: none;
@@ -109,7 +101,6 @@ body:has(nav#navigation #hamburger-toggle:checked) {
     height: var(--hamburger-size);
     margin-bottom: calc(-var(--hamburger-size) - var(--hamburger-padding));
     box-sizing: content-box;
-    transition: var(--nav-transition);
     .slice {
       background: #000;
       --slice-height: 2px;
