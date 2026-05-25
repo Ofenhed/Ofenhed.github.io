@@ -1,0 +1,60 @@
+@use 'defines.scss';
+@use 'nav.scss';
+
+#navigation #hamburger.egg {
+  @include nav.with-path('/', $selector: &) {
+    @include nav.closed($selector: &) {
+      .slice {
+
+        margin: 0;
+        &:nth-child(1) {
+          //height: calc(var(--hamburger) / 3);
+          height: 20%;
+          border-top: 2px #fff dotted;
+          border-radius: 90% 90% 5% 5%;
+          background: #d1b8b8;
+        }
+        &:nth-child(2) {
+          height: 25%;
+          width: 95%;
+          margin-left: 2.5%;
+          background: #613e33;
+          border-bottom: 1px #5f4 solid;
+          border-top: 0.5px #d80000 solid;
+          border-radius: 2px 2px 2px 2px;
+        }
+        &:nth-child(3) {
+          height: calc(var(--hamburger) / 3);
+          height: 20%;
+          background: #d1b8d8;
+          border-bottom: 1px hidden;
+          border-radius: 1px 1px 2px 2px;
+
+        }
+      }
+    }
+    @include nav.open($selector: &) {
+      .slice {
+        $colors: (1: #f55, 3: #55f);
+        @each $index, $color in $colors {
+          &:nth-child(#{$index}) {
+            opacity: 1;
+            box-shadow: 0 0 3px 0.5px $color;
+            background: $color;
+            border-right: 5px solid #555555;
+          }
+        }
+        &:nth-child(1) {
+          transform: rotate(135deg);
+        }
+        &:nth-child(3) {
+          transform: rotate(-315deg);
+        }
+        &:nth-child(2) {
+          border: none;
+          padding: 2px;
+        }
+      }
+    }
+  }
+}

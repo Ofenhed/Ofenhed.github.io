@@ -1,6 +1,6 @@
 @use 'defines.scss';
 @use 'nav.scss';
-@use 'space-hamburger.scss';
+@use 'hamburger-easter-egg.scss';
 
 @include nav.open() {
   grid-template-columns: max-content 8px auto 8px;
@@ -74,6 +74,10 @@
           top: calc(50% - 33% + var(--slice-height) / 2);
           transform: rotate(45deg);
         }
+        &:nth-child(3) {
+          top: calc(-50% - var(--hamburger-size) - var(--border-size) + var(--slice-height) / 2);
+          transform: rotate(-45deg);
+        }
         &:nth-child(2) {
           z-index: -1;
           border: var(--border-size) solid #aacb9d;
@@ -83,10 +87,6 @@
           left: calc(0px - var(--border-size));
           transform: rotate(90deg);
           height: var(--hamburger-size);
-        }
-        &:nth-child(3) {
-          top: calc(-50% - var(--hamburger-size) - var(--border-size) + var(--slice-height) / 2);
-          transform: rotate(-45deg);
         }
       }
     }
@@ -101,19 +101,17 @@
     margin-bottom: calc(-var(--hamburger-size) - var(--hamburger-padding));
     box-sizing: content-box;
     .slice {
-      background: #000;
-      --slice-height: 2px;
       display: block;
       position: relative;
+      background: #000;
       width: 100%;
+      margin-top: 22%;
+      --slice-height: 2px;
+      margin-top: calc(33% - var(--slice-height));
+      top: calc((33% - var(--slice-height))/-2);
       height: var(--slice-height, 2px);
       border-radius: var(--slice-height);
       opacity: 90%;
-      margin-top: 22%;
-      margin-top: calc(33% - var(--slice-height));
-      top: calc((33% - var(--slice-height))/-2);
-      &:nth-child(2) {
-      }
     }
   }
 }

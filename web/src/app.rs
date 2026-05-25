@@ -60,13 +60,42 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+enum EggCounter {
+    Counter(u8),
+    Triggered,
+}
+
+#[component]
+fn EggTrigger() -> impl IntoView {
+    let path = use_location().pathname;
+    if let Some(writer) = use_context::<WriteSignal<EggCounter>>() {
+        Signal::derive(move || {
+            path.track();
+            writer.update(|c| match c {
+                EggCounter::Counter(x) => *x = 10,
+                EggCounter::Triggered => (),
+            });
+        });
+    }
+}
+
 #[component]
 pub fn App() -> impl IntoView {
     let fallback = || view! { "Something hilarious about monkeys" }.into_view();
+    let (clicks_to_easter, set_clicks_to_easter) = signal(EggCounter::Counter(5));
+    provide_context(set_clicks_to_easter.clone());
+    let sub_egg_count = move || {
+        set_clicks_to_easter.update(|c| match c {
+            EggCounter::Counter(0) => *c = EggCounter::Triggered,
+            EggCounter::Counter(x) => *x -= 1,
+            EggCounter::Triggered => (),
+        });
+    };
+    let (get_logo_status, save_logo_status) = signal(AnimateQrLogo(true));
+    provide_context(get_logo_status);
+    provide_context(save_logo_status);
     let show_navigation = {
-        let (get_logo_status, save_logo_status) = signal(AnimateQrLogo(true));
-        provide_context(get_logo_status);
-        provide_context(save_logo_status);
         let (should_show_navigation, set_show_navigation) = signal(ShowNavigation(false));
         provide_context(set_show_navigation);
         Signal::derive(move || {
@@ -81,9 +110,10 @@ pub fn App() -> impl IntoView {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
         <Router>
+            <EggTrigger />
             <nav id="navigation" style:display=show_navigation>
-                <input type="checkbox" id="hamburger-toggle" aria-label="hamburger" aria-controls="menu" aria-expanded="false" />
-                <label for="hamburger-toggle" id="hamburger" aria-hidden="true">
+                <input type="checkbox" id="hamburger-toggle" aria-label="hamburger" aria-controls="menu" aria-expanded="false" on:change=move |_| sub_egg_count() />
+                <label for="hamburger-toggle" id="hamburger" aria-hidden="true" class:egg=move || clicks_to_easter.get() == EggCounter::Triggered>
                   <span class="slice" />
                   <span class="slice" />
                   <span class="slice" />

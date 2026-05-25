@@ -49,6 +49,11 @@
             );
           }
       }
+      .slice {
+        &:nth-child(1), &:nth-child(3) {
+          transition: none;
+        }
+      }
       @include nav.open($selector: &) {
         width: 3cm;
         position: relative;
@@ -61,8 +66,9 @@
           background: #000;
           --button-width: calc(100% - var(--open-burger-leak-right) - var(--button-margin) * 2);
           &:nth-child(1), &:nth-child(3) {
-            top: calc(100% + var(--hamburger-size) - 0.5cm);
+            top: calc(100% + var(--hamburger-size));
             left: calc(100% - var(--open-burger-leak-right) - 0.5cm);
+            pointer-events: none;
             padding: 0;
             height: 2px;
             margin: 0px;
