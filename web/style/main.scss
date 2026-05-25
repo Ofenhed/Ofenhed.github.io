@@ -50,7 +50,6 @@ body {
   }
   &:has(main[path^="/clog"]) {
     grid-template-columns: 0px var(--space-padding) auto var(--space-padding);
-    background: #000000;
     main {
       background: light-dark(#bbbbbb, #000000);
     }
