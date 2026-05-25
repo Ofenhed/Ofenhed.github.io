@@ -62,7 +62,6 @@
         margin: var(--button-margin);
         .slice {
           position: absolute;
-          mix-blend-mode: darken;
           background: #000;
           --button-width: calc(100% - var(--open-burger-leak-right) - var(--button-margin) * 2);
           &:nth-child(1), &:nth-child(3) {
