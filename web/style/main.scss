@@ -73,7 +73,6 @@ div.contact {
   }
   div.qr-code {
     margin-top: 1em;
-    width: 100%;
     display: block;
     img, canvas {
       width: 100%;
@@ -83,7 +82,7 @@ div.contact {
       image-rendering: pixelated;
     }
     img, div#canvasHolder {
-      width: calc(min(var(--qr-size), 100vh));
+      width: calc(min(var(--qr-size), 100%));
     }
     noscript > img::after {
       content: '';
