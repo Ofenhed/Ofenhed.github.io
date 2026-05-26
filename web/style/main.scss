@@ -1,6 +1,7 @@
 @use 'defines.scss';
 @use 'hamburger.scss';
 @use 'clog.scss';
+@use 'nav.scss';
 
 nav {
   a {
@@ -44,13 +45,13 @@ body {
     grid-area: main;
     padding: 1em;
   }
-  &:has(main[path="/"]) {
+  @include nav.with-path("/", $base: &) {
     &, main {
       background: light-dark(#ffffff, #222222);
     }
-  }
-  &:has(main[path^="/clog"]) {
-    grid-template-columns: 0px var(--space-padding) auto var(--space-padding);
+    nav#navigation:not(.beta-nav) {
+      display: none;
+    }
   }
 }
 
