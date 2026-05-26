@@ -1,6 +1,12 @@
 @use 'defines.scss';
 @use 'nav.scss';
 
+@mixin no-mask-support {
+  @supports not (offset-path: shape(from 0 0, move to 0 0)) {
+    @content
+  }
+}
+
 :root {
   --button-margin: 3px;
   --open-burger-leak-down: 1cm;
@@ -9,6 +15,9 @@
   --burger-background: #c9f;
   --space-main-background: light-dark(#ffffff, #000000);
   --space-body-background: light-dark(#000000, #222222);
+  @include no-mask-support {
+    --open-burger-leak-down: 0cm;
+  }
 }
 
 @include nav.with-path-prefix("/clog", $base: body) {
@@ -42,6 +51,7 @@
             curve to calc(100% - var(--top-left-rounding)) $top_height with 100% $top_height,
             line to calc(100% - var(--open-burger-leak-right) + var(--top-left-rounding)) calc(100% - var(--open-burger-leak-down)),
             curve to calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down) + var(--top-left-rounding)) with calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down)),
+            line to calc(100% - var(--open-burger-leak-right)) 100%,
             line to 0 100%,
             line to 0 0,
             //line to 0 2cm,
@@ -67,6 +77,10 @@
           &:nth-child(1), &:nth-child(3) {
             top: calc(100% + var(--hamburger-size));
             left: calc(100% - var(--open-burger-leak-right) - 0.5cm);
+            @include no-mask-support {
+              top: 0.25cm;
+              left: 1em;
+            }
             pointer-events: none;
             padding: 0;
             height: 2px;
@@ -81,6 +95,9 @@
             margin: 0;
             opacity: 1;
             border-radius: 2cm 0 0 0;
+            @include no-mask-support {
+              border-radius: 2cm 0 2cm 0;
+            }
             //transform: rotate(-90deg);
             top: 0;
             left: 0;
