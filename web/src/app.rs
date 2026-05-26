@@ -100,9 +100,9 @@ pub fn App() -> impl IntoView {
         provide_context(set_show_navigation);
         Signal::derive(move || {
             if ShowNavigation(true) == should_show_navigation.get() {
-                None
+                true
             } else {
-                Some("none")
+                false
             }
         })
     };
@@ -111,7 +111,7 @@ pub fn App() -> impl IntoView {
         <Meta name="color-scheme" content="dark light" />
         <Router>
             <EggTrigger />
-            <nav id="navigation" style:display=show_navigation>
+            <nav id="navigation" class:beta-nav=show_navigation>
                 <input type="checkbox" id="hamburger-toggle" aria-label="hamburger" aria-controls="menu" aria-expanded="false" on:change=move |_| sub_egg_count() />
                 <label for="hamburger-toggle" id="hamburger" aria-hidden="true" class:egg=move || clicks_to_easter.get() == EggCounter::Triggered>
                   <span class="slice" />
