@@ -72,6 +72,35 @@ jobs:
       with:
         path: target/site/
 
+  check:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Restore build cache
+      id: cache-primes-restore
+      uses: actions/cache/restore@v5
+      with:
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        fail-on-cache-miss: true
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          ~/.cargo/bin/cargo-leptos
+          target/release
+          target/front
+
+    - name: Use nightly rust
+      run: rustup override set nightly
+
+    - name: Log rust version
+      run: rustup --version
+
+    - name: Formatting
+      run: cargo fmt --check --all
+
   deploy:
     runs-on: ubuntu-latest
     needs: build
