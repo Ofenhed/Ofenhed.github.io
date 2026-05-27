@@ -1,5 +1,6 @@
 @use 'defines.scss';
 @use 'nav.scss';
+@use 'lcars.scss';
 
 @mixin no-mask-support {
   @supports not (offset-path: shape(from 0 0, move to 0 0)) {
@@ -36,6 +37,7 @@
     grid-template-columns: max-content var(--space-padding) auto var(--space-padding);
   }
   nav#navigation {
+    text-transform: uppercase;
 
     @include nav.open($selector: &) {
       background: none;
@@ -45,7 +47,6 @@
         background: var(--burger-background);
         &:nth-child(2) {
           $top_height: var(--hamburger-size);
-          transform: rotate(-180deg);
           clip-path: shape(
             from 100% 0px,
             curve to calc(100% - var(--top-left-rounding)) $top_height with 100% $top_height,
@@ -61,7 +62,7 @@
       }
       .slice {
         &:nth-child(1), &:nth-child(3) {
-          transition: none;
+          transform: none;
         }
       }
       @include nav.open($selector: &) {
@@ -132,7 +133,7 @@
           margin: 0;
         }
         &:nth-child(1) {
-          background: #89f;
+          background: lcars.$bluey;
         }
         &:nth-child(2) {
           background: #cf4f4f;
