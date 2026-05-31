@@ -1,17 +1,19 @@
 @use 'defines.scss';
 @use 'sass:color';
+@use 'sass:math';
 @use 'nav.scss';
 
 #navigation #hamburger.egg {
   $sword_length: 40px;
+  $sword_width: 0.75px;
   $handle_length: 8px;
+  $handle_width: 2.5px;
+  $glow_side: 16px;
   @include nav.with-path('/', $selector: &) {
-    @include nav.closed($selector: &) {
-      .slice {
-
-        margin: 0;
+    .slice {
+      margin: 0;
+      @include nav.closed($selector: &) {
         &:nth-child(1) {
-          //height: calc(var(--hamburger) / 3);
           height: 20%;
           border-top: 2px #fff dotted;
           border-radius: 90% 90% 5% 5%;
@@ -38,14 +40,15 @@
     }
     @include nav.open($selector: &) {
       .slice {
-        $colors: (1: #f55, 3: #78f);
+        $colors: (1: #f55, 2: #78f);
         @each $index, $color in $colors {
           &:nth-child(#{$index}) {
             opacity: 1;
             box-shadow: 0 0 1px 1px $color;
-            height: 0.75px;
+            height: $sword_width;
             width: $sword_length;
             background: color.scale($color, $lightness: +80%);
+            border: none;
             //border-right: 10px solid #555555;
             &::after {
               content: '';
@@ -54,11 +57,14 @@
               position: absolute;
               border-radius: 1px;
               left: -$handle_length+0.25px;
-              top: -0.75px;
-              height: 2.5px;
+              top: ($sword_width - $handle_width) / 2;
+              height: $handle_width;
               width: $handle_length;
             }
           }
+        }
+        &:nth-child(1), &:nth-child(2) {
+          animation-duration: 1s;
         }
         &:nth-child(1) {
           @keyframes red-sword-in {
@@ -82,12 +88,12 @@
             }
           }
           z-index: 3;
+          top: calc(50%);
           transform: rotate(-135deg);
           animation-timing-function: linear;
           animation-name: red-sword-in;
-          animation-duration: 1s;
         }
-        &:nth-child(3) {
+        &:nth-child(2) {
           @keyframes blue-sword-in {
             10% {
               transform: translate(-10px, 0px) rotate(-45deg);
@@ -109,12 +115,13 @@
             }
           }
           z-index: 5;
+          top: calc(50% - $sword_width);
+          left: 0;
           transform: rotate(-45deg);
           animation-name: blue-sword-in;
-          animation-timing-function: linear;
-          animation-duration: 1s;
+          animation-timing-function: ease-in;
         }
-        &:nth-child(2) {
+        &:nth-child(3) {
           @keyframes sword-sparcles {
             0% {
               opacity: 0;
@@ -130,13 +137,18 @@
             }
           }
           transform: scale(0.8);
+          width: $glow_side;
+          height: $glow_side;
           opacity: 1;
+          top: calc(50% - 2 * $sword_width - $glow_side / 2);
+          left: math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px / 2 - $sword_width;
           z-index: 4;
           border: none;
           animation-name: sword-sparcles;
           animation-duration: 1s;
+          background: none;
           background-image: radial-gradient(#ffff00, #ffffff10, #ffff0000);
-          padding: 2px;
+          padding: 0;
         }
       }
     }
