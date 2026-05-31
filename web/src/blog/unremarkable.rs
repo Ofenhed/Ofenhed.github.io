@@ -1,7 +1,6 @@
 use crate::blog::BlogEntry;
 use chrono::DateTime;
 use leptos::prelude::*;
-use std::borrow::Cow;
 
 #[component(transparent)]
 pub fn Unremarkable() -> BlogEntry<Children> {
@@ -56,7 +55,7 @@ pub fn Unremarkable() -> BlogEntry<Children> {
             .unwrap()
             .into(),
         title: "(un)Remarkable 2",
-        tags: Cow::Borrowed(&[]),
+        tags: &["review"],
         children: Children::to_children(|| content),
     }
     //BlogEntry::as_blog_entry(t, 1, "(un)Remarkable 2", DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00").unwrap(), [])

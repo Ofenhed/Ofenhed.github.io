@@ -1,5 +1,5 @@
-use leptos::{attr::custom::custom_attribute, nonce::use_nonce, prelude::*};
-use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
+use leptos::{attr::custom::custom_attribute, prelude::*};
+use leptos_meta::{Meta, MetaTags, Script, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
     SsrMode,
     components::{A, Route, Router, Routes},
@@ -55,9 +55,9 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             </head>
             <body>
                 <App/>
-                <script nonce=use_nonce()>
+                <Script>
                 {minified_js}
-                </script>
+                </Script>
             </body>
         </html>
     }
