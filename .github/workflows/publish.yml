@@ -93,7 +93,7 @@ jobs:
           target/front
 
     - name: Use nightly rust
-      run: rustup override set nightly
+      run: rustup override set nightly && rustup component add rustfmt
 
     - name: Log rust version
       run: rustup --version
