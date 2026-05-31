@@ -3,6 +3,7 @@ pub mod unremarkable;
 use crate::blog::unremarkable::Unremarkable;
 use chrono::{DateTime, Utc};
 use leptos::{prelude::*, tachys::view::iterators::StaticVec};
+use leptos_meta::{Meta, use_head};
 use leptos_router::{
     MatchNestedRoutes, PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode,
     any_nested_route::IntoAnyNestedRoute,
@@ -87,13 +88,6 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
         </ParentRoute>
     }
     .into_inner()
-    //}.into_inner();
-    //for blog in [Unremarkable] {
-    //    holder.children.push(view!{
-    //        <BlogRoute blog=blog />
-    //    }.into_inner());
-    //}
-    //holder
 }
 
 #[slot]
@@ -101,7 +95,7 @@ pub struct BlogEntry<T> {
     uid: u32,
     publish_date: DateTime<Utc>,
     title: &'static str,
-    tags: Cow<'static, [&'static str]>,
+    tags: &'static [&'static str],
     children: T,
 }
 
@@ -111,7 +105,7 @@ impl<T: Clone> Clone for BlogEntry<T> {
             uid: self.uid,
             publish_date: self.publish_date,
             title: self.title,
-            tags: self.tags.to_owned(),
+            tags: self.tags,
             children: self.children.clone(),
         }
     }
@@ -164,7 +158,7 @@ impl<T> BlogEntry<T> {
             uid: self.uid,
             publish_date: self.publish_date.clone(),
             title: self.title,
-            tags: self.tags.clone(),
+            tags: self.tags,
             children: (),
         }
     }
@@ -175,7 +169,15 @@ pub type EmptyBlogEntry = BlogEntry<()>;
 
 #[component]
 pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
+    use_head();
     view! {
+        <For
+            each=move || entry.tags.iter()
+            key=|x| x.to_owned()
+            children=|tag| view! {
+        <Meta property="og:article:tag" content=tag.to_owned() />
+            } />
+        <Meta property="og:article:published_time" content=entry.publish_date.to_rfc3339() />
         <h1>
         { entry.title }
         </h1>

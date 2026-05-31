@@ -33,7 +33,6 @@ cargo-leptos = "0.3.6"
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-nonce = ["leptos/nonce", "leptos_meta/nonce"]
 client-side = ["dep:web-sys", "dep:base64", "getrandom/wasm_js"]
 ssr = [
   "dep:axum",
