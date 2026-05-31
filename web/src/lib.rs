@@ -1,6 +1,6 @@
 pub mod app;
-pub mod contact;
 pub mod blog;
+pub mod contact;
 pub mod helpers;
 
 #[cfg(feature = "hydrate")]
