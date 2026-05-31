@@ -1,0 +1,12 @@
+[package]
+name = "js-macro"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+thiserror.workspace = true
+swc.workspace = true
+swc_common.workspace = true
