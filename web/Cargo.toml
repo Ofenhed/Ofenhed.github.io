@@ -33,7 +33,7 @@ cargo-leptos = "0.3.6"
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-nonce = ["leptos/nonce"]
+nonce = ["leptos/nonce", "leptos_meta/nonce"]
 client-side = ["dep:web-sys", "dep:base64", "getrandom/wasm_js"]
 ssr = [
   "dep:axum",
@@ -84,7 +84,7 @@ env = "DEV"
 # The features to use when compiling the bin target
 #
 # Optional. Can be over-ridden with the command line parameter --bin-features
-bin-features = ["dev", "ssr", "nonce"]
+bin-features = ["dev", "ssr"]
 
 # If the --no-default-features flag should be used when compiling the bin target
 #
@@ -94,7 +94,7 @@ bin-default-features = false
 # The features to use when compiling the lib target
 #
 # Optional. Can be over-ridden with the command line parameter --lib-features
-lib-features = ["hydrate", "nonce"]
+lib-features = ["hydrate"]
 
 # If the --no-default-features flag should be used when compiling the lib target
 #
