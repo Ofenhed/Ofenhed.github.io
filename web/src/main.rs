@@ -54,9 +54,6 @@ async fn main() {
             .fallback(leptos_axum::file_and_error_handler(shell))
             .with_state(leptos_options);
 
-        for (key, value) in std::env::vars() {
-            log!("{key}={value}")
-        }
         // run our app with hyper
         // `axum::Server` is a re-export of `hyper::Server`
         log!("listening on http://{}", &addr);
