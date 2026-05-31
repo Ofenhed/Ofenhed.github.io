@@ -7,14 +7,16 @@ edition = "2024"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-axum = { workspace = true, optional = true }
+axum = { workspace = true, optional = true, features = ["tokio", "http1"] }
 base64 = { workspace = true, optional = true }
 console_error_panic_hook.workspace = true
 console_log.workspace = true
 chrono.workspace = true
+getrandom = { workspace = true }
 image = { workspace = true, optional = true }
-leptos.workspace = true
-leptos_axum = { workspace = true, optional = true }
+js-macro = { path = "../js-macro" }
+leptos = { workspace = true }
+leptos_axum = { workspace = true, optional = true, features = ["default"] }
 leptos_meta.workspace = true
 leptos_router.workspace = true
 log.workspace = true
@@ -31,7 +33,8 @@ cargo-leptos = "0.3.6"
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-client-side = ["dep:web-sys", "dep:base64"]
+nonce = ["leptos/nonce"]
+client-side = ["dep:web-sys", "dep:base64", "getrandom/wasm_js"]
 ssr = [
   "dep:axum",
   "dep:image",
@@ -81,7 +84,7 @@ env = "DEV"
 # The features to use when compiling the bin target
 #
 # Optional. Can be over-ridden with the command line parameter --bin-features
-bin-features = ["dev"]
+bin-features = ["dev", "ssr", "nonce"]
 
 # If the --no-default-features flag should be used when compiling the bin target
 #
@@ -91,7 +94,7 @@ bin-default-features = false
 # The features to use when compiling the lib target
 #
 # Optional. Can be over-ridden with the command line parameter --lib-features
-lib-features = ["hydrate"]
+lib-features = ["hydrate", "nonce"]
 
 # If the --no-default-features flag should be used when compiling the lib target
 #

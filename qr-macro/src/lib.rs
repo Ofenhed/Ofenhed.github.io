@@ -1,6 +1,5 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use proc_macro2::TokenStream as TokenStream2;
 use qr::LogoPixel;
 use quote::{ToTokens, quote};
 use syn::{
@@ -123,19 +122,19 @@ pub fn make_qr(input: TokenStream) -> TokenStream {
                         0
                     };
                     let logo_data = {
-                        let mut logo_data = TokenStream2::new();
+                        let mut logo_data = Default::default();
                         res.code.chunks(width).for_each(|c| {
-                            let mut s = TokenStream2::new();
+                            let mut s = Default::default();
                             c.into_iter().for_each(|x| quote! { #x, }.to_tokens(&mut s));
                             quote! { [ #s ], }.to_tokens(&mut logo_data);
                         });
                         logo_data
                     };
                     let inv_data = {
-                        let mut inv_data = TokenStream2::new();
+                        let mut inv_data = Default::default();
                         if i_width > 0 {
                             inverts.chunks(i_width).for_each(|c| {
-                                let mut s = TokenStream2::new();
+                                let mut s = Default::default();
                                 c.into_iter().for_each(|x| quote! { #x, }.to_tokens(&mut s));
                                 quote! { [ #s ], }.to_tokens(&mut inv_data);
                             });
