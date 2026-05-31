@@ -1,7 +1,4 @@
-use leptos::{
-    prelude::*,
-    logging::log,
-};
+use leptos::{logging::log, prelude::*};
 
 pub trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
@@ -11,28 +8,35 @@ pub trait ScopedTimeout {
 impl ScopedTimeout for Owner {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce()) {
         let owner = self.downgrade();
-        set_timeout(move || {
-            if let Some(owner) = owner.upgrade() {
-               owner.with(action);
-            }
-        }, timeout);
+        set_timeout(
+            move || {
+                if let Some(owner) = owner.upgrade() {
+                    owner.with(action);
+                }
+            },
+            timeout,
+        );
     }
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce()) {
         let owner = self.downgrade();
         request_animation_frame(move || {
             if let Some(owner) = owner.upgrade() {
-               owner.with(action);
+                owner.with(action);
             }
         });
     }
 }
 
 pub fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'static + FnOnce()) {
-    let Some(owner) = Owner::current() else { return };
+    let Some(owner) = Owner::current() else {
+        return;
+    };
     owner.set_scoped_timeout(timeout, action)
 }
 pub fn request_scoped_animation_frame(action: impl 'static + FnOnce()) {
-    let Some(owner) = Owner::current() else { return };
+    let Some(owner) = Owner::current() else {
+        return;
+    };
     owner.request_scoped_animation_frame(action)
 }
 
@@ -46,7 +50,10 @@ pub struct IntervalIterator<I, F> {
 impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIterator<I, F> {
     pub fn into_scoped_timeout(mut self) {
         let Some(i) = self.it.next() else { return };
-        let Some(owner) = self.owner.upgrade() else { log!("Lost iterator owner"); return };
+        let Some(owner) = self.owner.upgrade() else {
+            log!("Lost iterator owner");
+            return;
+        };
         let interval = self.interval;
         owner.set_scoped_timeout(interval, move || {
             (self.action)(i);
@@ -55,7 +62,10 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
     }
 }
 
-pub trait IntoIntervalIterator<F> where Self: Iterator + Sized {
+pub trait IntoIntervalIterator<F>
+where
+    Self: Iterator + Sized,
+{
     #[must_use]
     fn on_interval(self, interval: std::time::Duration, action: F) -> IntervalIterator<Self, F>;
 }
@@ -69,7 +79,7 @@ impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterato
             it: self,
             interval,
             action,
-            owner: owner.downgrade()
+            owner: owner.downgrade(),
         }
     }
 }
