@@ -60,8 +60,10 @@
     overflow: visible;
     cursor: pointer;
     position: absolute;
-    &:not(:checked) ~ #hamburger .slice:nth-child(2) {
-      transform: rotate(720deg);
+    &:not(:checked) {
+      & ~ #hamburger .slice:nth-child(2) {
+        transform: rotate(720deg);
+      }
     }
     &:checked {
       & ~ #menu {

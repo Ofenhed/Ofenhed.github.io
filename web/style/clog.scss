@@ -39,6 +39,13 @@
   nav#navigation {
     text-transform: uppercase;
 
+    @include nav.closed($selector: &) {
+      pointer-events: none;
+      #hamburger {
+        pointer-events: all;
+      }
+    }
+
     @include nav.open($selector: &) {
       background: none;
     }
@@ -61,8 +68,13 @@
           }
       }
       .slice {
-        &:nth-child(1), &:nth-child(3) {
+        &:nth-child(1), &:nth-child(2), &:nth-child(3) {
           transform: none;
+        }
+        @include nav.closed($selector: &) {
+          &:nth-child(2) {
+            transform: none;
+          }
         }
       }
       @include nav.open($selector: &) {
