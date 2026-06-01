@@ -60,7 +60,7 @@ async fn main() {
             .unwrap();
     };
 
-    #[cfg(not(feature = "dev"))]
+    #[cfg(feature = "statics")]
     {
         use leptos_static_files::prelude::*;
         let do_generate = StaticFileOptions::new(Oco::Borrowed(&leptos_options));
