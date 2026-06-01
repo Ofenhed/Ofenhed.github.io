@@ -131,17 +131,20 @@
         vertical-align: bottom;
         a {
           margin: 0;
+          $small: 0.5ex;
+          $big: calc(2rem - $small);
+          padding: $big $small $small $big;
         }
-        &:nth-child(1) {
-          background: lcars.$bluey;
-        }
-        &:nth-child(2) {
-          background: #cf4f4f;
+        $colors: (1: lcars.$bluey, 2: lcars.$red, 3: lcars.$lima-bean);
+        @each $index, $color in $colors {
+          &:nth-child(#{$index}) {
+            background: $color;
+          }
         }
       }
       &::after {
         content: '';
-        background: #f80;
+        background: lcars.$orange;
         margin: var(--button-margin);
         display: block;
         width: calc(100% - var(--button-margin) * 2);

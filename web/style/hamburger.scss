@@ -37,7 +37,6 @@
     padding-left: 0;
     height: calc(100% - var(--menu-padding));
     z-index: 100;
-    z-index: -10;
     margin: 0;
 
     transform-origin: top left;
@@ -61,6 +60,9 @@
     overflow: visible;
     cursor: pointer;
     position: absolute;
+    &:not(:checked) ~ #hamburger .slice:nth-child(2) {
+      transform: rotate(720deg);
+    }
     &:checked {
       & ~ #menu {
         visibility: visible;
@@ -71,11 +73,13 @@
         background-color: #fff;
         --border-size: 2px;
         &:nth-child(1) {
-          top: calc(50% - 33% + var(--slice-height) / 2);
+          z-index: 0;
+          top: calc(50% - 25%);
           transform: rotate(45deg);
         }
         &:nth-child(3) {
-          top: calc(-50% - var(--hamburger-size) - var(--border-size) + var(--slice-height) / 2);
+          z-index: 0;
+          top: calc(-50% + 25% - var(--hamburger-size) - var(--border-size) * 4 + var(--slice-height));
           transform: rotate(-45deg);
         }
         &:nth-child(2) {
@@ -85,7 +89,7 @@
           background-color: rgba(0, 0, 0, 0);
           top: calc(-50% - var(--border-size) - var(--slice-height) / 2);
           left: calc(0px - var(--border-size));
-          transform: rotate(90deg);
+          transform: rotate(0deg);
           height: var(--hamburger-size);
         }
       }
@@ -105,7 +109,6 @@
       position: relative;
       background: #000;
       width: 100%;
-      margin-top: 22%;
       --slice-height: 2px;
       margin-top: calc(33% - var(--slice-height));
       top: calc((33% - var(--slice-height))/-2);

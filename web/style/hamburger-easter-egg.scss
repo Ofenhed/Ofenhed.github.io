@@ -11,9 +11,13 @@
   $glow_side: 16px;
   @include nav.with-path('/', $selector: &) {
     .slice {
+      &:nth-child(2) {
+        transform: rotate(-45deg);
+      }
       margin: 0;
       @include nav.closed($selector: &) {
         &:nth-child(1) {
+          margin-top: 5px;
           height: 20%;
           border-top: 2px #fff dotted;
           border-radius: 90% 90% 5% 5%;
