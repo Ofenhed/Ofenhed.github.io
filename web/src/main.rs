@@ -10,19 +10,20 @@ async fn main() {
     let addr = conf.leptos_options.site_addr;
     let leptos_options = conf.leptos_options;
     // Generate the list of routes in your Leptos App
-    let (_routes, static_routes) = generate_route_list_with_ssg({
-        let leptos_options = leptos_options.clone();
-        move || shell(leptos_options.clone())
+    let qr_options = leptos_options.clone();
+    let qr = tokio::task::spawn_blocking(move || {
+        conditionraise::contact::qr_generator::save_qrcode(&qr_options)
     });
-
+    pin!(qr);
+    #[cfg(feature = "dev")]
     {
-        let routes = static_routes.generate(&leptos_options);
-        let qr_options = leptos_options.clone();
-        let qr = tokio::task::spawn_blocking(move || {
-            conditionraise::contact::qr_generator::save_qrcode(&qr_options)
+        let (routes, static_routes) = leptos_axum::generate_route_list_with_ssg({
+            let leptos_options = leptos_options.clone();
+            move || shell(leptos_options.clone())
         });
-        pin!(routes);
-        pin!(qr);
+
+        let do_generate = static_routes.generate(&leptos_options);
+        pin!(do_generate);
         let [mut routes_saved, mut qr_saved] = [false; 2];
         loop {
             select! {
@@ -62,20 +63,29 @@ async fn main() {
     #[cfg(not(feature = "dev"))]
     {
         use leptos_static_files::prelude::*;
-        StaticFileOptions::new(Oco::Borrowed(&leptos_options))
-            .generate_static_files({
-                let leptos_options = leptos_options.clone();
-                move || shell(leptos_options.clone())
-            })
-            .await
-            .unwrap();
-        //let routes = shell(leptos_options.clone())
-        //    .into_any_nested_route()
-        //    .generate_routes();
-        //let defs = leptos_router::RouteDefs::new({
-        //    let leptos_options = leptos_options.clone();
-        //    move || shell(leptos_options.clone())
-        //});
+        let do_generate = StaticFileOptions::new(Oco::Borrowed(&leptos_options));
+        let do_generate = do_generate.generate_static_files({
+            let leptos_options = leptos_options.clone();
+            move || shell(leptos_options.clone())
+        });
+        pin!(do_generate);
+        let [mut routes_saved, mut qr_saved] = [false; 2];
+        loop {
+            select! {
+                q = &mut qr, if !qr_saved => {
+                    _ = q.expect("qr code can always be constructed");
+                    qr_saved = true;
+                }
+                r = &mut do_generate, if !routes_saved => {
+                    r.expect("Can always generate routes");
+                    routes_saved = true;
+                }
+                else => {
+                    break;
+                }
+            }
+        }
+        log!("Static files generated");
     }
 }
 
