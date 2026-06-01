@@ -71,7 +71,12 @@ enum EggCounter {
 
 #[component]
 pub fn App() -> impl IntoView {
-    let fallback = || view! { "Something hilarious about monkeys" }.into_view();
+    let fallback = || {
+        view! {
+        <h1>404 error</h1>
+        <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p> }
+        .into_view()
+    };
     const INITIAL_EGG_COUNTER: u8 = 8;
     let (clicks_to_easter, set_clicks_to_easter) = signal(EggCounter::Counter(INITIAL_EGG_COUNTER));
     let sub_egg_count = move || {

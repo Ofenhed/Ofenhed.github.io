@@ -15,10 +15,11 @@ chrono.workspace = true
 getrandom = { workspace = true }
 image = { workspace = true, optional = true }
 js-macro = { path = "../js-macro" }
-leptos = { workspace = true }
-leptos_axum = { workspace = true, optional = true, features = ["default"] }
+leptos = { workspace = true, features = ["rkyv"] }
+leptos_axum = { workspace = true, optional = true }
 leptos_meta.workspace = true
 leptos_router.workspace = true
+leptos_static_files = { path = "../leptos_static_files", optional = true }
 log.workspace = true
 qr = { path = "../qr" }
 qr-macro = { path = "../qr-macro" }
@@ -35,15 +36,17 @@ default = []
 hydrate = ["leptos/hydrate", "client-side"]
 client-side = ["dep:web-sys", "dep:base64", "getrandom/wasm_js"]
 ssr = [
-  "dep:axum",
   "dep:image",
-  "dep:leptos_axum",
   "dep:tokio",
+  "leptos_static_files?/ssr",
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",
 ]
-dev = ["ssr"]
+statics = [
+  "ssr", "dep:leptos_static_files",
+]
+dev = ["ssr", "dep:axum", "dep:leptos_axum"]
 
 [package.metadata.cargo-all-features]
 denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "leptos_axum"]
