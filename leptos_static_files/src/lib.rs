@@ -141,7 +141,6 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
         //for route in routes.iter() {
         //    println!("Got route {route:?}");
         //}
-        println!("Generating static files");
         routes
             .ok_or(StaticFileGeneratorError::NoRoutesGenerated)?
             .generate_static_files(
@@ -154,7 +153,6 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                         let additional_context = additional_context.clone();
                         let app_fn = app_fn.clone();
                         Sandboxed::new(async move {
-                            println!("Generating {}", path.as_ref());
                             let set_meta = owner.with(move || {
                                 provide_context(leptos_router::location::RequestUrl::new(
                                     path.as_ref(),
@@ -193,9 +191,7 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                     move |path, _owner, content| {
                         let target = static_path(&leptos_options, Oco::Borrowed(path.as_ref()))
                             .expect("All paths are valid");
-                        let print = format!("Saving {}", path.as_ref());
                         async move {
-                            println!("{}", print);
                             #[cfg(feature = "tokio")]
                             {
                                 if let Some(parent) = target.parent() {
