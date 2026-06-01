@@ -5,7 +5,7 @@ use std::{
 };
 
 use futures::StreamExt as _;
-use leptos::{config::LeptosOptions, prelude::*, server_fn::codec::IntoRes as _};
+use leptos::{config::LeptosOptions, prelude::*};
 use reactive_graph::owner::Sandboxed;
 
 pub mod prelude {
@@ -203,7 +203,7 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                         }
                     }
                 },
-                |owner| false,
+                |_owner| false,
             )
             .await;
         Ok(())
