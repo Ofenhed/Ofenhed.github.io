@@ -48,8 +48,11 @@ jobs:
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
 
-    - name: Build
-      run: cargo leptos build --release --bin-features ssr,statics
+    - name: Build wasm
+      run: cargo leptos build --release --frontend-only
+
+    - name: Build static file generator
+      run: cargo leptos build --release --server-only --bin-features ssr,statics
 
     - name: Save cache
       uses: actions/cache/save@v5
