@@ -110,21 +110,37 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
         init_executor()?;
         let new_owner =
             || Owner::new_root(Some(Arc::from(hydration_context::SsrSharedContext::new())));
-        let routes = new_owner().with({
-            let additional_context = self.additional_context.clone();
-            let not_found_path = self.leptos.not_found_path.clone();
-            let app_fn = app_fn.clone();
-            move || {
-                provide_context(leptos_router::location::RequestUrl::new(""));
-                //let (mock_parts, _) = Request::new(Body::from("")).into_parts();
-                //provide_context(mock_parts);
-                let (mock_meta, _) = leptos_meta::ServerMetaContext::new();
-                provide_context(mock_meta);
-                //provide_context(ResponseOptions::default());
-                additional_context();
-                leptos_router::RouteList::generate(app_fn.clone())
-            }
-        });
+        let routes = {
+            let owner = new_owner();
+            let list = owner.with({
+                let additional_context = self.additional_context.clone();
+                let not_found_path = self.leptos.not_found_path.clone();
+                let app_fn = app_fn.clone();
+                move || {
+                    provide_context(leptos_router::location::RequestUrl::new(""));
+                    //let (mock_parts, _) = Request::new(Body::from("")).into_parts();
+                    //provide_context(mock_parts);
+                    let (mock_meta, _) = leptos_meta::ServerMetaContext::new();
+                    provide_context(mock_meta);
+                    //provide_context(ResponseOptions::default());
+                    additional_context();
+                    leptos_router::RouteList::generate(app_fn.clone()).map(|mut list| {
+                        use leptos_router::{
+                            Method, PathSegment, RouteListing, SsrMode, static_routes::StaticRoute,
+                        };
+                        list.push(RouteListing::new(
+                            [PathSegment::Static(Cow::Owned(not_found_path.to_string()))],
+                            SsrMode::Static(StaticRoute::new()),
+                            [Method::Get],
+                            [],
+                        ));
+                        list
+                    })
+                }
+            });
+            owner.unset_with_forced_cleanup();
+            list
+        };
 
         routes
             .ok_or(StaticFileGeneratorError::NoRoutesGenerated)?
