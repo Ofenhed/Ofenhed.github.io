@@ -3,7 +3,6 @@
 async fn main() {
     use conditionraise::app::*;
     use leptos::{logging::log, prelude::*};
-    use leptos_axum::generate_route_list_with_ssg;
     use tokio::{pin, select};
 
     let conf = get_configuration(None).unwrap();
@@ -31,7 +30,7 @@ async fn main() {
                     _ = q.expect("qr code can always be constructed");
                     qr_saved = true;
                 }
-                _ = &mut routes, if !routes_saved => {
+                _ = &mut do_generate, if !routes_saved => {
                     routes_saved = true;
                 }
                 else => {
@@ -40,19 +39,16 @@ async fn main() {
             }
         }
         log!("Static files generated");
-    }
 
-    #[cfg(feature = "dev")]
-    {
         use axum::Router;
         use leptos_axum::LeptosRoutes;
         let app = Router::new()
-            .leptos_routes(&leptos_options, _routes, {
+            .leptos_routes(&leptos_options, routes, {
                 let leptos_options = leptos_options.clone();
                 move || shell(leptos_options.clone())
             })
             .fallback(leptos_axum::file_and_error_handler(shell))
-            .with_state(leptos_options);
+            .with_state(leptos_options.clone());
 
         // run our app with hyper
         // `axum::Server` is a re-export of `hyper::Server`
@@ -61,6 +57,25 @@ async fn main() {
         axum::serve(listener, app.into_make_service())
             .await
             .unwrap();
+    };
+
+    #[cfg(not(feature = "dev"))]
+    {
+        use leptos_static_files::prelude::*;
+        StaticFileOptions::new(Oco::Borrowed(&leptos_options))
+            .generate_static_files({
+                let leptos_options = leptos_options.clone();
+                move || shell(leptos_options.clone())
+            })
+            .await
+            .unwrap();
+        //let routes = shell(leptos_options.clone())
+        //    .into_any_nested_route()
+        //    .generate_routes();
+        //let defs = leptos_router::RouteDefs::new({
+        //    let leptos_options = leptos_options.clone();
+        //    move || shell(leptos_options.clone())
+        //});
     }
 }
 

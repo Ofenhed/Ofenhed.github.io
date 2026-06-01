@@ -38,7 +38,7 @@ fn BlogIndex() -> impl IntoView {
 #[component(transparent)]
 pub fn BlogRoute(
     blog: impl 'static + Send + Clone + Fn() -> PopulatedBlogEntry,
-) -> leptos_router::any_nested_route::AnyNestedRoute {
+) -> impl leptos_router::MatchNestedRoutes + Clone {
     let metadata = blog().metadata();
     view! {
         <Route
