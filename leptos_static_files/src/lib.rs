@@ -122,25 +122,10 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                 provide_context(mock_meta);
                 //provide_context(ResponseOptions::default());
                 additional_context();
-                leptos_router::RouteList::generate(app_fn.clone()).map(|mut list| {
-                    use leptos_router::{
-                        Method, PathSegment, RouteListing, SsrMode, static_routes::StaticRoute,
-                    };
-                    list.push(RouteListing::new(
-                        [PathSegment::Static(Cow::Owned(not_found_path.to_string()))],
-                        SsrMode::Static(StaticRoute::new()),
-                        [Method::Get],
-                        [],
-                    ));
-                    list
-                })
+                leptos_router::RouteList::generate(app_fn.clone())
             }
         });
 
-        //let (something, iter) = routes.generate_routes();
-        //for route in routes.iter() {
-        //    println!("Got route {route:?}");
-        //}
         routes
             .ok_or(StaticFileGeneratorError::NoRoutesGenerated)?
             .generate_static_files(
