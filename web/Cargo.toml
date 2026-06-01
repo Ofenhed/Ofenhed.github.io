@@ -57,7 +57,7 @@ skip_feature_sets = [["ssr", "hydrate", "dev"], []]
 #output-name = "ssr_modes"
 # The site root folder is where cargo-leptos generate all output. WARNING: all content of this folder will be erased on a rebuild. Use it in your server setup.
 site-root = "target/site"
-not-found-path = "target/site/404.html"
+not-found-path = "/404"
 # The site-root relative folder where all compiled output (JS, WASM and CSS) is written
 # Defaults to pkg
 site-pkg-dir = "pkg"
