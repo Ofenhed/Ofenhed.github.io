@@ -1,7 +1,7 @@
 use std::{
+    borrow::Cow,
     path::{Path, PathBuf},
     sync::Arc,
-    borrow::Cow,
 };
 
 use futures::StreamExt as _;
@@ -123,9 +123,16 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                 //provide_context(ResponseOptions::default());
                 additional_context();
                 leptos_router::RouteList::generate(app_fn.clone()).map(|mut list| {
-                use leptos_router::{Method, static_routes::StaticRoute, SsrMode, RouteListing, PathSegment};
-                list.push(RouteListing::new([PathSegment::Static(Cow::Owned(not_found_path.to_string()))], SsrMode::Static(StaticRoute::new()), [Method::Get], []));
-                list
+                    use leptos_router::{
+                        Method, PathSegment, RouteListing, SsrMode, static_routes::StaticRoute,
+                    };
+                    list.push(RouteListing::new(
+                        [PathSegment::Static(Cow::Owned(not_found_path.to_string()))],
+                        SsrMode::Static(StaticRoute::new()),
+                        [Method::Get],
+                        [],
+                    ));
+                    list
                 })
             }
         });
@@ -168,7 +175,9 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                                     async move {
                                         //let v = v.resolve().await;
                                         let stream = set_meta
-                                            .inject_meta_context(v.resolve().await.to_html_stream_in_order())
+                                            .inject_meta_context(
+                                                v.resolve().await.to_html_stream_in_order(),
+                                            )
                                             .await;
                                         stream.collect().await
                                     }
