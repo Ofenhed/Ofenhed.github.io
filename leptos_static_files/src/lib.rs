@@ -169,10 +169,9 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                             }
                             let reply = owner
                                 .with(move || {
-                                    let mut v = (app_fn)();
-                                    v.dry_resolve();
+                                    let v = (app_fn)();
                                     async move {
-                                        //let v = v.resolve().await;
+                                        let v = v.resolve().await;
                                         let stream = set_meta
                                             .inject_meta_context(
                                                 v.resolve().await.to_html_stream_in_order(),
