@@ -118,11 +118,12 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                 let app_fn = app_fn.clone();
                 move || {
                     provide_context(leptos_router::location::RequestUrl::new(""));
-                    //let (mock_parts, _) = Request::new(Body::from("")).into_parts();
-                    //provide_context(mock_parts);
-                    let (mock_meta, _) = leptos_meta::ServerMetaContext::new();
-                    provide_context(mock_meta);
-                    //provide_context(ResponseOptions::default());
+                    #[cfg(feature = "meta")]
+                    {
+                        use leptos_meta::*;
+                        let (mock_meta, _) = ServerMetaContext::new();
+                        provide_context(mock_meta);
+                    }
                     additional_context();
                     leptos_router::RouteList::generate(app_fn.clone()).map(|mut list| {
                         use leptos_router::{
@@ -149,34 +150,35 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                     let additional_context = self.additional_context.clone();
                     let app_fn = app_fn.clone();
                     move |path| {
-                        let owner = new_owner();
                         let path = path.clone();
                         let additional_context = additional_context.clone();
                         let app_fn = app_fn.clone();
                         Sandboxed::new(async move {
-                            let set_meta = owner.with(move || {
+                            let owner = new_owner();
+                            let inject_meta = owner.with(move || {
                                 provide_context(leptos_router::location::RequestUrl::new(
                                     path.as_ref(),
                                 ));
-                                let (meta, set_meta) = leptos_meta::ServerMetaContext::new();
-                                provide_context(meta);
-                                additional_context();
-                                set_meta
+                                #[cfg(feature = "meta")]
+                                {
+                                    use leptos_meta::*;
+                                    let (mock_meta, set_meta) = ServerMetaContext::new();
+                                    provide_context(mock_meta);
+                                    additional_context();
+                                    |x| set_meta.inject_meta_context(x)
+                                }
+                                #[cfg(not(feature = "meta"))]
+                                |x| async move { x }
                             });
-                            let sc = owner.shared_context().unwrap();
-                            while let Some(pending) = sc.await_deferred() {
-                                pending.await;
-                            }
                             let reply = owner
                                 .with(move || {
                                     let v = (app_fn)();
                                     async move {
                                         let v = v.resolve().await;
-                                        let stream = set_meta
-                                            .inject_meta_context(
-                                                v.resolve().await.to_html_stream_in_order(),
-                                            )
-                                            .await;
+                                        let stream = inject_meta(
+                                            v.resolve().await.to_html_stream_in_order(),
+                                        )
+                                        .await;
                                         stream.collect().await
                                     }
                                 })
