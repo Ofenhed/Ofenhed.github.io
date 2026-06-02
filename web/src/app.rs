@@ -118,6 +118,7 @@ pub fn App() -> impl IntoView {
             }
         })
     };
+    let aria_hidden = Signal::derive(move || if aria_expanded.get() { "false" } else { "true" });
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
@@ -141,7 +142,7 @@ pub fn App() -> impl IntoView {
                     <span class="slice" />
                     <span class="slice" />
                 </label>
-                <ul id="menu" aria-hidden="true">
+                <ul id="menu" aria-hidden=aria_hidden>
                     <li>
                         <A href="/">"Contact"</A>
                     </li>
