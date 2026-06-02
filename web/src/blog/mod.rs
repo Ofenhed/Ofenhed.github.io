@@ -172,6 +172,7 @@ pub type EmptyBlogEntry = BlogEntry<()>;
 
 #[component]
 pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
+    use leptos_meta::Title;
     use_head();
     let last_update = entry.last_updated.map(|x| {
         view! {
@@ -179,6 +180,8 @@ pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
         }
     });
     view! {
+        <Title formatter=|title: String| format!("{title} - Captains Log") text=entry.title />
+        <Meta property="og:title" content=entry.title />
         <For
             each=move || entry.tags.iter()
             key=|x| x.to_owned()
