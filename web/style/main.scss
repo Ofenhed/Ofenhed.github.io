@@ -55,12 +55,6 @@ body {
   }
 }
 
-main {
-  @media (max-width: var(--qr-width)) {
-    padding-top: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
-  }
-}
-
 img[wasm-fallback-src] {
   display: none;
 }

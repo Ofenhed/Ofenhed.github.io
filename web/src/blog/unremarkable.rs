@@ -5,13 +5,13 @@ use leptos::prelude::*;
 #[component(transparent)]
 pub fn Unremarkable() -> BlogEntry<Children> {
     let content = view! {
-        "I had such high hopes, and I was initially very happy with this product, I tried the writing and some sketching, looked through the (very few) settings, and the build quality is absolutely amazing."
-        <br />
-        <br />
-        "The issues arose as soon as I tried to be productive with the device, which forced me to your cloud service. It's very interesting that you are charging for that \"service\", as I would gladly pay extra to not have it."
-        <br />
-        <br />
-        "Some of the issues I've run into in the very short time I've tested the device:"
+        <p>
+            "I had such high hopes, and I was initially very happy with this product, I tried the writing and some sketching, looked through the (very few) settings, and the build quality is absolutely amazing."
+        </p>
+        <p>
+            "The issues arose as soon as I tried to be productive with the device, which forced me to your cloud service. It's very interesting that you are charging for that \"service\", as I would gladly pay extra to not have it."
+        </p>
+        <p>"Some of the issues I've run into in the very short time I've tested the device:"</p>
         <ul>
             <li>
                 "There is no way to have files on your device which are not synced to the cloud, unless you completely disconnect from the remarkable account. There goes most of my use cases, as no respectable customer should be OK with that."

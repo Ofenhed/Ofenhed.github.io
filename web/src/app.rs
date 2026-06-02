@@ -129,7 +129,9 @@ pub fn App() -> impl IntoView {
                     id="hamburger-toggle"
                     aria-label="hamburger"
                     aria-controls="menu"
-                    aria-expanded=Signal::derive(move || if aria_expanded.get() { "true" } else { "false" })
+                    aria-expanded=Signal::derive(move || {
+                        if aria_expanded.get() { "true" } else { "false" }
+                    })
                     on:change=sub_egg_count()
                 />
                 <label
