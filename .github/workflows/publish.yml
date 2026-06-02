@@ -98,8 +98,14 @@ jobs:
     - name: Log rust version
       run: rustup --version
 
-    - name: Formatting
+    - name: Rust formatting
       run: cargo fmt --check --all
+
+    - name: Install leptosfmt
+      run: cargo install leptosfmt --locked
+
+    - name: Leptos view formatting
+      run: leptosfmt --check
 
   deploy:
     runs-on: ubuntu-latest
