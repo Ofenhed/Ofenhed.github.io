@@ -105,7 +105,7 @@ jobs:
       run: cargo install leptosfmt --locked
 
     - name: Leptos view formatting
-      run: leptosfmt --check
+      run: leptosfmt --check web/
 
   deploy:
     runs-on: ubuntu-latest
