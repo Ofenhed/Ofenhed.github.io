@@ -17,7 +17,6 @@ use crate::{
 pub struct ShowNavigation(pub bool);
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
-    provide_meta_context();
     //let css_path = format!("/{}/{}.css", options.site_pkg_dir, options.output_name);
     let css_path = options.css_path();
     let minified_js = js_macro::minify_js! {
@@ -71,6 +70,7 @@ enum EggCounter {
 
 #[component]
 pub fn App() -> impl IntoView {
+    provide_meta_context();
     let fallback = || {
         view! {
         <h1>404 error</h1>
