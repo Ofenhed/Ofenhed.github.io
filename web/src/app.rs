@@ -78,6 +78,7 @@ pub fn App() -> impl IntoView {
     };
     const INITIAL_EGG_COUNTER: u8 = 8;
     let (clicks_to_easter, set_clicks_to_easter) = signal(EggCounter::Counter(INITIAL_EGG_COUNTER));
+    let (aria_expanded, set_aria_expanded) = signal(false);
     let sub_egg_count = move || {
         let path = use_location().pathname;
         let e = Effect::new(move |_| {
@@ -91,8 +92,9 @@ pub fn App() -> impl IntoView {
                 });
             }
         });
-        move |_| {
+        move |event: leptos::ev::Event| {
             let _e = e;
+            set_aria_expanded.set(event_target_checked(&event));
             set_clicks_to_easter.update(move |c| match c {
                 EggCounter::Counter(0) => *c = EggCounter::Triggered,
                 EggCounter::Counter(x) => {
@@ -126,7 +128,7 @@ pub fn App() -> impl IntoView {
                     id="hamburger-toggle"
                     aria-label="hamburger"
                     aria-controls="menu"
-                    aria-expanded="false"
+                    aria-expanded=Signal::derive(move || if aria_expanded.get() { "true" } else { "false" })
                     on:change=sub_egg_count()
                 />
                 <label
