@@ -143,7 +143,7 @@
           height: $glow_side;
           opacity: 1;
           top: calc(50% - 2 * $sword_width - $glow_side / 2);
-          left: math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px / 2 - $sword_width;
+          left: math.div(math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px, 2) - $sword_width;
           z-index: 4;
           border: none;
           animation-name: sword-sparcles;

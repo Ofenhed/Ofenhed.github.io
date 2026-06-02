@@ -3,7 +3,7 @@
 @use 'sass:selector';
 @use 'sass:string';
 
-@mixin with-navigation($selector: (), $path: null, $path-match: null, $base: null, $navigator: null) {
+@mixin with-navigation($selector: (), $path: null, $invert-path: false, $path-match: null, $base: null, $navigator: null) {
   @if $base == null {
     $base: body;
   }
@@ -17,7 +17,11 @@
   }
   @if $path != null {
     $p: string.quote(#{$path});
-    $s: selector.append($s, ":has(main[path#{$path-match}=\"#{$p}\"])");
+    $p-sel: ":has(main[path#{$path-match}=\"#{$p}\"])";
+    @if $invert-path {
+      $p-sel: ":not(#{$p-sel})";
+    }
+    $s: selector.append($s, $p-sel);
   }
 
   @if list.length($selector) > 0 {

@@ -109,7 +109,7 @@
     .slice {
       display: block;
       position: relative;
-      background: #000;
+      background: light-dark(#000, #888);
       width: 100%;
       --slice-height: 2px;
       margin-top: calc(33% - var(--slice-height));
@@ -121,3 +121,10 @@
   }
 }
 
+@include nav.with-path-prefix("/clog", $invert-path: true)  {
+  &:has(nav#navigation.beta-nav) main {
+    @media screen {
+      padding-top: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
+    }
+  }
+}

@@ -173,6 +173,7 @@ pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=entry.title />
         <Meta property="og:title" content=entry.title />
+        <Meta property="og:article:author" content=entry.title />
         <For
             each=move || entry.tags.iter()
             key=|x| x.to_owned()
@@ -207,7 +208,7 @@ fn to_title<'a>(input: impl Into<Oco<'a, str>>) -> Oco<'a, str> {
 #[component]
 pub fn BlogEntryList(entries: Vec<EmptyBlogEntry>) -> impl IntoView {
     view! {
-        <ul>
+        <ul id="blog-entries">
             <For each=move || entries.clone() key=|x: &EmptyBlogEntry| x.uid let(entry)>
                 <li>
                     <A href=move || {
