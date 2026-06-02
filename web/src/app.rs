@@ -45,18 +45,16 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <!DOCTYPE html>
         <html lang="en">
             <head>
-                <meta charset="utf-8"/>
-                <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <AutoReload options=options.clone()/>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <AutoReload options=options.clone() />
                 <HydrationScripts options />
                 <Stylesheet href=css_path />
-                <MetaTags/>
+                <MetaTags />
             </head>
             <body>
-                <App/>
-                <Script>
-                {minified_js}
-                </Script>
+                <App />
+                <Script>{minified_js}</Script>
             </body>
         </html>
     }
@@ -73,8 +71,9 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
     let fallback = || {
         view! {
-        <h1>404 error</h1>
-        <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p> }
+            <h1>"404 error"</h1>
+            <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p>
+        }
         .into_view()
     };
     const INITIAL_EGG_COUNTER: u8 = 8;
@@ -122,30 +121,38 @@ pub fn App() -> impl IntoView {
         <Meta name="color-scheme" content="dark light" />
         <Router>
             <nav id="navigation" class:beta-nav=show_navigation>
-                <input type="checkbox" id="hamburger-toggle" aria-label="hamburger" aria-controls="menu" aria-expanded="false" on:change=sub_egg_count() />
-                <label for="hamburger-toggle" id="hamburger" aria-hidden="true" class:egg=move || clicks_to_easter.get() == EggCounter::Triggered>
-                  <span class="slice" />
-                  <span class="slice" />
-                  <span class="slice" />
+                <input
+                    type="checkbox"
+                    id="hamburger-toggle"
+                    aria-label="hamburger"
+                    aria-controls="menu"
+                    aria-expanded="false"
+                    on:change=sub_egg_count()
+                />
+                <label
+                    for="hamburger-toggle"
+                    id="hamburger"
+                    aria-hidden="true"
+                    class:egg=move || clicks_to_easter.get() == EggCounter::Triggered
+                >
+                    <span class="slice" />
+                    <span class="slice" />
+                    <span class="slice" />
                 </label>
                 <ul id="menu" aria-hidden="true">
-                  <li>
-                    <A href="/">"Contact"</A>
-                  </li>
-                  <li>
-                    <A href="/clog">"Clog"</A>
-                  </li>
+                    <li>
+                        <A href="/">"Contact"</A>
+                    </li>
+                    <li>
+                        <A href="/clog">"Clog"</A>
+                    </li>
                 </ul>
             </nav>
             <main {..custom_attribute("path", use_location().pathname)}>
-            <Routes fallback>
-                <Route
-                  path=path!("/")
-                  view=Contact
-                  ssr=SsrMode::Static(StaticRoute::new())
-                  />
-                <Blog />
-            </Routes>
+                <Routes fallback>
+                    <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
+                    <Blog />
+                </Routes>
             </main>
         </Router>
     }

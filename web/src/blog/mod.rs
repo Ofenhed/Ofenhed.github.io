@@ -30,9 +30,7 @@ fn BlogIndex() -> impl IntoView {
     if let Some(c) = use_context::<BlogContext>() {
         c.title.update(|t| *t = "Blog");
     }
-    view! {
-        <h1>"Posts"</h1>
-    }
+    view! { <h1>"Posts"</h1> }
 }
 
 #[component(transparent)]
@@ -43,11 +41,9 @@ pub fn BlogRoute(
     view! {
         <Route
             path=metadata
-            view=move|| view!{
-                <ShowBlogEntry entry=blog() />
-            }
+            view=move || view! { <ShowBlogEntry entry=blog() /> }
             ssr=SsrMode::Static(StaticRoute::new())
-            />
+        />
     }
     .into_inner()
     .into_any_nested_route()
@@ -75,16 +71,13 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
             view=Outlet
             ssr=SsrMode::Static(StaticRoute::new())
             clone:blog_metadata
-            >
-        <Route
-            path=path!("/")
-            view=move || view!{
-                <BlogEntryList entries=blog_metadata.clone() />
-            }.into_view()
-            ssr=SsrMode::Static(StaticRoute::new()) />
-            <ForRoute each=blogs child=move |b| view! {
-                <BlogRoute blog=b />
-            }.into_inner() />
+        >
+            <Route
+                path=path!("/")
+                view=move || view! { <BlogEntryList entries=blog_metadata.clone() /> }.into_view()
+                ssr=SsrMode::Static(StaticRoute::new())
+            />
+            <ForRoute each=blogs child=move |b| view! { <BlogRoute blog=b /> }.into_inner() />
         </ParentRoute>
     }
     .into_inner()
@@ -175,9 +168,7 @@ pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
     use leptos_meta::Title;
     use_head();
     let last_update = entry.last_updated.map(|x| {
-        view! {
-            <Meta property="og:modified_time" content=x.to_rfc3339() />
-        }
+        view! { <Meta property="og:modified_time" content=x.to_rfc3339() /> }
     });
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=entry.title />
@@ -185,16 +176,13 @@ pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
         <For
             each=move || entry.tags.iter()
             key=|x| x.to_owned()
-            children=|tag| view! {
-        <Meta property="og:article:tag" content=tag.to_owned() />
-            } />
+            children=|tag| view! { <Meta property="og:article:tag" content=tag.to_owned() /> }
+        />
         <Meta property="og:article:published_time" content=entry.publish_date.to_rfc3339() />
         {last_update}
-        <h1>
-        { entry.title }
-        </h1>
-        <p>{ entry.publish_date.to_string() }</p>
-        { (entry.children)() }
+        <h1>{entry.title}</h1>
+        <p>{entry.publish_date.to_string()}</p>
+        {(entry.children)()}
     }
 }
 
@@ -220,15 +208,13 @@ fn to_title<'a>(input: impl Into<Oco<'a, str>>) -> Oco<'a, str> {
 pub fn BlogEntryList(entries: Vec<EmptyBlogEntry>) -> impl IntoView {
     view! {
         <ul>
-        <For each=move || entries.clone()
-            key=|x: &EmptyBlogEntry| x.uid
-            let(entry)>
-            <li>
-                <A href=move || format!("/clog/{}#{}", entry.uid, to_title(entry.title))>
-                    { entry.title.to_string() }
-                </A>
-            </li>
-        </For>
+            <For each=move || entries.clone() key=|x: &EmptyBlogEntry| x.uid let(entry)>
+                <li>
+                    <A href=move || {
+                        format!("/clog/{}#{}", entry.uid, to_title(entry.title))
+                    }>{entry.title.to_string()}</A>
+                </li>
+            </For>
         </ul>
     }
 }

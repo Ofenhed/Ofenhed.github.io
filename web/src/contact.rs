@@ -89,9 +89,7 @@ pub fn Email() -> impl IntoView {
             set_display.set(None);
         }
     });
-    view! {
-        <a node_ref=a_ref style:display=display></a>
-    }
+    view! { <a node_ref=a_ref style:display=display></a> }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -349,7 +347,9 @@ pub fn Contact() -> impl IntoView {
         <div class="contact">
             <div class="qr-code">
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
-                    <noscript><img src="qrcode.png" /></noscript>
+                    <noscript>
+                        <img src="qrcode.png" />
+                    </noscript>
                     <img wasm-fallback-src="qrcode.png" />
                     <div id="canvasHolder" style:display=show_canvas>
                         <canvas node_ref=canvas_ref width=width height=height />
@@ -358,13 +358,11 @@ pub fn Contact() -> impl IntoView {
                 </a>
             </div>
             <p class="linked-in">
-                <a href="https://linkedin.com/in/conditionraisemarcus">
-                    Marcus Ofenhed
-                </a>
+                <a href="https://linkedin.com/in/conditionraisemarcus">Marcus Ofenhed</a>
             </p>
-            <p on:click=move |_| { maybe_activate_nav.dispatch(()); }>
-                Senior IT Security Consultant
-            </p>
+            <p on:click=move |_| {
+                maybe_activate_nav.dispatch(());
+            }>Senior IT Security Consultant</p>
             <Email />
         </div>
     }
