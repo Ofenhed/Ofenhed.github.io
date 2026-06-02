@@ -94,6 +94,7 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
 pub struct BlogEntry<T> {
     uid: u32,
     publish_date: DateTime<Utc>,
+    last_updated: Option<DateTime<Utc>>,
     title: &'static str,
     tags: &'static [&'static str],
     children: T,
@@ -104,6 +105,7 @@ impl<T: Clone> Clone for BlogEntry<T> {
         Self {
             uid: self.uid,
             publish_date: self.publish_date,
+            last_updated: self.last_updated,
             title: self.title,
             tags: self.tags,
             children: self.children.clone(),
@@ -156,7 +158,8 @@ impl<T> BlogEntry<T> {
     pub fn metadata(&self) -> BlogEntry<()> {
         BlogEntry {
             uid: self.uid,
-            publish_date: self.publish_date.clone(),
+            publish_date: self.publish_date,
+            last_updated: self.last_updated,
             title: self.title,
             tags: self.tags,
             children: (),
@@ -170,6 +173,11 @@ pub type EmptyBlogEntry = BlogEntry<()>;
 #[component]
 pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
     use_head();
+    let last_update = entry.last_updated.map(|x| {
+        view! {
+            <Meta property="og:modified_time" content=x.to_rfc3339() />
+        }
+    });
     view! {
         <For
             each=move || entry.tags.iter()
@@ -178,6 +186,7 @@ pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
         <Meta property="og:article:tag" content=tag.to_owned() />
             } />
         <Meta property="og:article:published_time" content=entry.publish_date.to_rfc3339() />
+        {last_update}
         <h1>
         { entry.title }
         </h1>

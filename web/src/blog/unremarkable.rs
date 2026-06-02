@@ -54,9 +54,9 @@ pub fn Unremarkable() -> BlogEntry<Children> {
         publish_date: DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00")
             .unwrap()
             .into(),
+        last_updated: None,
         title: "(un)Remarkable 2",
         tags: &["review"],
         children: Children::to_children(|| content),
     }
-    //BlogEntry::as_blog_entry(t, 1, "(un)Remarkable 2", DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00").unwrap(), [])
 }
