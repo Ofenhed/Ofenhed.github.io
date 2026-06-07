@@ -1,4 +1,4 @@
-use crate::blog::BlogEntry;
+use crate::blog::{BlogEntry, tags::Tag};
 use chrono::DateTime;
 use leptos::prelude::*;
 
@@ -63,7 +63,7 @@ pub fn Unremarkable() -> BlogEntry<Children> {
             .into(),
         last_updated: None,
         title: "(un)Remarkable 2",
-        tags: &["review"],
+        tags: &[Tag::Review, Tag::Tech],
         children: Children::to_children(|| content),
     }
 }
