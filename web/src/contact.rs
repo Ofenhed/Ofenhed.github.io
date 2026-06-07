@@ -1,6 +1,6 @@
 use leptos::{html, prelude::*};
 
-use crate::app::ShowNavigation;
+use crate::{app::ShowNavigation, helpers::NoWasm};
 
 #[cfg(not(feature = "ssr"))]
 mod qr_settings {
@@ -350,7 +350,9 @@ pub fn Contact() -> impl IntoView {
                     <noscript>
                         <img src="qrcode.png" />
                     </noscript>
-                    <img wasm-fallback-src="qrcode.png" />
+                    <NoWasm>
+                    <img src="qrcode.png" />
+                    </NoWasm>
                     <div id="canvasHolder" style:display=show_canvas>
                         <canvas node_ref=canvas_ref width=width height=height />
                         <canvas node_ref=worm_canvas_ref width=width height=height />
