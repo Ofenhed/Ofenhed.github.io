@@ -23,6 +23,7 @@ leptos_static_files = { path = "../leptos_static_files", optional = true }
 log.workspace = true
 qr = { path = "../qr" }
 qr-macro = { path = "../qr-macro" }
+strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"], default-features = false, optional = true }
 wasm-bindgen.workspace = true
