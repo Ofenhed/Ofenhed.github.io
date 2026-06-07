@@ -116,7 +116,7 @@ pub fn Contact() -> impl IntoView {
     #[cfg(not(feature = "ssr"))]
     Effect::new(move |_| {
         use crate::helpers::*;
-        use leptos::logging::log;
+        use leptos::logging::{log, warn};
         use qr_settings::*;
         use std::iter;
         use wasm_bindgen::JsCast;
@@ -322,7 +322,7 @@ pub fn Contact() -> impl IntoView {
             || {
                 set_scoped_timeout(
                     std::time::Duration::from_secs_f64(Math::random() * 5.0),
-                    || log!("Worm detected in browser"),
+                    || warn!("Worm detected in browser"),
                 );
                 create_worm(state)
             },
