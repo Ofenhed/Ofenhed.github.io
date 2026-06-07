@@ -1,5 +1,5 @@
 use leptos::{attr::custom::custom_attribute, prelude::*};
-use leptos_meta::{Meta, MetaTags, Script, Stylesheet, Title, provide_meta_context};
+use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
     SsrMode,
     components::{A, Route, Router, Routes},
@@ -19,28 +19,6 @@ pub struct ShowNavigation(pub bool);
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     //let css_path = format!("/{}/{}.css", options.site_pkg_dir, options.output_name);
     let css_path = options.css_path();
-    let minified_js = js_macro::minify_js! {
-        addEventListener("DOMContentLoaded", (event) => {
-            const has_wasm = (() => {
-                try {
-                    if (typeof WebAssembly === "object"
-                        && typeof WebAssembly.instantiate === "function") {
-                        const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
-                        if (module instanceof WebAssembly.Module)
-                            return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
-                    }
-                } catch (e) {
-                }
-                return false;
-            })();
-            if (!has_wasm) {
-                document.querySelectorAll("img[wasm-fallback-src]").forEach((img) => {
-                    img.setAttribute("src", img.getAttribute("wasm-fallback-src"));
-                    img.removeAttribute("wasm-fallback-src");
-                });
-            }
-        });
-    };
     view! {
         <!DOCTYPE html>
         <html lang="en">
@@ -54,7 +32,6 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             </head>
             <body>
                 <App />
-                <Script>{minified_js}</Script>
             </body>
         </html>
     }
