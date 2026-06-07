@@ -15,7 +15,7 @@ leptos_router.workspace = true
 log.workspace = true
 reactive_graph = { workspace = true, features = ["sandboxed-arenas", "hydration"] }
 thiserror.workspace = true
-tokio = { workspace = true, features = ["fs", "io-util"], optional = true }
+tokio = { workspace = true, features = ["fs", "io-util", "sync"], optional = true }
 wasm-bindgen.workspace = true
 
 [features]
