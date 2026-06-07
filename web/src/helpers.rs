@@ -1,4 +1,10 @@
-use leptos::{logging::log, prelude::*};
+use leptos::{
+    attr::custom::custom_attribute, logging::log, prelude::*, tachys::view::iterators::StaticVec,
+};
+use leptos_meta::Script;
+use leptos_router::{
+    MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, components::Outlet,
+};
 
 pub trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
@@ -81,5 +87,106 @@ impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterato
             action,
             owner: owner.downgrade(),
         }
+    }
+}
+
+#[component(transparent)]
+pub fn ForRoute<X, R: Send + 'static + MatchNestedRoutes + Clone, F: Fn(X) -> R>(
+    each: impl IntoIterator<Item = X>,
+    children: F,
+) -> impl MatchNestedRoutes {
+    let entries = StaticVec::from(each.into_iter().map(children).collect::<Vec<_>>());
+    entries.into_any_nested_route()
+}
+
+#[component]
+pub fn AddContext<T: Send + Sync + 'static>(
+    context: T,
+    #[prop(optional)] children: Option<Children>,
+) -> impl IntoView {
+    #[derive(Clone, Copy)]
+    struct OutletRendered;
+    if let Some(writer) = use_context::<WriteSignal<_>>() {
+        writer.set(context)
+    }
+    let children = children.map(|children| {
+        Owner::current().map(move |x| {
+            x.child().with(move || {
+                provide_context(OutletRendered);
+                let child = children();
+                child
+            })
+        })
+    });
+    let outlet = if use_context::<OutletRendered>().is_none() {
+        Some(
+            view! {
+                <Outlet />
+            }
+            .into_inner(),
+        )
+    } else {
+        None
+    };
+    view! {
+        {outlet}
+        {children}
+    }
+}
+
+#[component]
+pub fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
+    #[derive(Clone, Copy)]
+    struct NoWasmScriptLoaded;
+    let load_init_script = {
+        let root = {
+            let mut owner = Owner::current().unwrap();
+            while let Some(parent) = owner.parent() {
+                owner = parent;
+            }
+            owner
+        };
+        if let Some(NoWasmScriptLoaded) = root.use_context_bidirectional() {
+            None
+        } else {
+            provide_context(NoWasmScriptLoaded);
+            Some(())
+        }
+    };
+    let init_script = load_init_script.map(|()| {
+        let script = js_macro::minify_js! {
+            addEventListener("DOMContentLoaded", (event) => {
+                const has_wasm = (() => {
+                    try {
+                        if (typeof WebAssembly === "object"
+                            && typeof WebAssembly.instantiate === "function") {
+                            const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+                            if (module instanceof WebAssembly.Module)
+                                return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+                        }
+                    } catch (e) {
+                    }
+                    return false;
+                })();
+                if (!has_wasm) {
+                    document.querySelectorAll("template.wasm-fallback").forEach((template) => {
+                        const clone = document.importNode(template.content, true);
+                        template.parentElement.replaceChild(clone, template);
+                    });
+                }
+            });
+        };
+        view! {
+            <Script>
+                {script}
+            </Script>
+        }
+    });
+
+    view! {
+        {init_script}
+        <template class:wasm-fallback=true {..custom_attribute("shadowrootclonable", ())}>
+        {children.map(|x| x())}
+        </template>
     }
 }
