@@ -122,10 +122,7 @@ pub fn AddContext<T: Send + Sync + 'static>(
         })
     });
     let outlet = if use_context::<OutletRendered>().is_none() {
-        Some(
-            view! { <Outlet /> }
-            .into_inner(),
-        )
+        Some(view! { <Outlet /> }.into_inner())
     } else {
         None
     };
