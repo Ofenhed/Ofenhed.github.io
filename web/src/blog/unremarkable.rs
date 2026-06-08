@@ -1,10 +1,14 @@
-use crate::blog::{BlogEntry, tags::Tag};
+use crate::blog::{
+    BlogEntry,
+    metadata::{Locale, Tag},
+};
 use chrono::DateTime;
 use leptos::prelude::*;
 
 #[component(transparent)]
 pub fn Unremarkable() -> BlogEntry<Children> {
-    let content = view! {
+    let child = view! {
+        <fieldset><legend>Note</legend>"This is mostly the feedback I provided to Remarkable when I returned their "<a href="https://remarkable.com/products/remarkable-2">"Remarkable 2"</a>". While it is no longer sold, I imagine that some of the critiques still apply or are worth considering before buying a Remarkable device. I received no reply to these critiques, but I also had no issues returning the device."</fieldset>
         <p>
             "I had such high hopes, and I was initially very happy with this product, I tried the writing and some sketching, looked through the (very few) settings, and the build quality is absolutely amazing."
         </p>
@@ -14,7 +18,7 @@ pub fn Unremarkable() -> BlogEntry<Children> {
         <p>"Some of the issues I've run into in the very short time I've tested the device:"</p>
         <ul>
             <li>
-                "There is no way to have files on your device which are not synced to the cloud, unless you completely disconnect from the remarkable account. There goes most of my use cases, as no respectable customer should be OK with that."
+                "There is no way to have files on your device which are not synced to the cloud, unless you completely disconnect from the remarkable account. There goes most of my use cases, as no respectable customer"<ins>" of mine"</ins>" should be OK with that."
             </li>
             <li>
                 "The Desktop client is simply a client to the cloud, it has no ability to sync files with the device, so without cloud you only have the 10.11.99.1 server to download files from, which only allows PDF downloads and no uploads. That means that without cloud, this device is extremely limited."
@@ -49,10 +53,10 @@ pub fn Unremarkable() -> BlogEntry<Children> {
                 "Why are some menus white on black, while most are black on white? White on black is a lot harder to read, why is there no accessibility option?"
             </li>
             <li>
-                "You should provide hooks for developers, such as sync button press. One way would be to use systemd services."
+                "You should provide hooks for developers, such as sync button press. One way would be to use systemd services."<ins>" The device is moddable, but it is very inconvenient."</ins>
             </li>
             <li>
-                "You should not run everything as root. This is pretty much lesson one in security, which makes me think that I don't want any sensitive data in your cloud."
+                "You should not run everything as root. "<del>This</del><ins><a href="https://en.wikipedia.org/wiki/Principle_of_least_privilege">"Principle of Least Privilege"</a></ins>" is pretty much lesson one in security, which makes me think that I don't want any sensitive data in your cloud."<ins>" You may think me a stickler with this, but you are (again) advertising this as a business product, and it is to be expected that this device will be used to read untrusted PDF files, which is "<a href="https://nvd.nist.gov/vuln/search#/nvd/home?keyword=PDF&resultType=records">"notoriously hard to do securely"</a>"."</ins>
             </li>
         </ul>
     };
@@ -61,9 +65,14 @@ pub fn Unremarkable() -> BlogEntry<Children> {
         publish_date: DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00")
             .unwrap()
             .into(),
-        last_updated: None,
+        last_updated: Some(
+            DateTime::parse_from_rfc3339("2026-06-08T09:00:00+01:00")
+                .unwrap()
+                .into(),
+        ),
         title: "(un)Remarkable 2",
+        locale: Locale::EnglishSimplified.into(),
         tags: &[Tag::Review, Tag::Tech],
-        children: Children::to_children(|| content),
+        children: Children::to_children(move || child),
     }
 }
