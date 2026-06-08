@@ -16,11 +16,13 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: Restore build cache
+    - name: Restore cache
       id: cache-primes-restore
       uses: actions/cache/restore@v5
       with:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-leptos-
         path: |
           ~/.cargo/registry
           ~/.cargo/git
@@ -45,13 +47,27 @@ jobs:
       env:
         CARGO_TARGET_DIR: ./target
 
+    - name: Read toolkit info
+      if: steps.cargo-leptos-cached.outcome == 'success'
+      run: mkdir -p ~/.cache && cargo info cargo-leptos > ~/.cache/cargo-leptos-info
+
+    - name: Save leptos cache
+      if: steps.cache-primes-restore.cache-primary-key != steps.cache-primes-restore.cache-matched-key && steps.cargo-leptos-cached.outcome == 'success'
+      uses: actions/cache/save@v5
+      with:
+        key: ${{ runner.os }}-leptos-${{ hashFiles('~/.cache/cargo-leptos-info') }}
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          ~/.cargo/bin/cargo-leptos
+
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
 
     - name: Compile targets
       run: cargo leptos build --release --bin-features ssr,statics
 
-    - name: Save cache
+    - name: Save full cache
       uses: actions/cache/save@v5
       if: always()
       with:
