@@ -44,15 +44,17 @@ enum EggCounter {
 }
 
 #[component]
+pub fn NotFound() -> impl IntoView {
+    view! {
+        <h1>"404 error"</h1>
+        <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p>
+    }
+}
+
+#[component]
 pub fn App() -> impl IntoView {
     provide_meta_context();
-    let fallback = || {
-        view! {
-            <h1>"404 error"</h1>
-            <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p>
-        }
-        .into_view()
-    };
+    let fallback = || NotFound().into_view();
     const INITIAL_EGG_COUNTER: u8 = 8;
     let (clicks_to_easter, set_clicks_to_easter) = signal(EggCounter::Counter(INITIAL_EGG_COUNTER));
     let (aria_expanded, set_aria_expanded) = signal(false);
