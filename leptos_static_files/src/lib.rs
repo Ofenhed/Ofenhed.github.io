@@ -9,7 +9,7 @@ use leptos::{config::LeptosOptions, prelude::*};
 use reactive_graph::owner::Sandboxed;
 
 pub mod prelude {
-    pub use super::{StaticFileGeneratorError, StaticFileOptions, NoGenerateStatic};
+    pub use super::{NoGenerateStatic, StaticFileGeneratorError, StaticFileOptions};
 }
 
 pub struct StaticFileOptions<'a, C> {
