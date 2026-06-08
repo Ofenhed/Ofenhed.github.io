@@ -50,7 +50,7 @@ jobs:
 
     - name: Read toolkit info
       id: read-cargo-leptos-info
-      run: mkdir -p ~/.cache && cargo info cargo-leptos > ~/.cache/cargo-leptos-info
+      run: mkdir -p ./target && cargo info cargo-leptos > ./target/.cargo-leptos-version
 
     - name: Check saved leptos version
       id: check-cache-cargo-leptos-version
@@ -58,7 +58,7 @@ jobs:
       continue-on-error: true
       uses: actions/cache/restore@v5
       with:
-        key: ${{ runner.os }}-leptos-${{ hashFiles('~/.cache/cargo-leptos-info') }}
+        key: ${{ runner.os }}-leptos-${{ hashFiles('./target/.cargo-leptos-version') }}
         lookup-only: true
         path: |
           ~/.cargo/bin/cargo-leptos
@@ -67,7 +67,7 @@ jobs:
       if: steps.check-cache-cargo-leptos-version.outcome != 'failure'
       uses: actions/cache/save@v5
       with:
-        key: ${{ runner.os }}-leptos-${{ hashFiles('~/.cache/cargo-leptos-info') }}
+        key: ${{ runner.os }}-leptos-${{ hashFiles('./target/.cargo-leptos-version') }}
         path: |
           ~/.cargo/registry
           ~/.cargo/git
