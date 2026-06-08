@@ -123,14 +123,14 @@ pub fn App() -> impl IntoView {
                     <span class="slice" />
                     <span class="slice" />
                 </label>
-                <ul id="menu" aria-hidden=aria_hidden>
+                <menu id="menu" aria-hidden=aria_hidden>
                     <li>
                         <A href="/">"Contact"</A>
                     </li>
                     <li>
                         <A href="/clog">"Clog"</A>
                     </li>
-                </ul>
+                </menu>
             </nav>
             <main {..custom_attribute("path", use_location().pathname)}>
                 <Routes fallback>
