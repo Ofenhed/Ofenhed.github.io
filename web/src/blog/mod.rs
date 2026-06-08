@@ -121,45 +121,46 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
         }
     };
     view! {
-            <ParentRoute
-                path=path!("")
-                view=Outlet
-                ssr=SsrMode::OutOfOrder>
-                <Route
-                  path=path!("/page/:page")
-                  view = move || {
-                      let page = page().get();
-                      view! {
+        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
+            <Route
+                path=path!("/page/:page")
+                view=move || {
+                    let page = page().get();
+                    view! {
                         <AddContext context=page />
-            {maybe_ignore.clone()}
-                      }
-                  }
-                  ssr=SsrMode::Static(StaticRoute::new().prerender_params(
-                // TODO: There is a leptos bug that strips the static route prerender of
-                // children if parent routes has a static ssr. This should probably be
-                // moved to BlogPaging, at which point the count should be handled
-                // dynamically based on filtered entries
-                move || {
-                    async move {
-                        let max_pages = num_pages(BLOGS.len());
-                        [(
-                            "page".to_string(),
-                            (1..max_pages).map(|x| (x + 1).to_string()).collect::<Vec<_>>(),
-                        )]
-                        .into_iter()
-                        .collect()
+                        {maybe_ignore.clone()}
                     }
-                },
-            ))
-                          />
-                <Route
-                    path=path!("/")
-                    view=move || view! { <AddContext context=CurrentPage(0) /> {maybe_ignore}
+                }
+                ssr=SsrMode::Static(
+                    StaticRoute::new()
+                        .prerender_params(move || {
+                            async move {
+                                let max_pages = num_pages(BLOGS.len());
+                                [
+                                    (
+                                        "page".to_string(),
+                                        (1..max_pages)
+                                            .map(|x| (x + 1).to_string())
+                                            .collect::<Vec<_>>(),
+                                    ),
+                                ]
+                                    .into_iter()
+                                    .collect()
+                            }
+                        }),
+                )
+            />
+            <Route
+                path=path!("/")
+                view=move || {
+                    view! {
+                        <AddContext context=CurrentPage(0) />
+                        {maybe_ignore}
                     }
-                    ssr=SsrMode::Static(StaticRoute::new())
-                    />
-                    </ParentRoute>
-
+                }
+                ssr=SsrMode::Static(StaticRoute::new())
+            />
+        </ParentRoute>
     }
     .into_inner()
 }
@@ -167,85 +168,87 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
 #[component(transparent)]
 pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
     view! {
-            <ParentRoute
-                path=path!("")
-                view=Outlet
-                ssr=SsrMode::OutOfOrder>
-                <ParentRoute
-                    path=path!("/sort")
-                    view=Outlet
-                    ssr=SsrMode::OutOfOrder
-                    >
-                    <ForRoute each=SortBy::VARIANTS.iter() children=|key| view! {
-                    <ParentRoute
-                        path=(StaticSegment(key.as_ref()), )
-                        view=move || view! { <AddContext context=key.to_owned() /> }
-                        ssr=SsrMode::OutOfOrder
-                        >
-                        <ParentRoute
-                            path=path!("/invert")
-                            view=|| view! { <AddContext context=SortInvert(true) /> }
-                            ssr=SsrMode::OutOfOrder>
-                            <BlogPaging />
-                        </ParentRoute>
-                        <ParentRoute
-                            path=path!("/")
-                            view=|| view! { <AddContext context=SortInvert(false) /> }
-                            ssr=SsrMode::OutOfOrder>
-                            <BlogPaging />
-                        </ParentRoute>
-                    </ParentRoute>
-                    }.into_inner() />
-                </ParentRoute>
-                <ParentRoute
-                    path=path!("/")
-                    view=|| view! { <AddContext context=SortInvert(false)>
-                        <AddContext context=SortBy::PublishDate />
-                            </AddContext>
+        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
+            <ParentRoute path=path!("/sort") view=Outlet ssr=SsrMode::OutOfOrder>
+                <ForRoute
+                    each=SortBy::VARIANTS.iter()
+                    children=|key| {
+                        view! {
+                            <ParentRoute
+                                path=(StaticSegment(key.as_ref()),)
+                                view=move || view! { <AddContext context=key.to_owned() /> }
+                                ssr=SsrMode::OutOfOrder
+                            >
+                                <ParentRoute
+                                    path=path!("/invert")
+                                    view=|| view! { <AddContext context=SortInvert(true) /> }
+                                    ssr=SsrMode::OutOfOrder
+                                >
+                                    <BlogPaging />
+                                </ParentRoute>
+                                <ParentRoute
+                                    path=path!("/")
+                                    view=|| view! { <AddContext context=SortInvert(false) /> }
+                                    ssr=SsrMode::OutOfOrder
+                                >
+                                    <BlogPaging />
+                                </ParentRoute>
+                            </ParentRoute>
+                        }
+                            .into_inner()
                     }
-                    ssr=SsrMode::OutOfOrder
-                    >
+                />
+            </ParentRoute>
+            <ParentRoute
+                path=path!("/")
+                view=|| {
+                    view! {
+                        <AddContext context=SortInvert(false)>
+                            <AddContext context=SortBy::PublishDate />
+                        </AddContext>
+                    }
+                }
+                ssr=SsrMode::OutOfOrder
+            >
                 <BlogPaging />
             </ParentRoute>
         </ParentRoute>
-
     }
     .into_inner()
 }
 
 #[component(transparent)]
 pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
+    let no_tag_filter: Option<TagFilter> = None;
     view! {
-            <ParentRoute
-                path=path!("")
-                view=Outlet
-                ssr=SsrMode::OutOfOrder>
-                <ParentRoute
-                    path=path!("/tag")
-                    view=Outlet
-                    ssr=SsrMode::OutOfOrder
-                    >
-                    <ForRoute each=Tag::VARIANTS.iter() children=|key| view! {
-                        <ParentRoute
-                            path=(StaticSegment(key.as_ref()), )
-                            view=move || view! { <AddContext context=Some(TagFilter(key.to_owned())) /> }
-                            ssr=SsrMode::OutOfOrder
+        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
+            <ParentRoute path=path!("/tag") view=Outlet ssr=SsrMode::OutOfOrder>
+                <ForRoute
+                    each=Tag::VARIANTS.iter()
+                    children=|key| {
+                        view! {
+                            <ParentRoute
+                                path=(StaticSegment(key.as_ref()),)
+                                view=move || {
+                                    view! { <AddContext context=Some(TagFilter(key.to_owned())) /> }
+                                }
+                                ssr=SsrMode::OutOfOrder
                             >
-                            <BlogSorting />
-                        </ParentRoute>
-                    }.into_inner() />
-                </ParentRoute>
-                <ParentRoute
-                    path=path!("/")
-                    view=|| view! {
-                        <AddContext context={None::<TagFilter>} />
+                                <BlogSorting />
+                            </ParentRoute>
+                        }
+                            .into_inner()
                     }
-                    ssr=SsrMode::OutOfOrder
-                    >
+                />
+            </ParentRoute>
+            <ParentRoute
+                path=path!("/")
+                view=move || view! { <AddContext context=no_tag_filter /> }
+                ssr=SsrMode::OutOfOrder
+            >
                 <BlogPaging />
             </ParentRoute>
         </ParentRoute>
-
     }
     .into_inner()
 }
@@ -309,13 +312,18 @@ pub fn BlogListing(
         entries
     };
     view! {
-            <ParentRoute
-                path=path!("/")
-                view=move || view! { <Outlet /><BlogEntryList entries=blogs /> }
-                  ssr=SsrMode::OutOfOrder
-                >
-                <BlogTagFilter />
-            </ParentRoute>
+        <ParentRoute
+            path=path!("/")
+            view=move || {
+                view! {
+                    <Outlet />
+                    <BlogEntryList entries=blogs />
+                }
+            }
+            ssr=SsrMode::OutOfOrder
+        >
+            <BlogTagFilter />
+        </ParentRoute>
     }
     .into_inner()
 }
@@ -327,15 +335,8 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
         .map(|x| x().metadata())
         .collect::<Vec<EmptyBlogEntry>>();
     view! {
-        <ParentRoute
-            path=path!("/clog")
-            view=Outlet
-            ssr=SsrMode::OutOfOrder
-        >
-            <ParentRoute
-                path=path!("/entry")
-                view=Outlet
-                ssr=SsrMode::Static(StaticRoute::new())>
+        <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
+            <ParentRoute path=path!("/entry") view=Outlet ssr=SsrMode::Static(StaticRoute::new())>
                 <ForRoute each=blogs children=|b| view! { <BlogRoute blog=b /> }.into_inner() />
             </ParentRoute>
             <BlogListing blogs=blog_metadata />
@@ -477,7 +478,9 @@ pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
         <For
             each=move || entry.tags.iter()
             key=|x| x.to_owned()
-            children=|tag| view! { <Meta property="og:article:tag" content=tag.as_ref().to_string() /> }
+            children=|tag| {
+                view! { <Meta property="og:article:tag" content=tag.as_ref().to_string() /> }
+            }
         />
         <Meta property="og:article:published_time" content=entry.publish_date.to_rfc3339() />
         {last_update}
@@ -558,14 +561,15 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<EmptyBlogEntry>>) -> impl
             <For each=move || entries.get() key=|x: &EmptyBlogEntry| x.uid let(entry)>
                 <li>
                     <article>
-                    <A href=move || {
-                        format!("/clog/entry/{}#{}", entry.uid, to_title(entry.title))
-                    }>{entry.title.to_owned()}</A>
+                        <A href=move || {
+                            format!("/clog/entry/{}#{}", entry.uid, to_title(entry.title))
+                        }>{entry.title.to_owned()}</A>
                         <ul class="tags">
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
-                                <li><A href=move || {
-                                    format!("/clog/tag/{}", tag.as_ref())
-                                }>{tag.as_ref().to_string()}</A>
+                                <li>
+                                    <A href=move || {
+                                        format!("/clog/tag/{}", tag.as_ref())
+                                    }>{tag.as_ref().to_string()}</A>
                                 </li>
                             </For>
                         </ul>

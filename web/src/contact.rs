@@ -356,7 +356,7 @@ pub fn Contact() -> impl IntoView {
                         <img src="qrcode.png" />
                     </noscript>
                     <NoWasm>
-                    <img src="qrcode.png" />
+                        <img src="qrcode.png" />
                     </NoWasm>
                     <div id="canvasHolder" style:display=show_canvas>
                         <canvas node_ref=canvas_ref width=width height=height />

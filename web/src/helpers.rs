@@ -123,9 +123,7 @@ pub fn AddContext<T: Send + Sync + 'static>(
     });
     let outlet = if use_context::<OutletRendered>().is_none() {
         Some(
-            view! {
-                <Outlet />
-            }
+            view! { <Outlet /> }
             .into_inner(),
         )
     } else {
@@ -178,17 +176,13 @@ pub fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
                 }
             });
         };
-        view! {
-            <Script>
-                {script}
-            </Script>
-        }
+        view! { <Script>{script}</Script> }
     });
 
     view! {
         {init_script}
         <template class:wasm-fallback=true {..custom_attribute("shadowrootclonable", ())}>
-        {children.map(|x| x())}
+            {children.map(|x| x())}
         </template>
     }
 }
