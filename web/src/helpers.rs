@@ -1,5 +1,8 @@
 use leptos::{
-    attr::custom::custom_attribute, logging::log, prelude::*, tachys::view::iterators::StaticVec,
+    attr::{Attr, Loading, custom::custom_attribute},
+    logging::log,
+    prelude::*,
+    tachys::view::iterators::StaticVec,
 };
 use leptos_meta::Script;
 use leptos_router::{
@@ -91,10 +94,10 @@ impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterato
 }
 
 #[component(transparent)]
-pub fn ForRoute<X, R: Send + 'static + MatchNestedRoutes + Clone, F: Fn(X) -> R>(
+pub fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X) -> R>(
     each: impl IntoIterator<Item = X>,
     children: F,
-) -> impl MatchNestedRoutes {
+) -> impl MatchNestedRoutes + Clone {
     let entries = StaticVec::from(each.into_iter().map(children).collect::<Vec<_>>());
     entries.into_any_nested_route()
 }
@@ -170,8 +173,7 @@ pub fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
                 })();
                 if (!has_wasm) {
                     document.querySelectorAll("template.wasm-fallback").forEach((template) => {
-                        const clone = document.importNode(template.content, true);
-                        template.parentElement.replaceChild(clone, template);
+                        template.parentElement.replaceChild(document.importNode(template.content, true), template);
                     });
                 }
             });
@@ -189,4 +191,11 @@ pub fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
         {children.map(|x| x())}
         </template>
     }
+}
+
+type ImgDefAttr = (Attr<Loading, &'static str>,);
+
+#[component(transparent)]
+pub fn ImgDef() -> ImgDefAttr {
+    (Attr(Loading, "lazy"),)
 }
