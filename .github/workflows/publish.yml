@@ -42,17 +42,18 @@ jobs:
       continue-on-error: true
 
     - name: Build leptos toolkit
+      id: cargo-leptos-build
       if: steps.cargo-leptos-cached.outcome == 'failure'
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
 
     - name: Read toolkit info
-      if: steps.cargo-leptos-cached.outcome == 'success'
+      if: steps.cargo-leptos-build.outcome == 'success'
       run: mkdir -p ~/.cache && cargo info cargo-leptos > ~/.cache/cargo-leptos-info
 
     - name: Save leptos cache
-      if: steps.cache-primes-restore.cache-primary-key != steps.cache-primes-restore.cache-matched-key && steps.cargo-leptos-cached.outcome == 'success'
+      if: steps.cache-primes-restore.cache-primary-key != steps.cache-primes-restore.cache-matched-key && steps.cargo-leptos-build.outcome == 'success'
       uses: actions/cache/save@v5
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles('~/.cache/cargo-leptos-info') }}
