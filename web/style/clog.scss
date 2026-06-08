@@ -22,8 +22,29 @@
 }
 
 ul#blog-entries {
-  li {
-    list-style-type: none;
+  & > li {
+    &:not(:first-of-type) {
+      border-top: 1px solid light-dark(#000, #fff);
+      margin-top: 0.5em;
+      padding-top: 0.5em;
+    }
+    & a {
+      text-decoration: none;
+    }
+    &, & li {
+      list-style-type: none;
+      ul.tags {
+        li {
+          clear: none;
+          a {
+            color: light-dark(#555, bbb);
+            &::before {
+              content: '#';
+            }
+          }
+        }
+      }
+    }
   }
 }
 
