@@ -2,6 +2,9 @@
 @use 'hamburger.scss';
 @use 'clog.scss';
 @use 'nav.scss';
+@use 'contact.scss';
+@use 'third-party.scss';
+@use 'sass:string';
 
 nav {
   a {
@@ -44,6 +47,16 @@ body {
     height: calc(100% - 1em * 2);
     grid-area: main;
     padding: 1em;
+    img {
+      max-width: 100%;
+    }
+    del {
+      background: rgba(255, 0, 0, 0.2);
+    }
+    ins {
+      background: rgba(0, 255, 0, 0.2);
+      text-decoration: none;
+    }
   }
   @include nav.with-path("/", $base: &) {
     &, main {
@@ -53,69 +66,48 @@ body {
       display: none;
     }
   }
-}
-
-img[wasm-fallback-src] {
-  display: none;
-}
-
-div.contact {
-  &, * {
-    text-align: center;
-  }
-  div.qr-code {
-    margin-top: 1em;
-    display: block;
-    img, canvas {
-      width: 100%;
-      aspect-ratio: 1/1;
-    }
-    &, img, canvas {
-      image-rendering: pixelated;
-    }
-    img, div#canvasHolder {
-      width: calc(min(var(--qr-size), 100%));
-    }
-    noscript > img::after {
-      content: '';
+  div.note {
+    border-radius: 0.25em;
+    padding: 0.5em;
+    padding-left: 2.5em;
+    background: light-dark(#a4cefe,#044c9f);
+    color: light-dark(#000, #fff);
+    &:before {
+      content: "\2139";
+      font: var(--symbol-font-text);
+      font-family: u1f400;
+      text-rendering: optimizeLegibility;
+      //aspect-ratio: 1/1;
+      display: block;
+      position: relative;
+      height: fit-content;
       width: 0;
       height: 0;
-      clear: both;
-      display: block;
-    }
-    div#canvasHolder {
-      clear: both;
-      display: inline-block;
-      position: relative;
-      canvas {
-        top: 0;
-        left: 0;
-        &:nth-child(1) {
-          position: relative;
-          z-index: 0;
-        }
-        &:nth-child(2) {
-          position: absolute;
-          z-index: 1;
-        }
-      }
+      overflow: visible;
+      left: -1.5em;
+      //background: light-dark(#a4cefe,#044c9f);
+      //$color: light-dark(#000044, #a4cefe);
+      //color: $color;
+      //border-color: $color;
+      //border-width: 1px;
+      //border-style: solid;
+      //border-radius: 5em;
     }
   }
-  p.linked-in {
+  kbd {
+    background-color: #eeeeee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow:
+      0 1px 1px rgb(0 0 0 / 0.2),
+      0 2px 0 0 rgb(255 255 255 / 0.7) inset;
+    color: #333333;
+    display: inline-block;
+    font-size: 0.85em;
     font-weight: bold;
-    & > a {
-      text-decoration: none;
-      color: light-dark(#000000, #ffffff);
-      &:before {
-        content: "in";
-        display: inline-block;
-        background: #1565c0;
-        color: #fff;
-        padding: 0px 3px;
-        border-radius: 3px;
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-        margin-right: 0.5ex;
-      }
-    }
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+    text-transform: capitalize;
   }
 }

@@ -1,0 +1,43 @@
+div.contact {
+  &, * {
+    text-align: center;
+  }
+  div.qr-code {
+    margin-top: 1em;
+    display: block;
+    img, canvas {
+      width: 100%;
+      aspect-ratio: 1/1;
+    }
+    &, img, canvas {
+      image-rendering: pixelated;
+    }
+    img, div#canvasHolder {
+      width: calc(min(var(--qr-size), 100%));
+    }
+    noscript > img::after {
+      content: '';
+      width: 0;
+      height: 0;
+      clear: both;
+      display: block;
+    }
+    div#canvasHolder {
+      clear: both;
+      display: inline-block;
+      position: relative;
+      canvas {
+        top: 0;
+        left: 0;
+        &:nth-child(1) {
+          position: relative;
+          z-index: 0;
+        }
+        &:nth-child(2) {
+          position: absolute;
+          z-index: 1;
+        }
+      }
+    }
+  }
+}

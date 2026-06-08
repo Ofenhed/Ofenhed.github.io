@@ -1,0 +1,31 @@
+a[href^="https://linkedin.com"], a[href="https://www.linkedin.com"] {
+  font-weight: bold;
+  text-decoration: none;
+  color: light-dark(#000000, #ffffff);
+  &:before {
+    content: "in";
+    display: inline-block;
+    background: #1565c0;
+    color: #fff;
+    padding: 0px 3px;
+    border-radius: 3px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    margin-right: 0.5ex;
+  }
+}
+
+a[href^="https://youtube.com/"], a[href="https://www.youtube.com/"], a[href="https://youtu.be/"] {
+  font-weight: bold;
+  text-decoration: none;
+  color: light-dark(#000000, #ffffff);
+  &:before {
+    content: "▸";
+    display: inline-block;
+    background: #ff0033;
+    color: #fff;
+    padding: 0px 1.2ex;
+    border-radius: 5px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    margin-right: 0.5ex;
+  }
+}
