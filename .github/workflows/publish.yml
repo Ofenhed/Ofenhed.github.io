@@ -20,7 +20,7 @@ jobs:
       id: cache-primes-restore
       uses: actions/cache/restore@v5
       with:
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-leptos-
         path: |
@@ -111,7 +111,7 @@ jobs:
       id: cache-primes-restore
       uses: actions/cache/restore@v5
       with:
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}
         fail-on-cache-miss: true
         path: |
           ~/.cargo/registry
