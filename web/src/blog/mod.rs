@@ -1,6 +1,5 @@
 pub mod keyboards;
 pub mod metadata;
-pub mod traits;
 pub mod unremarkable;
 
 use crate::{
