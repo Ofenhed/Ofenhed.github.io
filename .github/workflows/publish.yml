@@ -50,7 +50,7 @@ jobs:
 
     - name: Read toolkit info
       id: read-cargo-leptos-info
-      run: mkdir -p ./target && cargo info cargo-leptos > ./target/.cargo-leptos-version
+      run: mkdir -p ./target && (cargo info cargo-leptos | tee ./target/.cargo-leptos-version)
 
     - name: Check saved leptos version
       id: check-cache-cargo-leptos-version
