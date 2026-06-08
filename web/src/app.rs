@@ -21,7 +21,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     let css_path = options.css_path();
     view! {
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="sv">
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
