@@ -49,11 +49,22 @@ jobs:
         CARGO_TARGET_DIR: ./target
 
     - name: Read toolkit info
-      if: steps.cargo-leptos-build.outcome == 'success'
+      id: read-cargo-leptos-info
       run: mkdir -p ~/.cache && cargo info cargo-leptos > ~/.cache/cargo-leptos-info
 
+    - name: Check saved leptos version
+      id: check-cache-cargo-leptos-version
+      if: steps.read-cargo-leptos-info.outcome == 'success'
+      continue-on-error: true
+      uses: actions/cache/restore@v5
+      with:
+        key: ${{ runner.os }}-leptos-${{ hashFiles('~/.cache/cargo-leptos-info') }}
+        lookup-only: true
+        path: |
+          ~/.cargo/bin/cargo-leptos
+
     - name: Save leptos cache
-      if: steps.cache-primes-restore.cache-primary-key != steps.cache-primes-restore.cache-matched-key && steps.cargo-leptos-build.outcome == 'success'
+      if: steps.check-cache-cargo-leptos-version.outcome != 'failure'
       uses: actions/cache/save@v5
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles('~/.cache/cargo-leptos-info') }}
