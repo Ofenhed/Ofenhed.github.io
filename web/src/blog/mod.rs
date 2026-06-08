@@ -1,10 +1,8 @@
-pub mod keyboards;
 pub mod metadata;
 pub mod unremarkable;
 
 use crate::{
     blog::{
-        keyboards::Keyboards,
         metadata::{Locale, Tag},
         unremarkable::Unremarkable,
     },
@@ -13,8 +11,10 @@ use crate::{
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
 use leptos_meta::{Meta, use_head};
+#[allow(unused)] // False positive
+use leptos_router::MatchNestedRoutes;
 use leptos_router::{
-    MatchNestedRoutes, PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
+    PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
     any_nested_route::IntoAnyNestedRoute,
     components::{A, ParentRoute, Route},
     hooks::use_params,
@@ -32,7 +32,7 @@ use std::{
 use strum::{AsRefStr, EnumString, VariantArray};
 
 const ENTRIES_PER_PAGE: usize = 10;
-const BLOGS: &[fn() -> BlogEntry<Children>] = &[Unremarkable, Keyboards];
+const BLOGS: &[fn() -> BlogEntry<Children>] = &[Unremarkable];
 
 #[component(transparent)]
 pub fn BlogRoute(
