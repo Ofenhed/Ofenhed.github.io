@@ -10,18 +10,18 @@ use crate::{
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
-use leptos_meta::{Meta, use_head};
+use leptos_meta::{use_head, Meta};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
 use leptos_router::{
-    PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
     any_nested_route::IntoAnyNestedRoute,
-    components::{A, ParentRoute, Route},
+    components::{ParentRoute, Route, A},
     hooks::use_params,
     nested_router::Outlet,
     params::Params,
     path,
     static_routes::StaticRoute,
+    PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
 };
 use std::{
     borrow::Cow,
