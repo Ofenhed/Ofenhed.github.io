@@ -141,7 +141,9 @@ jobs:
       run: rustup --version
 
     - name: Rust formatting
+      id: is-formatted
       run: cargo fmt --check --all
+      continue-on-error: true
 
     - name: Check if leptosfmt was cached
       id: leptosfmt-cached
@@ -177,6 +179,8 @@ jobs:
           ~/.cargo/bin/twiggy
 
     - name: Leptos view formatting
+      id: is-leptos-formatted
+      continue-on-error: true
       run: leptosfmt --check web/
 
     - name: Download wasm binary
@@ -209,6 +213,9 @@ jobs:
       if: steps.get-old-wasm.outcome == 'success'
       run: twiggy diff target/old/conditionraise.wasm  target/new/conditionraise.wasm
 
+    - name: Propagate failure
+      if: steps.is-formatted.outcome == 'failure' || steps.is-leptos-formatted == 'failure'
+      run: 'false'
 
   deploy:
     runs-on: ubuntu-latest
