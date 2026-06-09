@@ -141,9 +141,11 @@ jobs:
 
     - name: Restore tool cache
       id: cache-tools-restore
+      continue-on-error: true
       uses: actions/cache/restore@v5
       with:
         key: ${{ runner.os }}-check-tools-${{ hashFiles('**/Cargo.lock') }}
+        fail-on-cache-miss: true
         path: |
           ~/.cargo/registry
           ~/.cargo/git
