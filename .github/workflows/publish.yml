@@ -7,6 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  cargo_leptos_version: ./target/.cargo-leptos-version
 
 jobs:
   build:
@@ -44,30 +45,26 @@ jobs:
     - name: Build leptos toolkit
       id: cargo-leptos-build
       if: steps.cargo-leptos-cached.outcome == 'failure'
-      run: cargo install cargo-leptos --locked
+      run: cargo install cargo-leptos --locked && (cargo info cargo-leptos | tee "$cargo_leptos_version")
       env:
         CARGO_TARGET_DIR: ./target
 
-    - name: Read toolkit info
-      id: read-cargo-leptos-info
-      run: mkdir -p ./target && (cargo info cargo-leptos | tee ./target/.cargo-leptos-version)
-
     - name: Check saved leptos version
       id: check-cache-cargo-leptos-version
-      if: steps.read-cargo-leptos-info.outcome == 'success'
+      if: steps.cargo-leptos-build.outcome == 'success'
       continue-on-error: true
       uses: actions/cache/restore@v5
       with:
-        key: ${{ runner.os }}-leptos-${{ hashFiles('./target/.cargo-leptos-version') }}
+        key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         lookup-only: true
         path: |
           ~/.cargo/bin/cargo-leptos
 
     - name: Save leptos cache
-      if: steps.check-cache-cargo-leptos-version.outcome != 'failure'
+      if: steps.check-cache-cargo-leptos-version.outcome == 'failure'
       uses: actions/cache/save@v5
       with:
-        key: ${{ runner.os }}-leptos-${{ hashFiles('./target/.cargo-leptos-version') }}
+        key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         path: |
           ~/.cargo/registry
           ~/.cargo/git
