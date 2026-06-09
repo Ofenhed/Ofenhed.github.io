@@ -186,9 +186,9 @@ jobs:
 
     - name: Check target binary bloat
       run: |
-        twiggy top ./target/site/pkg/conditionraise.wasm
-        twiggy monos ./target/site/pkg/conditionraise.wasm
-        twiggy garbage ./target/site/pkg/conditionraise.wasm
+        twiggy top ${{ steps.get-wasm.download-path }}
+        twiggy monos ${{ steps.get-wasm.download-path }}
+        twiggy garbage ${{ steps.get-wasm.download-path }}
 
     - name: Download previous wasm binary
       uses: actions/download-artifact@v8
