@@ -170,8 +170,25 @@ jobs:
     - name: Rust formatting
       run: cargo fmt --check --all
 
-    - name: Install tools
-      run: cargo install leptosfmt twiggy --locked
+    - name: Check if leptosfmt was cached
+      id: leptosfmt-cached
+      run: test -f ~/.cargo/bin/leptosfmt
+      continue-on-error: true
+
+    - name: Check if twiggy was cached
+      id: twiggy-cached
+      run: test -f ~/.cargo/bin/twiggy
+      continue-on-error: true
+
+    - name: Install leptosfmt
+      if: steps.leptosfmt-cached.outcome == 'failure'
+      run: cargo install leptosfmt --locked
+      env:
+        CARGO_TARGET_DIR: ./target
+
+    - name: Install twiggy
+      if: steps.twiggy-cached.outcome == 'failure'
+      run: cargo install twiggy --locked
       env:
         CARGO_TARGET_DIR: ./target
 
