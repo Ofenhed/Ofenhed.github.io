@@ -1,3 +1,4 @@
+#![allow(unused)] // for now
 use leptos::prelude::*;
 
 #[component]

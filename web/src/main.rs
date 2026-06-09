@@ -3,7 +3,7 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use conditionraise::app::*;
+    use conditionraise::{save_qrcode, shell};
     use leptos::{logging::log, prelude::*};
     use tokio::{pin, select};
 
@@ -13,9 +13,7 @@ async fn main() {
     let leptos_options = conf.leptos_options;
     // Generate the list of routes in your Leptos App
     let qr_options = leptos_options.clone();
-    let qr = tokio::task::spawn_blocking(move || {
-        conditionraise::contact::qr_generator::save_qrcode(&qr_options)
-    });
+    let qr = tokio::task::spawn_blocking(move || save_qrcode(&qr_options));
     pin!(qr);
     #[cfg(feature = "dev")]
     {

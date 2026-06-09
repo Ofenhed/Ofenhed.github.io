@@ -9,7 +9,8 @@ use leptos_router::{
     MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, components::Outlet,
 };
 
-pub trait ScopedTimeout {
+#[cfg_attr(feature = "ssr", allow(unused))]
+pub(crate) trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce());
 }
@@ -36,28 +37,33 @@ impl ScopedTimeout for Owner {
     }
 }
 
-pub fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'static + FnOnce()) {
+#[cfg_attr(feature = "ssr", allow(unused))]
+pub(crate) fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'static + FnOnce()) {
     let Some(owner) = Owner::current() else {
         return;
     };
     owner.set_scoped_timeout(timeout, action)
 }
-pub fn request_scoped_animation_frame(action: impl 'static + FnOnce()) {
+
+#[cfg_attr(feature = "ssr", allow(unused))]
+pub(crate) fn request_scoped_animation_frame(action: impl 'static + FnOnce()) {
     let Some(owner) = Owner::current() else {
         return;
     };
     owner.request_scoped_animation_frame(action)
 }
 
-pub struct IntervalIterator<I, F> {
+#[cfg_attr(feature = "ssr", allow(unused))]
+pub(crate) struct IntervalIterator<I, F> {
     it: I,
     interval: std::time::Duration,
     action: F,
     owner: WeakOwner,
 }
 
+#[cfg_attr(feature = "ssr", allow(unused))]
 impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIterator<I, F> {
-    pub fn into_scoped_timeout(mut self) {
+    pub(crate) fn into_scoped_timeout(mut self) {
         let Some(i) = self.it.next() else { return };
         let Some(owner) = self.owner.upgrade() else {
             log!("Lost iterator owner");
@@ -71,7 +77,8 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
     }
 }
 
-pub trait IntoIntervalIterator<F>
+#[cfg_attr(feature = "ssr", allow(unused))]
+pub(crate) trait IntoIntervalIterator<F>
 where
     Self: Iterator + Sized,
 {
@@ -79,6 +86,7 @@ where
     fn on_interval(self, interval: std::time::Duration, action: F) -> IntervalIterator<Self, F>;
 }
 
+#[cfg_attr(feature = "ssr", allow(unused))]
 impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterator<F> for I {
     fn on_interval(self, interval: std::time::Duration, action: F) -> IntervalIterator<Self, F> {
         let Some(owner) = Owner::current() else {
@@ -94,7 +102,7 @@ impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterato
 }
 
 #[component(transparent)]
-pub fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X) -> R>(
+pub(crate) fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X) -> R>(
     each: impl IntoIterator<Item = X>,
     children: F,
 ) -> impl MatchNestedRoutes + Clone {
@@ -103,7 +111,7 @@ pub fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X) -> R>
 }
 
 #[component]
-pub fn AddContext<T: Send + Sync + 'static>(
+pub(crate) fn AddContext<T: Send + Sync + 'static>(
     context: T,
     #[prop(optional)] children: Option<Children>,
 ) -> impl IntoView {
@@ -133,7 +141,7 @@ pub fn AddContext<T: Send + Sync + 'static>(
 }
 
 #[component]
-pub fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
+pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
     #[derive(Clone, Copy)]
     struct NoWasmScriptLoaded;
     let load_init_script = {
@@ -187,6 +195,6 @@ pub fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
 type ImgDefAttr = (Attr<Loading, &'static str>,);
 
 #[component(transparent)]
-pub fn ImgDef() -> ImgDefAttr {
+pub(crate) fn ImgDef() -> ImgDefAttr {
     (Attr(Loading, "lazy"),)
 }
