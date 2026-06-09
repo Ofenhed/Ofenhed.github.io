@@ -46,6 +46,10 @@ pub fn BuildInfo() -> impl IntoView {
             option_env!("GITHUB_SHA").map(Oco::Borrowed),
         ),
         (
+            Oco::Borrowed("Run number"),
+            option_env!("GITHUB_RUN_NUMBER").map(Oco::Borrowed),
+        ),
+        (
             Oco::Borrowed("Run ID"),
             option_env!("GITHUB_RUN_ID").map(Oco::Borrowed),
         ),
