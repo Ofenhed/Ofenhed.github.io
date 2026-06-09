@@ -43,8 +43,6 @@ body {
   }
   height: 100vh;
   main {
-    width: calc(100% - 1em * 2);
-    height: calc(100% - 1em * 2);
     grid-area: main;
     padding: 1em;
     img {
