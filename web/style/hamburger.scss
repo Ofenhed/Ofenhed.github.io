@@ -7,7 +7,6 @@
 }
 
 #navigation {
-  grid-area: menu;
   top: 0;
   left: 0;
   z-index: 1000;
@@ -17,6 +16,7 @@
   width: fit-content;
   @include nav.open(&) {
     background: #badbad;
+    grid-area: menu;
   }
   @include nav.closed($selector: &) {
     transform-origin: top left;
