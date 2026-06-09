@@ -48,7 +48,7 @@ jobs:
 
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      if: steps.cargo-leptos-cached.outcome == 'failure'
+      if: steps.cargo-leptos-cached.outcome == 'failure' && !${{ cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
@@ -59,7 +59,7 @@ jobs:
 
     - name: Check saved leptos version
       id: check-cache-cargo-leptos-version
-      if: steps.write-cargo-leptos-version.outcome == 'success'
+      if: steps.write-cargo-leptos-version.outcome == 'success' && !${{ cancelled() }}
       continue-on-error: true
       uses: actions/cache/restore@v5
       with:
@@ -70,7 +70,7 @@ jobs:
           ~/.cargo/bin/cargo-leptos
 
     - name: Save leptos cache
-      if: steps.check-cache-cargo-leptos-version.outcome == 'failure'
+      if: steps.check-cache-cargo-leptos-version.outcome == 'failure' && !${{ cancelled() }}
       uses: actions/cache/save@v5
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
@@ -114,7 +114,7 @@ jobs:
         path: target/front/wasm32-unknown-unknown/wasm-release/conditionraise.wasm
 
   check:
-    if: ${{ always() }}
+    if: !${{ cancelled() }}
     runs-on: ubuntu-latest
     needs: build
 
@@ -140,36 +140,29 @@ jobs:
     - name: Log rust version
       run: rustup --version
 
-    - name: Rust formatting
-      id: is-formatted
-      run: cargo fmt --check --all
-      continue-on-error: true
-
     - name: Check if leptosfmt was cached
       id: leptosfmt-cached
       run: test -f ~/.cargo/bin/leptosfmt
-      continue-on-error: true
 
     - name: Check if twiggy was cached
       id: twiggy-cached
       run: test -f ~/.cargo/bin/twiggy
-      continue-on-error: true
 
     - name: Install leptosfmt
-      if: steps.leptosfmt-cached.outcome == 'failure'
+      if: steps.leptosfmt-cached.outcome == 'failure' && !${{ cancelled() }}
       run: cargo install leptosfmt --locked
       env:
         CARGO_TARGET_DIR: ./target
 
     - name: Install twiggy
-      if: steps.twiggy-cached.outcome == 'failure'
+      if: steps.twiggy-cached.outcome == 'failure' && !${{ cancelled() }}
       run: cargo install twiggy --locked
       env:
         CARGO_TARGET_DIR: ./target
 
     - name: Save tool cache
       uses: actions/cache/save@v5
-      if: steps.cache-tools-restore.outcome == 'failure'
+      if: steps.cache-tools-restore.outcome == 'failure' && !${{ cancelled() }}
       with:
         key: ${{ steps.cache-tools-restore.outputs.cache-primary-key }}
         path: |
@@ -178,30 +171,42 @@ jobs:
           ~/.cargo/bin/leptosfmt
           ~/.cargo/bin/twiggy
 
+    - name: Setup completed
+      id: setup-completed
+      run: 'true'
+
+    - name: Rust formatting
+      if: steps.setup-completed.outcome == 'success' && !${{ cancelled() }}
+      run: cargo fmt --check --all
+
     - name: Leptos view formatting
-      id: is-leptos-formatted
-      continue-on-error: true
+      if: steps.setup-completed.outcome == 'success' && !${{ cancelled() }}
       run: leptosfmt --check web/
 
     - name: Download wasm binary
       uses: actions/download-artifact@v8
       id: get-wasm
+      if: steps.setup-completed.outcome == 'success' && !${{ cancelled() }}
       with:
         artifact-ids: ${{ needs.build.outputs.wasm }}
         path: target/new
 
     - name: Check twiggy top
       run: twiggy top target/new/conditionraise.wasm
+      if: steps.setup-completed.outcome == 'success' && !${{ cancelled() }}
 
     - name: Check twiggy monos
       run: twiggy monos target/new/conditionraise.wasm
+      if: steps.setup-completed.outcome == 'success' && !${{ cancelled() }}
 
     - name: Check twiggy garbage
       run: twiggy garbage target/new/conditionraise.wasm
+      if: steps.setup-completed.outcome == 'success' && !${{ cancelled() }}
 
     - name: Download artifact from latest build
       uses: dawidd6/action-download-artifact@v21
       id: get-old-wasm
+      if: steps.get-wasm.outcome == 'success' && !${{ cancelled() }}
       continue-on-error: true
       with:
         name: wasm-file
@@ -210,12 +215,8 @@ jobs:
         branch: master
 
     - name: Check target size change
-      if: steps.get-old-wasm.outcome == 'success'
+      if: steps.get-old-wasm.outcome == 'success' && !${{ cancelled() }}
       run: twiggy diff target/old/conditionraise.wasm  target/new/conditionraise.wasm
-
-    - name: Propagate failure
-      if: steps.is-formatted.outcome == 'failure' || steps.is-leptos-formatted == 'failure'
-      run: 'false'
 
   deploy:
     runs-on: ubuntu-latest
