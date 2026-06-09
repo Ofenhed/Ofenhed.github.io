@@ -10,34 +10,10 @@ env:
   cargo_leptos_version: ./target/.cargo-leptos-version
 
 jobs:
-  move-last-artifact:
-    runs-on: ubuntu-latest
-    outputs:
-      old-wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
-
-    steps:
-    - name: Download artifact from latest build
-      uses: dawidd6/action-download-artifact@v21
-      id: get-old-wasm
-      continue-on-error: true
-      with:
-        name: wasm-file
-        workflow_conclusion: success
-        branch: master
-
-    - name: Save wasm as previous
-      uses: actions/upload-artifact@v7
-      if: steps.get-old-wasm.outcome == 'success'
-      id: upload-wasm-file
-      with:
-        name: old-wasm-file
-        path: conditionraise.wasm
-
   build:
     if: ${{ always() }}
 
     runs-on: ubuntu-latest
-    needs: move-last-artifact
 
     outputs:
       wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
@@ -140,9 +116,7 @@ jobs:
   check:
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    needs:
-      - build
-      - move-last-artifact
+    needs: build
 
     steps:
     - uses: actions/checkout@v6
@@ -218,16 +192,18 @@ jobs:
         twiggy monos target/site/pkg/conditionraise.wasm
         twiggy garbage target/site/pkg/conditionraise.wasm
 
-    - name: Download previous wasm binary
-      uses: actions/download-artifact@v8
+    - name: Download artifact from latest build
+      uses: dawidd6/action-download-artifact@v21
       id: get-old-wasm
+      continue-on-error: true
       with:
-        artifact-ids: ${{ needs.move-last-artifact.outputs.wasm }}
-        path: target/site.old/pkg/
+        name: wasm-file
+        workflow_conclusion: success
+        branch: master
 
     - name: Check target binary bloat
       if: steps.get-old-wasm.outcome == 'success'
-      run: twiggy diff target/site.old/pkg/conditionraise.wasm  target/site/pkg/conditionraise.wasm
+      run: twiggy diff conditionraise.wasm  target/site/pkg/conditionraise.wasm
 
 
   deploy:
