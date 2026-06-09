@@ -21,7 +21,6 @@ jobs:
       id: get-old-wasm
       continue-on-error: true
       with:
-        workflow: publish.yaml
         name: wasm-file
         workflow_conclusion: success
         branch: master
@@ -224,10 +223,11 @@ jobs:
       id: get-old-wasm
       with:
         artifact-ids: ${{ needs.move-last-artifact.outputs.wasm }}
+        path: target/site.old/pkg/
 
     - name: Check target binary bloat
       if: steps.get-old-wasm.outcome == 'success'
-      run: twiggy diff ${{ steps.get-old-wasm.download-path }} ${{ steps.get-wasm.download-path }}
+      run: twiggy diff target/site.old/pkg/conditionraise.wasm  target/site/pkg/conditionraise.wasm
 
 
   deploy:
