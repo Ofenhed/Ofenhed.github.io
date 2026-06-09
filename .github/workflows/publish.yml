@@ -75,8 +75,6 @@ jobs:
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
           ~/.cargo/bin/cargo-leptos
 
     - name: Add wasm target
