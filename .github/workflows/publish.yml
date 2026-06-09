@@ -16,7 +16,7 @@ jobs:
       old-wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
 
     steps:
-    - name: 'Download artifact from latest build'
+    - name: Download artifact from latest build
       uses: dawidd6/action-download-artifact@v6
       id: get-old-wasm
       continue-on-error: true
@@ -86,6 +86,7 @@ jobs:
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         lookup-only: true
+        fail-on-cache-miss: true
         path: |
           ~/.cargo/bin/cargo-leptos
 
