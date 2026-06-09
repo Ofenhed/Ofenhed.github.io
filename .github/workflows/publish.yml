@@ -10,9 +10,33 @@ env:
   cargo_leptos_version: ./target/.cargo-leptos-version
 
 jobs:
+  move-last-artifact:
+    runs-on: ubuntu-latest
+    outputs:
+      old-wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
+
+    steps:
+    - uses: actions/download-artifact@v8
+      id: get-old-wasm
+      with:
+        name: wasm-file
+
+    - name: Save wasm as previous
+      uses: actions/upload-artifact@v7
+      if: steps.get-old-wasm.outcome == 'success'
+      id: upload-wasm-file
+      with:
+        name: old-wasm-file
+        path: ${{ steps.get-old-wasm.download-path }}
+
   build:
+    if: ${{ always() }}
 
     runs-on: ubuntu-latest
+    needs: move-last-artifact
+
+    outputs:
+      wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
 
     steps:
     - uses: actions/checkout@v6
@@ -97,22 +121,40 @@ jobs:
       with:
         path: target/site/
 
+    - name: Save wasm file
+      uses: actions/upload-artifact@v7
+      id: upload-wasm-file
+      with:
+        name: wasm-file
+        path: target/site/pkg/conditionraise.wasm
+
   check:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
+    needs:
+      - build
+      - move-last-artifact
 
     steps:
     - uses: actions/checkout@v6
+
+    - name: Restore tool cache
+      id: cache-tools-restore
+      uses: actions/cache/restore@v5
+      with:
+        key: ${{ runner.os }}-check-tools-${{ hashFiles('**/Cargo.lock') }}
+        path: |
+          ~/.cargo/bin/leptosfmt
+          ~/.cargo/bin/twiggy
 
     - name: Restore build cache
       id: cache-primes-restore
       uses: actions/cache/restore@v5
       with:
         key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}
-        fail-on-cache-miss: true
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          ~/.cargo/bin/cargo-leptos
           target/release
           target/front
 
@@ -125,13 +167,45 @@ jobs:
     - name: Rust formatting
       run: cargo fmt --check --all
 
-    - name: Install leptosfmt
-      run: cargo install leptosfmt --locked
+    - name: Install tools
+      run: cargo install leptosfmt twiggy --locked
       env:
         CARGO_TARGET_DIR: ./target
 
+    - name: Save tool cache
+      uses: actions/cache/save@v5
+      if: steps.cache-tools-restore.outcome == 'failure'
+      with:
+        key: ${{ steps.cache-tools-restore.outputs.cache-primary-key }}
+        path: |
+          ~/.cargo/bin/leptosfmt
+          ~/.cargo/bin/twiggy
+
     - name: Leptos view formatting
       run: leptosfmt --check web/
+
+    - name: Download wasm binary
+      uses: actions/download-artifact@v8
+      id: get-wasm
+      with:
+        artifact-ids: ${{ needs.build.outputs.wasm }}
+
+    - name: Check target binary bloat
+      run: |
+        twiggy top ./target/site/pkg/conditionraise.wasm
+        twiggy monos ./target/site/pkg/conditionraise.wasm
+        twiggy garbage ./target/site/pkg/conditionraise.wasm
+
+    - name: Download previous wasm binary
+      uses: actions/download-artifact@v8
+      id: get-old-wasm
+      with:
+        artifact-ids: ${{ needs.move-last-artifact.outputs.wasm }}
+
+    - name: Check target binary bloat
+      if: steps.get-old-wasm.outcome == 'success'
+      run: twiggy diff ${{ steps.get-old-wasm.download-path }} ${{ steps.get-wasm.download-path }}
+
 
   deploy:
     runs-on: ubuntu-latest
