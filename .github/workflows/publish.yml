@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Download artifact from latest build
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v21
       id: get-old-wasm
       continue-on-error: true
       with:
