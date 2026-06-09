@@ -1,6 +1,9 @@
 use leptos::{html, prelude::*};
 
-use crate::{app::ShowNavigation, helpers::NoWasm};
+use crate::{
+    app::ShowNavigation,
+    helpers::{ImgDef, NoWasm},
+};
 
 #[cfg(not(feature = "ssr"))]
 mod qr_settings {
@@ -59,7 +62,7 @@ make_vcard!(
 );
 
 #[component]
-pub fn Email() -> impl IntoView {
+pub(crate) fn Email() -> impl IntoView {
     fn hostname() -> Option<String> {
         let window = window();
         let document = window.document()?;
@@ -93,10 +96,10 @@ pub fn Email() -> impl IntoView {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub struct AnimateQrLogo(pub bool);
+pub(crate) struct AnimateQrLogo(pub bool);
 
 #[component]
-pub fn Contact() -> impl IntoView {
+pub(crate) fn Contact() -> impl IntoView {
     #[cfg_attr(feature = "ssr", allow(unused))]
     let (show_canvas, set_show_canvas) = signal(Some("none"));
     #[cfg_attr(feature = "ssr", allow(unused))]
@@ -348,10 +351,10 @@ pub fn Contact() -> impl IntoView {
             <div class="qr-code">
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
                     <noscript>
-                        <img src="qrcode.png" />
+                        <img {..ImgDef()} src="qrcode.png" />
                     </noscript>
                     <NoWasm>
-                        <img src="qrcode.png" />
+                        <img {..ImgDef()} src="qrcode.png" />
                     </NoWasm>
                     <div id="canvasHolder" style:display=show_canvas>
                         <canvas node_ref=canvas_ref width=width height=height />
@@ -371,7 +374,7 @@ pub fn Contact() -> impl IntoView {
 }
 
 #[cfg(feature = "ssr")]
-pub mod qr_generator {
+pub(crate) mod qr_generator {
     use super::*;
     use std::path::Path;
     #[derive(Debug, thiserror::Error)]

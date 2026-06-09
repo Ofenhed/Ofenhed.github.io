@@ -14,7 +14,7 @@ use crate::{
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub struct ShowNavigation(pub bool);
+pub(crate) struct ShowNavigation(pub bool);
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     //let css_path = format!("/{}/{}.css", options.site_pkg_dir, options.output_name);
@@ -38,7 +38,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
 }
 
 #[component]
-pub fn BuildInfo() -> impl IntoView {
+pub(crate) fn BuildInfo() -> impl IntoView {
     use std::option_env;
     let data: [(Oco<'static, str>, Option<Oco<'static, str>>); _] = [
         (
@@ -81,7 +81,7 @@ enum EggCounter {
 }
 
 #[component]
-pub fn NotFound() -> impl IntoView {
+pub(crate) fn NotFound() -> impl IntoView {
     view! {
         <h1>"404 error"</h1>
         <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p>
@@ -89,7 +89,7 @@ pub fn NotFound() -> impl IntoView {
 }
 
 #[component]
-pub fn App() -> impl IntoView {
+pub(crate) fn App() -> impl IntoView {
     provide_meta_context();
     let fallback = || NotFound().into_view();
     const INITIAL_EGG_COUNTER: u8 = 8;

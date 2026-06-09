@@ -1,8 +1,13 @@
-pub mod app;
-pub mod blog;
-pub mod contact;
-pub mod helpers;
-pub mod third_party;
+pub(crate) mod app;
+pub(crate) mod blog;
+pub(crate) mod contact;
+pub(crate) mod helpers;
+pub(crate) mod third_party;
+
+#[cfg(feature = "ssr")]
+pub use contact::qr_generator::save_qrcode;
+
+pub use app::shell;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]

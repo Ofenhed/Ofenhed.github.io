@@ -23,12 +23,7 @@ use leptos_router::{
     path,
     static_routes::StaticRoute,
 };
-use std::{
-    borrow::Cow,
-    cmp::max,
-    str::FromStr,
-    sync::{OnceLock, RwLock},
-};
+use std::{borrow::Cow, cmp::max, str::FromStr};
 use strum::{AsRefStr, EnumString, VariantArray};
 
 const ENTRIES_PER_PAGE: usize = 10;
@@ -48,30 +43,6 @@ pub fn BlogRoute(
     }
     .into_inner()
     .into_any_nested_route()
-}
-
-pub fn num_strings() -> &'static RwLock<Vec<(usize, &'static str)>> {
-    static NUM_CELL: OnceLock<RwLock<Vec<(usize, &'static str)>>> = OnceLock::new();
-    NUM_CELL.get_or_init(Default::default)
-}
-
-pub fn to_static_str(from: usize) -> &'static str {
-    let lock = num_strings().read().unwrap();
-    if let Ok(index) = lock.binary_search_by_key(&from, |(i, _)| *i) {
-        lock[index].1
-    } else {
-        drop(lock);
-        let mut lock = num_strings().write().unwrap();
-        if let Ok(index) = lock.binary_search_by_key(&from, |(i, _)| *i) {
-            lock[index].1
-        } else {
-            let num = Box::leak(Box::from(format!("{from}")));
-            lock.push((from, num));
-            lock.sort_unstable_by_key(|(i, _)| *i);
-            lock.dedup_by_key(|(i, _)| *i);
-            num
-        }
-    }
 }
 
 #[component(transparent)]
