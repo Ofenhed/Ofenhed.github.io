@@ -145,19 +145,10 @@ jobs:
       with:
         key: ${{ runner.os }}-check-tools-${{ hashFiles('**/Cargo.lock') }}
         path: |
-          ~/.cargo/bin/leptosfmt
-          ~/.cargo/bin/twiggy
-
-    - name: Restore build cache
-      id: cache-primes-restore
-      uses: actions/cache/restore@v5
-      with:
-        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}
-        path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target/release
-          target/front
+          ~/.cargo/bin/leptosfmt
+          ~/.cargo/bin/twiggy
 
     - name: Use nightly rust
       run: rustup override set nightly && rustup component add rustfmt
@@ -179,6 +170,8 @@ jobs:
       with:
         key: ${{ steps.cache-tools-restore.outputs.cache-primary-key }}
         path: |
+          ~/.cargo/registry
+          ~/.cargo/git
           ~/.cargo/bin/leptosfmt
           ~/.cargo/bin/twiggy
 
