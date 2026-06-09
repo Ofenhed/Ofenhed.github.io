@@ -37,6 +37,33 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     }
 }
 
+#[component]
+pub fn BuildInfo() -> impl IntoView {
+    use std::option_env;
+    let data: [(Oco<'static, str>, Option<Oco<'static, str>>); _] = [
+        (
+            Oco::Borrowed("Commit"),
+            option_env!("GITHUB_SHA").map(Oco::Borrowed),
+        ),
+        (
+            Oco::Borrowed("Run ID"),
+            option_env!("GITHUB_RUN_ID").map(Oco::Borrowed),
+        ),
+        (
+            Oco::Borrowed("Build OS"),
+            option_env!("RUNNER_OS").map(Oco::Borrowed),
+        ),
+    ];
+    view! {
+        <For each=move || data.clone() key=|x| x.clone() let:(d)>
+            <fieldset>
+                <legend>{d.0}</legend>
+                {d.1}
+            </fieldset>
+        </For>
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum EggCounter {
     Counter(u8),
@@ -135,6 +162,7 @@ pub fn App() -> impl IntoView {
             <main {..custom_attribute("path", use_location().pathname)}>
                 <Routes fallback>
                     <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
+                    <Route path=path!("/build") view=BuildInfo ssr=SsrMode::Static(StaticRoute::new()) />
                     <Blog />
                 </Routes>
             </main>
