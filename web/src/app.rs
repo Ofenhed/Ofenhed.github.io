@@ -10,7 +10,7 @@ use leptos_router::{
 
 use crate::{
     blog::Blog,
-    contact::{AnimateQrLogo, Contact},
+    contact::{Contact, PersistentQrLogo},
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -120,7 +120,7 @@ pub(crate) fn App() -> impl IntoView {
             });
         }
     };
-    let (get_logo_status, save_logo_status) = signal(AnimateQrLogo(true));
+    let (get_logo_status, save_logo_status) = signal(PersistentQrLogo::default());
     provide_context(get_logo_status);
     provide_context(save_logo_status);
     let show_navigation = {
