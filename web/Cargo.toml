@@ -12,7 +12,6 @@ base64 = { workspace = true, optional = true }
 console_error_panic_hook.workspace = true
 console_log.workspace = true
 chrono.workspace = true
-getrandom = { workspace = true }
 image = { workspace = true, optional = true }
 js-macro = { path = "../js-macro" }
 leptos = { workspace = true, features = ["rkyv"] }
@@ -35,7 +34,7 @@ cargo-leptos = "0.3.6"
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-client-side = ["dep:web-sys", "dep:base64", "getrandom/wasm_js"]
+client-side = ["dep:web-sys", "dep:base64"]
 ssr = [
   "dep:image",
   "dep:tokio",
