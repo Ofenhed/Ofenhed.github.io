@@ -162,7 +162,11 @@ pub fn App() -> impl IntoView {
             <main {..custom_attribute("path", use_location().pathname)}>
                 <Routes fallback>
                     <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
-                    <Route path=path!("/build") view=BuildInfo ssr=SsrMode::Static(StaticRoute::new()) />
+                    <Route
+                        path=path!("/build")
+                        view=BuildInfo
+                        ssr=SsrMode::Static(StaticRoute::new())
+                    />
                     <Blog />
                 </Routes>
             </main>
