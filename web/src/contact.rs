@@ -95,8 +95,11 @@ pub(crate) fn Email() -> impl IntoView {
     view! { <a node_ref=a_ref style:display=display></a> }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub(crate) struct AnimateQrLogo(pub bool);
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+pub(crate) struct PersistentQrLogo {
+    logo_animated: bool,
+    log_written: bool,
+}
 
 #[component]
 pub(crate) fn Contact() -> impl IntoView {
@@ -122,8 +125,8 @@ pub(crate) fn Contact() -> impl IntoView {
 
         let worm_delay = 2.5f64;
         let animate_logo = {
-            if let Some(c) = use_context::<ReadSignal<AnimateQrLogo>>() {
-                c.get_untracked() == AnimateQrLogo(true)
+            if let Some(c) = use_context::<ReadSignal<PersistentQrLogo>>() {
+                c.get_untracked().logo_animated == false
             } else {
                 true
             }
@@ -237,14 +240,14 @@ pub(crate) fn Contact() -> impl IntoView {
                 });
             }
         }
-        if let Some(setter) = use_context::<WriteSignal<AnimateQrLogo>>() {
+        if let Some(setter) = use_context::<WriteSignal<PersistentQrLogo>>() {
             set_scoped_timeout(
                 std::time::Duration::from_secs_f64(
                     MAX_INITIAL_DELAY
                         + MAX_SHADE_INTERVAL * (0xff as f64) / (SHADE_STEP_SIZE as f64),
                 ),
                 move || {
-                    setter.set(AnimateQrLogo(false));
+                    setter.update_untracked(|x| x.logo_animated = true);
                 },
             );
         }
@@ -320,9 +323,25 @@ pub(crate) fn Contact() -> impl IntoView {
             || {
                 set_scoped_timeout(
                     std::time::Duration::from_secs_f64(Math::random() * 5.0),
-                    || warn!("Worm detected in browser"),
+                    || {
+                        if let Some(true) = use_context::<WriteSignal<PersistentQrLogo>>()
+                            .map(|x| {
+                                x.try_maybe_update(|qr| {
+                                    if qr.log_written {
+                                        (false, false)
+                                    } else {
+                                        qr.log_written = true;
+                                        (false, true)
+                                    }
+                                })
+                            })
+                            .flatten()
+                        {
+                            warn!("Worm detected in browser");
+                        }
+                    },
                 );
-                create_worm(state)
+                create_worm(state);
             },
         );
         set_show_canvas.set(None);
