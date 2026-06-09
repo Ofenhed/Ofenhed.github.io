@@ -85,12 +85,6 @@ jobs:
     - name: Compile targets
       run: cargo leptos build --release --bin-features ssr,statics
 
-    - name: Remove old cache
-      if: always()
-      run: gh cache delete ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
-      env:
-        GH_TOKEN: ${{ github.token }}
-
     - name: Save full cache
       uses: actions/cache/save@v5
       if: always()
