@@ -74,13 +74,17 @@ jobs:
     - name: Build leptos toolkit
       id: cargo-leptos-build
       if: steps.cargo-leptos-cached.outcome == 'failure'
-      run: cargo install cargo-leptos --locked && (cargo info cargo-leptos | tee "$cargo_leptos_version")
+      run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
 
+    - name: Check cargo-leptos version
+      id: write-cargo-leptos-version
+      run: cargo info cargo-leptos | tee "$cargo_leptos_version"
+
     - name: Check saved leptos version
       id: check-cache-cargo-leptos-version
-      if: steps.cargo-leptos-build.outcome == 'success'
+      if: steps.write-cargo-leptos-version.outcome == 'success'
       continue-on-error: true
       uses: actions/cache/restore@v5
       with:
