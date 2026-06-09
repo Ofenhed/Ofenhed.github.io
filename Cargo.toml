@@ -36,6 +36,9 @@ panic = "abort"
 [profile.wasm-release]
 inherits = "release"
 opt-level = 'z'
+split-debuginfo = "packed"
+debuginfo = "full"
+strip = false
 lto = true
 codegen-units = 1
 panic = "abort"

@@ -111,7 +111,7 @@ jobs:
       id: upload-wasm-file
       with:
         name: wasm-file
-        path: target/site/pkg/conditionraise.wasm
+        path: target/front/wasm32-unknown-unknown/wasm-release/conditionraise.wasm
 
   check:
     if: ${{ always() }}
@@ -184,16 +184,16 @@ jobs:
       id: get-wasm
       with:
         artifact-ids: ${{ needs.build.outputs.wasm }}
-        path: target/site/pkg/
+        path: target/new
 
     - name: Check twiggy top
-      run: twiggy top target/site/pkg/conditionraise.wasm
+      run: twiggy top target/new/conditionraise.wasm
 
     - name: Check twiggy monos
-      run: twiggy monos target/site/pkg/conditionraise.wasm
+      run: twiggy monos target/new/conditionraise.wasm
 
     - name: Check twiggy garbage
-      run: twiggy garbage target/site/pkg/conditionraise.wasm
+      run: twiggy garbage target/new/conditionraise.wasm
 
     - name: Download artifact from latest build
       uses: dawidd6/action-download-artifact@v21
@@ -201,12 +201,13 @@ jobs:
       continue-on-error: true
       with:
         name: wasm-file
+        path: target/old
         workflow_conclusion: success
         branch: master
 
-    - name: Check target binary bloat
+    - name: Check target size change
       if: steps.get-old-wasm.outcome == 'success'
-      run: twiggy diff conditionraise.wasm  target/site/pkg/conditionraise.wasm
+      run: twiggy diff target/old/conditionraise.wasm  target/new/conditionraise.wasm
 
 
   deploy:
