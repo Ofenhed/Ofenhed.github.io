@@ -11,7 +11,6 @@ chrono = { version = "0.4.44", default-features = false, features = ["std", "was
 console_error_panic_hook = "0.1.7"
 console_log = "1.0"
 futures = { version = "0.3", default-features = false }
-getrandom = { version = ">= 0.3" }
 hydration_context = "0.3"
 image = { version = "0.25", default-features = false, features = ["png"] }
 leptos = { version = "0.8", default-features = false }
