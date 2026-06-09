@@ -18,6 +18,7 @@ jobs:
     steps:
     - uses: actions/download-artifact@v8
       id: get-old-wasm
+      continue-on-error: true
       with:
         name: wasm-file
 
