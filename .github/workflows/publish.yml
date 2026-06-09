@@ -16,11 +16,15 @@ jobs:
       old-wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
 
     steps:
-    - uses: actions/download-artifact@v8
+    - name: 'Download artifact from latest build'
+      uses: dawidd6/action-download-artifact@v6
       id: get-old-wasm
       continue-on-error: true
       with:
+        workflow: publish.yaml
         name: wasm-file
+        workflow_conclusion: success
+        branch: master
 
     - name: Save wasm as previous
       uses: actions/upload-artifact@v7
@@ -28,7 +32,7 @@ jobs:
       id: upload-wasm-file
       with:
         name: old-wasm-file
-        path: ${{ steps.get-old-wasm.download-path }}
+        path: conditionraise.wasm
 
   build:
     if: ${{ always() }}
