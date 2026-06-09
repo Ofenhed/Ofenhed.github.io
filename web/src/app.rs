@@ -59,11 +59,7 @@ pub fn BuildInfo() -> impl IntoView {
         option_env!("GITHUB_REPOSITORY"),
         option_env!("GITHUB_RUN_ID"),
     ) {
-        Some(view! {
-            <a href=format!("{url}/{repo}/actions/runs/{run_id})")>
-                Github build
-            </a>
-        })
+        Some(view! { <a href=format!("{url}/{repo}/actions/runs/{run_id})")>Github build</a> })
     } else {
         None
     };
