@@ -11,6 +11,7 @@ use leptos_router::{
 use crate::{
     blog::Blog,
     contact::{Contact, PersistentQrLogo},
+    helpers::ImgDef,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -59,7 +60,14 @@ pub(crate) fn BuildInfo() -> impl IntoView {
         option_env!("GITHUB_REPOSITORY"),
         option_env!("GITHUB_RUN_ID"),
     ) {
-        Some(view! { <a href=format!("{url}/{repo}/actions/runs/{run_id})")>Github build</a> })
+        Some(view! {
+            <a href=format!("{url}/{repo}/actions/runs/{run_id})")>
+                <img
+                    {..ImgDef()}
+                    src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
+                />
+            </a>
+        })
     } else {
         None
     };
