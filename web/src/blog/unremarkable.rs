@@ -12,7 +12,7 @@ pub fn Unremarkable() -> BlogEntry<Children> {
             <legend>Note</legend>
             "This is mostly the feedback I provided to Remarkable when I returned their "
             <a href="https://remarkable.com/products/remarkable-2">"Remarkable 2"</a>
-            ". While it is no longer sold, I imagine that some of the critiques still apply or are worth considering before buying a Remarkable device. I received no reply to these critiques, but I also had no issues returning the device."
+            ". While it is no longer sold, I imagine that some of the critiques still apply or are worth considering before buying a Remarkable device. I received no reply to these critiques, but I had no issues whatsoever returning the device."
         </fieldset>
         <p>
             "I had such high hopes, and I was initially very happy with this product, I tried the writing and some sketching, looked through the (very few) settings, and the build quality is absolutely amazing."
