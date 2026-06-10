@@ -2,10 +2,6 @@
 @use 'nav.scss';
 @use 'hamburger-easter-egg.scss';
 
-@include nav.open() {
-  grid-template-columns: max-content 8px auto 8px;
-}
-
 #navigation {
   top: 0;
   left: 0;
@@ -14,9 +10,9 @@
   margin: 0;
   height: 100%;
   width: fit-content;
+  grid-area: menu-start / menu-start / menu-end / menu-end;
   @include nav.open(&) {
     background: #badbad;
-    grid-area: menu;
   }
   @include nav.closed($selector: &) {
     transform-origin: top left;
@@ -117,14 +113,6 @@
       height: var(--slice-height, 2px);
       border-radius: var(--slice-height);
       opacity: 90%;
-    }
-  }
-}
-
-@include nav.with-path-prefix("/clog", $invert-path: true)  {
-  &:has(nav#navigation.beta-nav) main {
-    @media screen {
-      padding-top: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
     }
   }
 }
