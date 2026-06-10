@@ -61,7 +61,7 @@ pub(crate) fn BuildInfo() -> impl IntoView {
         option_env!("GITHUB_RUN_ID"),
     ) {
         Some(view! {
-            <a href=format!("{url}/{repo}/actions/runs/{run_id})")>
+            <a href=format!("{url}/{repo}/actions/runs/{run_id}")>
                 <img
                     {..ImgDef()}
                     src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
