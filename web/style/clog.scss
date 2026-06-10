@@ -52,7 +52,7 @@ ul#blog-entries {
   @media screen {
     background: var(--space-body-background);
     grid-template-rows: calc(var(--hamburger-size) + var(--button-margin) * 2) auto 0px;
-    grid-template-columns: 0px var(--space-padding) auto var(--space-padding);
+    grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start] var(--space-width) [main-end] 1fr;
     main {
       background: var(--space-main-background);
       border-radius: var(--top-left-rounding) var(--top-left-rounding) 0 0;
@@ -63,7 +63,7 @@ ul#blog-entries {
       left: 0;
     }
     @include nav.open($selector: &) {
-      grid-template-columns: max-content var(--space-padding) auto var(--space-padding);
+      grid-template-columns: [menu-start] max-content [menu-end] 1fr [main-start] var(--space-width) [main-end] 1fr;
     }
     nav#navigation {
       text-transform: uppercase;
