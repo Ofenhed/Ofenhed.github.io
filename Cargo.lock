@@ -1000,6 +1000,7 @@ dependencies = [
  "chrono",
  "console_error_panic_hook",
  "console_log",
+ "futures",
  "image",
  "js-macro",
  "leptos",

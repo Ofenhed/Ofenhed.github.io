@@ -82,7 +82,7 @@ jobs:
       run: rustup target add wasm32-unknown-unknown
 
     - name: Compile targets
-      run: cargo leptos build --release --bin-features ssr,statics
+      run: cargo leptos build --split --release --bin-features ssr,statics
 
     - name: Save full cache
       uses: actions/cache/save@v5
