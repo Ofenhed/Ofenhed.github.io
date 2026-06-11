@@ -48,19 +48,19 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
 
     fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
         let metadata = with_blog_simple::<BlogEntryMeta>(blog.clone());
+        let b = Lazy::<B>::new();
         view! {
             <ParentRoute
                 path=metadata
-                view=move || view! {
-                    <BlogHeading entry=blog.clone() />
-                    <Outlet />
+                view=move || {
+                    view! {
+                        <BlogHeading entry=blog.clone() />
+                        <Outlet />
+                    }
                 }
-                ssr=SsrMode::OutOfOrder>
-            <Route
-                path=path!("")
-                view={ Lazy::<B>::new() }
-                ssr=SsrMode::Static(StaticRoute::new())
-                    />
+                ssr=SsrMode::OutOfOrder
+            >
+                <Route path=path!("") view=b ssr=SsrMode::Static(StaticRoute::new()) />
             </ParentRoute>
         }
         .into_inner()
