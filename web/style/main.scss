@@ -25,11 +25,8 @@ body {
   display: grid;
   margin: 0px;
   grid-template-columns: [menu-start] 0px [menu-end main-start] 0px 100% 0px [main-end];
-  grid-template-rows: [menu-start] 0px [main-start] auto [main-end] 0px [menu-end];
+  grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end] 0px [menu-end];
   overflow-x: hidden;
-  &:has(> nav.beta-nav) {
-    grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end] 0px [menu-end];
-  }
 
   @include nav.open($selector: &) {
     grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start] 100% [main-end] 0px;

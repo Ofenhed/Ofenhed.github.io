@@ -51,7 +51,6 @@ ul#blog-entries {
 @include nav.with-path-prefix("/clog", $base: body) {
   @media screen {
     background: var(--space-body-background);
-    grid-template-rows: calc(var(--hamburger-size) + var(--button-margin) * 2) auto 0px;
     grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start] var(--space-width) [main-end] 1fr;
     main {
       background: var(--space-main-background);
