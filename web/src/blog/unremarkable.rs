@@ -1,13 +1,51 @@
-use crate::blog::{
-    BlogEntry,
-    metadata::{Locale, Tag},
-};
-use chrono::DateTime;
+use crate::blog::metadata::{BlogEntry, Locale, Tag};
+use chrono::{DateTime, Utc};
 use leptos::prelude::*;
+use leptos_router::{LazyRoute, lazy_route};
 
-#[component(transparent)]
-pub fn Unremarkable() -> BlogEntry<Children> {
-    let child = view! {
+#[derive(Clone, Copy)]
+pub(crate) struct Unremarkable;
+
+impl BlogEntry for Unremarkable {
+    fn uid() -> u32 {
+        1
+    }
+
+    fn publish_date() -> DateTime<Utc> {
+        DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00")
+            .unwrap()
+            .into()
+    }
+
+    fn last_updated() -> Option<DateTime<Utc>> {
+        Some(
+            DateTime::parse_from_rfc3339("2026-06-08T09:00:00+01:00")
+                .unwrap()
+                .into(),
+        )
+    }
+
+    fn locale() -> Option<Locale> {
+        Locale::EnglishSimplified.into()
+    }
+
+    fn title() -> &'static str {
+        "(un)Remarkable 2"
+    }
+
+    fn tags() -> &'static [Tag] {
+        &[Tag::Review, Tag::Tech]
+    }
+}
+
+#[lazy_route]
+impl LazyRoute for Unremarkable {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(_this: Self) -> AnyView {
+        view! {
         <fieldset>
             <legend>Note</legend>
             "This is mostly the feedback I provided to Remarkable when I returned their "
@@ -77,20 +115,6 @@ pub fn Unremarkable() -> BlogEntry<Children> {
                 </ins>
             </li>
         </ul>
-    };
-    BlogEntry {
-        uid: 1,
-        publish_date: DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00")
-            .unwrap()
-            .into(),
-        last_updated: Some(
-            DateTime::parse_from_rfc3339("2026-06-08T09:00:00+01:00")
-                .unwrap()
-                .into(),
-        ),
-        title: "(un)Remarkable 2",
-        locale: Locale::EnglishSimplified.into(),
-        tags: &[Tag::Review, Tag::Tech],
-        children: Children::to_children(move || child),
+    }.into_any()
     }
 }

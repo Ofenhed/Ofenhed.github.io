@@ -1,7 +1,7 @@
-use leptos::{attr::custom::custom_attribute, prelude::*};
+use leptos::{attr::custom::custom_attribute, prelude::*, task::spawn_local_scoped};
 use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
-    SsrMode,
+    Lazy, LazyRoute as _, SsrMode,
     components::{A, Route, Router, Routes},
     hooks::use_location,
     path,

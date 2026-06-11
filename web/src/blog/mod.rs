@@ -3,19 +3,22 @@ pub mod unremarkable;
 
 use crate::{
     blog::{
-        metadata::{Locale, Tag},
+        metadata::{
+            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag,
+            with_blog_simple,
+        },
         unremarkable::Unremarkable,
     },
     helpers::{AddContext, ForRoute},
 };
 use chrono::{DateTime, Utc};
-use leptos::prelude::*;
+use leptos::{prelude::*, task::spawn_local_scoped};
 use leptos_meta::{Meta, use_head};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
 use leptos_router::{
-    PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
-    any_nested_route::IntoAnyNestedRoute,
+    Lazy, PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
+    any_nested_route::{AnyNestedRoute, IntoAnyNestedRoute},
     components::{A, ParentRoute, Route},
     hooks::use_params,
     nested_router::Outlet,
@@ -27,22 +30,42 @@ use std::{borrow::Cow, cmp::max, str::FromStr};
 use strum::{AsRefStr, EnumString, VariantArray};
 
 const ENTRIES_PER_PAGE: usize = 10;
-const BLOGS: &[fn() -> BlogEntry<Children>] = &[Unremarkable];
 
-#[component(transparent)]
-pub fn BlogRoute(
-    blog: impl 'static + Send + Clone + Fn() -> PopulatedBlogEntry,
-) -> impl MatchNestedRoutes + Clone {
-    let metadata = blog().metadata();
-    view! {
-        <Route
-            path=metadata
-            view=move || view! { <ShowBlogEntry entry=blog() /> }
-            ssr=SsrMode::Static(StaticRoute::new())
-        />
+pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
+    [b.with_blog(Unremarkable)].into_iter()
+}
+
+pub fn with_blogs_simple<B>()
+-> impl Iterator<Item = <BlogEntryHandlerFor<B> as BlogEntryHandler>::Result>
+where
+    BlogEntryHandlerFor<B>: BlogEntryHandler<Result = B>,
+{
+    with_blogs(BlogEntryHandlerFor::<B>::new())
+}
+
+impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
+    type Result = AnyNestedRoute;
+
+    fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
+        let metadata = with_blog_simple::<BlogEntryMeta>(blog.clone());
+        view! {
+            <ParentRoute
+                path=metadata
+                view=move || view! {
+                    <BlogHeading entry=blog.clone() />
+                    <Outlet />
+                }
+                ssr=SsrMode::OutOfOrder>
+            <Route
+                path=path!("")
+                view={ Lazy::<B>::new() }
+                ssr=SsrMode::Static(StaticRoute::new())
+                    />
+            </ParentRoute>
+        }
+        .into_inner()
+        .into_any_nested_route()
     }
-    .into_inner()
-    .into_any_nested_route()
 }
 
 #[component(transparent)]
@@ -106,7 +129,7 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
                     StaticRoute::new()
                         .prerender_params(move || {
                             async move {
-                                let max_pages = num_pages(BLOGS.len());
+                                let max_pages = num_pages(with_blogs(()).count());
                                 [
                                     (
                                         "page".to_string(),
@@ -226,7 +249,7 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
 
 #[component(transparent)]
 pub fn BlogListing(
-    #[prop(into)] blogs: Signal<Vec<EmptyBlogEntry>>,
+    #[prop(into)] blogs: Signal<Vec<BlogEntryMeta>>,
 ) -> impl MatchNestedRoutes + Clone {
     let blogs = {
         let (sort_by, writer) = signal(SortBy::PublishDate);
@@ -249,7 +272,7 @@ pub fn BlogListing(
                             true
                         }
                     })
-                    .map(ToOwned::to_owned)
+                    .cloned()
                     .collect::<Vec<_>>()
             }))
         });
@@ -286,6 +309,12 @@ pub fn BlogListing(
         <ParentRoute
             path=path!("/")
             view=move || {
+                Effect::new(move |_| {
+                    let blogs = blogs.with(|x| x.iter().map(|x| x.uid).collect());
+                    for b in with_blogs(PreloadUids(blogs)).filter_map(|x| x) {
+                        spawn_local_scoped(async move { b.await });
+                    }
+                });
                 view! {
                     <Outlet />
                     <BlogEntryList entries=blogs />
@@ -300,15 +329,12 @@ pub fn BlogListing(
 }
 #[component(transparent)]
 pub fn Blog() -> impl MatchNestedRoutes + Clone {
-    let blogs = BLOGS.to_vec();
-    let blog_metadata = BLOGS
-        .iter()
-        .map(|x| x().metadata())
-        .collect::<Vec<EmptyBlogEntry>>();
+    let blogs = with_blogs_simple::<AnyNestedRoute>().collect::<Vec<_>>();
+    let blog_metadata = with_blogs_simple::<BlogEntryMeta>().collect::<Vec<_>>();
     view! {
         <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
             <ParentRoute path=path!("/entry") view=Outlet ssr=SsrMode::Static(StaticRoute::new())>
-                <ForRoute each=blogs children=|b| view! { <BlogRoute blog=b /> }.into_inner() />
+                <ForRoute each=blogs children=|b| b />
             </ParentRoute>
             <BlogListing blogs=blog_metadata />
         </ParentRoute>
@@ -316,70 +342,40 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
     .into_inner()
 }
 
+#[derive(PartialEq, Eq, Clone)]
+#[cfg_attr(debug_assertions, derive(Debug))]
 #[slot]
-#[derive(PartialEq, Eq)]
-pub struct BlogEntry<T> {
+pub struct BlogEntryMeta {
     uid: u32,
     publish_date: DateTime<Utc>,
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
     title: &'static str,
     tags: &'static [Tag],
-    children: T,
 }
 
-impl<T> BlogEntry<T> {
-    fn clone_map<R>(&self, f: impl FnOnce(&T) -> R) -> BlogEntry<R> {
-        let BlogEntry {
-            uid,
-            publish_date,
-            last_updated,
-            locale,
-            title,
-            tags,
-            children,
-        } = self;
-        BlogEntry {
-            uid: *uid,
-            publish_date: publish_date.clone(),
-            last_updated: last_updated.clone(),
-            locale: locale.clone(),
-            title: title,
-            tags: tags,
-            children: (),
-        }
-        .map(|_| f(children))
-    }
+impl BlogEntryHandler for BlogEntryHandlerFor<BlogEntryMeta> {
+    type Result = BlogEntryMeta;
 
-    fn map<R>(self, f: impl FnOnce(T) -> R) -> BlogEntry<R> {
-        let BlogEntry {
-            uid,
-            publish_date,
-            last_updated,
-            locale,
-            title,
-            tags,
-            children,
-        } = self;
-        BlogEntry {
-            uid,
-            publish_date,
-            last_updated,
-            locale,
-            title,
-            tags,
-            children: f(children),
+    fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
+        blog.into()
+    }
+}
+
+impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
+    fn from(_: T) -> Self {
+        BlogEntryMeta {
+            uid: T::uid(),
+            publish_date: T::publish_date(),
+            last_updated: T::last_updated(),
+            locale: T::locale(),
+            title: T::title(),
+            tags: T::tags(),
         }
     }
 }
 
-impl<T: Clone> Clone for BlogEntry<T> {
-    fn clone(&self) -> Self {
-        self.clone_map(|x| x.clone())
-    }
-}
-
-impl<T> PossibleRouteMatch for BlogEntry<T> {
+impl PossibleRouteMatch for BlogEntryMeta {
     fn optional(&self) -> bool {
         false
     }
@@ -422,42 +418,33 @@ impl<T> PossibleRouteMatch for BlogEntry<T> {
     }
 }
 
-impl<T> BlogEntry<T> {
-    pub fn metadata(&self) -> BlogEntry<()> {
-        self.clone_map(|_| ())
-    }
-}
-
-pub type PopulatedBlogEntry = BlogEntry<Children>;
-pub type EmptyBlogEntry = BlogEntry<()>;
-
 #[component]
-pub fn ShowBlogEntry(entry: PopulatedBlogEntry) -> impl IntoView {
+pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
     use leptos_meta::Title;
+    _ = entry;
     use_head();
-    let last_update = entry.last_updated.map(|x| {
+    let last_update = B::last_updated().map(|x| {
         view! { <Meta property="og:modified_time" content=x.to_rfc3339() /> }
     });
-    let locale = entry.locale.map(|x| {
+    let locale = B::locale().map(|x| {
         view! { <Meta property="og:locale" content=x.as_ref().to_string() /> }
     });
     view! {
-        <Title formatter=|title: String| format!("{title} - Captains Log") text=entry.title />
+        <Title formatter=|title: String| format!("{title} - Captains Log") text=B::title() />
         {locale}
-        <Meta property="og:title" content=entry.title />
+        <Meta property="og:title" content=B::title() />
         <Meta property="og:article:author" content="Marcus Ofenhed" />
         <For
-            each=move || entry.tags.iter()
+            each=move || B::tags().iter()
             key=|x| x.to_owned()
             children=|tag| {
                 view! { <Meta property="og:article:tag" content=tag.as_ref().to_string() /> }
             }
         />
-        <Meta property="og:article:published_time" content=entry.publish_date.to_rfc3339() />
+        <Meta property="og:article:published_time" content=B::publish_date().to_rfc3339() />
         {last_update}
-        <h1>{entry.title}</h1>
-        <p>{entry.publish_date.to_string()}</p>
-        {(entry.children)()}
+        <h1>{B::title()}</h1>
+        <p>{B::publish_date().to_string()}</p>
     }
 }
 
@@ -481,10 +468,10 @@ fn to_title<'a>(input: impl Into<Oco<'a, str>>) -> Oco<'a, str> {
 
 #[derive(Clone)]
 #[allow(unused)]
-struct FilteredEntities(Vec<EmptyBlogEntry>);
+struct FilteredEntities(Vec<BlogEntryMeta>);
 
 #[allow(unused)]
-struct CurrentPageEntries(Vec<EmptyBlogEntry>);
+struct CurrentPageEntries(Vec<BlogEntryMeta>);
 
 #[derive(Clone, Default, Debug, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
@@ -526,10 +513,10 @@ impl FromStr for SortInvert {
 }
 
 #[component]
-pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<EmptyBlogEntry>>) -> impl IntoView {
+pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl IntoView {
     view! {
         <ul id="blog-entries">
-            <For each=move || entries.get() key=|x: &EmptyBlogEntry| x.uid let(entry)>
+            <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li>
                     <article>
                         <A href=move || {

@@ -12,6 +12,7 @@ base64 = { workspace = true, optional = true }
 console_error_panic_hook.workspace = true
 console_log.workspace = true
 chrono.workspace = true
+futures = { workspace = true, features = ["alloc"] }
 image = { workspace = true, optional = true }
 js-macro = { path = "../js-macro" }
 leptos = { workspace = true, features = ["rkyv"] }
