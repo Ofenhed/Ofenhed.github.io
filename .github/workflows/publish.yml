@@ -142,10 +142,12 @@ jobs:
 
     - name: Check if leptosfmt was cached
       id: leptosfmt-cached
+      continue-on-error: true
       run: test -f ~/.cargo/bin/leptosfmt
 
     - name: Check if twiggy was cached
       id: twiggy-cached
+      continue-on-error: true
       run: test -f ~/.cargo/bin/twiggy
 
     - name: Install leptosfmt
