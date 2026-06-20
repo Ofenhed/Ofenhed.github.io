@@ -1,7 +1,7 @@
 use leptos::{attr::custom::custom_attribute, html, prelude::*, task::spawn_local_scoped};
 use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
-    Lazy, LazyRoute as _, SsrMode,
+    LazyRoute as _, SsrMode,
     components::{A, Route, Router, Routes},
     hooks::use_location,
     path,
@@ -150,7 +150,7 @@ pub(crate) fn App() -> impl IntoView {
         })
     };
     let aria_hidden = Signal::derive(move || if aria_expanded.get() { "false" } else { "true" });
-    let planner = Lazy::<Planner>::new();
+    //let planner = Lazy::<Planner>::new();
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
