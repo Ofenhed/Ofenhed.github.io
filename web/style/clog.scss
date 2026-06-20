@@ -51,7 +51,10 @@ ul#blog-entries {
 @include nav.with-path-prefix("/clog", $base: body) {
   @media screen {
     background: var(--space-body-background);
-    grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start] var(--space-width) [main-end] 1fr;
+    grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;
+    footer {
+      background: var(--space-main-background);
+    }
     main {
       background: var(--space-main-background);
       border-radius: var(--top-left-rounding) var(--top-left-rounding) 0 0;
@@ -62,7 +65,7 @@ ul#blog-entries {
       left: 0;
     }
     @include nav.open($selector: &) {
-      grid-template-columns: [menu-start] max-content [menu-end] 1fr [main-start] var(--space-width) [main-end] 1fr;
+      grid-template-columns: [menu-start] max-content [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;
     }
     nav#navigation {
       text-transform: uppercase;

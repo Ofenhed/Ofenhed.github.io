@@ -24,37 +24,93 @@ nav {
 body {
   display: grid;
   margin: 0px;
-  grid-template-columns: [menu-start] 0px [menu-end main-start] 0px 100% 0px [main-end];
-  grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end] 0px [menu-end];
+  grid-template-columns: [menu-start] 0px [menu-end main-start footer-start] 0px 100% 0px [footer-end main-end];
+  grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] min-content [footer-end menu-end];
   overflow-x: hidden;
 
   @include nav.open($selector: &) {
-    grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start] 100% [main-end] 0px;
+    grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start footer-start] 100% [footer-end main-end] 0px;
   }
 
-  @media print {
-    grid-template-columns: 0px 0px [main-start] auto [main-end] 0px !important;
-    grid-template-rows: 0px [main-start] auto [main-end] 0px !important;
-    nav { display: none };
-    main {
-      border-radius: 0 !important;
-      background: #fff !important;
-      text-color: #000;
-    }
-  }
   height: 100vh;
-  main {
+  counter-reset: footnote-link footnote-text;
+  & > main {
     grid-area: main-start / main-start / main-end / main-end;
     padding: 1em;
     img {
       max-width: 100%;
     }
+    details {
+      border: 1px solid #aaaaaa;
+      border-radius: 4px;
+      padding: 0.5em 0.5em 0;
+      summary {
+        font-weight: bold;
+        margin: -0.5em -0.5em 0;
+        padding: 0.5em;
+        cursor: grab;
+      }
+      &[open] {
+        padding: 0.5em;
+        summary {
+          border-bottom: 1px solid #aaaaaa;
+          margin-bottom: 0.5em;
+          cursor: grabbing;
+        }
+      }
+    }
+
     del {
       background: rgba(255, 0, 0, 0.2);
     }
     ins {
       background: rgba(0, 255, 0, 0.2);
       text-decoration: none;
+    }
+    a.footnote-link::after {
+      counter-increment: footnote-link;
+      content: counter(footnote-link);
+    }
+    quote {
+      &::before {
+        content: "‘";
+      }
+      font-style: italic;
+      &::after {
+        content: "’";
+      }
+    }
+    section {
+      margin-bottom: 1em;
+    }
+  }
+  main a.footnote-link::after, & > footer > div::before {
+    vertical-align: super;
+    text-decoration: none;
+    font-size: 67%;
+  }
+  & > footer {
+    display: grid;
+    grid-area: footer-start / footer-start / footer-end / footer-end;
+    grid-auto-flow: row;
+    & > div {
+      &[aria-current] {
+        font-weight: bold;
+      }
+      display: grid;
+      grid-auto-columns: max-content auto max-content;
+      grid-auto-flow: column;
+      &::before {
+        display: block;
+        grid-column: 1;
+        counter-increment: footnote-text;
+        content: counter(footnote-text);
+      }
+      & > a.footnote-return-link::after {
+        grid-column: 3;
+        content: "\1F519";
+        text-decoration: none;
+      }
     }
   }
   @include nav.with-path("/", $base: &) {
@@ -70,7 +126,7 @@ body {
     padding: 0.5em;
     padding-left: 2.5em;
     background: light-dark(#a4cefe,#044c9f);
-    color: light-dark(#000, #fff);
+    color: --font-color;
     &:before {
       content: "\2139";
       font: var(--symbol-font-text);
@@ -108,5 +164,41 @@ body {
     padding: 2px 4px;
     white-space: nowrap;
     text-transform: capitalize;
+  }
+}
+
+@media print {
+  ::details-content {
+    content-visibility: visible;
+    height: auto !important;
+  }
+  body {
+    display: inline;
+    grid-template-columns: 0px 0px [main-start] auto [main-end] 0px !important;
+    grid-template-rows: 0px [main-start] max-content [main-end] 0px !important;
+    nav { display: none };
+    main {
+      border-radius: 0 !important;
+      background: #fff !important;
+      color: #000;
+      details {
+        padding: 0.5em;
+        summary {
+          border-bottom: 1px solid #aaaaaa;
+          margin-bottom: 0.5em;
+        }
+      }
+    }
+    section, main li {
+      break-inside: avoid;
+    }
+    a:not(.just-url) {
+      &[href^="https://"]::after, &[href^="http://"]::after {
+        content: " (" attr(href) ")";
+        text-decoration-line: line-through;
+        color: #000;
+        font-weight: normal;
+      }
+    }
   }
 }

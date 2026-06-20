@@ -8,6 +8,7 @@ use strum::{AsRefStr, EnumString, VariantArray};
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Tag {
+    Ai,
     Tech,
     Review,
     Keyboards,
@@ -27,10 +28,24 @@ pub enum Locale {
 pub trait BlogEntry: Sized + LazyRoute + Clone + Sync + 'static {
     fn uid() -> u32;
     fn publish_date() -> DateTime<Utc>;
-    fn last_updated() -> Option<DateTime<Utc>>;
-    fn locale() -> Option<Locale>;
     fn title() -> &'static str;
     fn tags() -> &'static [Tag];
+
+    fn publish() -> bool {
+        false
+    }
+
+    fn locale() -> Option<Locale> {
+        None
+    }
+
+    fn last_updated() -> Option<DateTime<Utc>> {
+        None
+    }
+
+    fn pin() -> Option<usize> {
+        None
+    }
 }
 
 pub trait BlogEntryHandler {

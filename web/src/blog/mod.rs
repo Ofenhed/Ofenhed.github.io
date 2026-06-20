@@ -1,7 +1,9 @@
+pub mod ai;
 pub mod metadata;
 pub mod unremarkable;
 
 use crate::{
+    app::HamburgerMenu,
     blog::{
         metadata::{
             BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag,
@@ -12,7 +14,7 @@ use crate::{
     helpers::{AddContext, ForRoute},
 };
 use chrono::{DateTime, Utc};
-use leptos::{prelude::*, task::spawn_local_scoped};
+use leptos::{ev, prelude::*, task::spawn_local_scoped};
 use leptos_meta::{Meta, use_head};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
@@ -32,7 +34,11 @@ use strum::{AsRefStr, EnumString, VariantArray};
 const ENTRIES_PER_PAGE: usize = 10;
 
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
-    [b.with_blog(Unremarkable)].into_iter()
+    [
+        b.with_blog(Unremarkable),
+        b.with_blog(ai::WhatAreLLMs),
+    ]
+    .into_iter()
 }
 
 pub fn with_blogs_simple<B>()
@@ -266,6 +272,12 @@ pub fn BlogListing(
                 let filter = tags.get();
                 b.into_iter()
                     .filter(|x| {
+                        #[cfg(not(debug_assertions))]
+                        {
+                            if !x.publish {
+                                return false;
+                            }
+                        }
                         if let Some(TagFilter(filter)) = filter {
                             x.tags.contains(&filter)
                         } else {
@@ -284,6 +296,13 @@ pub fn BlogListing(
             blogs.sort_unstable_by(|a, b| {
                 let (a, b) = if invert_sort { (b, a) } else { (a, b) };
                 match sort_by {
+                    SortBy::Default => match (&a.pin, &b.pin) {
+                        (x, y) if x == y => b.publish_date.partial_cmp(&a.publish_date).unwrap(),
+                        (None, None) => unreachable!("None == None"),
+                        (Some(_), None) => std::cmp::Ordering::Less,
+                        (None, Some(_)) => std::cmp::Ordering::Greater,
+                        (Some(x), Some(y)) => x.cmp(&y),
+                    },
                     SortBy::Title => a.title.partial_cmp(b.title).unwrap(),
                     SortBy::PublishDate => b.publish_date.partial_cmp(&a.publish_date).unwrap(),
                     SortBy::ModifyDate => b
@@ -350,8 +369,10 @@ pub struct BlogEntryMeta {
     publish_date: DateTime<Utc>,
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
+    publish: bool,
     title: &'static str,
     tags: &'static [Tag],
+    pin: Option<usize>,
 }
 
 impl BlogEntryHandler for BlogEntryHandlerFor<BlogEntryMeta> {
@@ -369,8 +390,10 @@ impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
             publish_date: T::publish_date(),
             last_updated: T::last_updated(),
             locale: T::locale(),
+            publish: T::publish(),
             title: T::title(),
             tags: T::tags(),
+            pin: T::pin(),
         }
     }
 }
@@ -443,7 +466,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         />
         <Meta property="og:article:published_time" content=B::publish_date().to_rfc3339() />
         {last_update}
-        <h1>{B::title()}</h1>
+        <h1 id="pageHeader">{B::title()}</h1>
         <p>{B::publish_date().to_string()}</p>
     }
 }
@@ -477,6 +500,7 @@ struct CurrentPageEntries(Vec<BlogEntryMeta>);
 #[strum(serialize_all = "kebab-case")]
 pub enum SortBy {
     #[default]
+    Default,
     PublishDate,
     ModifyDate,
     Title,
@@ -514,12 +538,16 @@ impl FromStr for SortInvert {
 
 #[component]
 pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl IntoView {
+    let HamburgerMenu(toggle) = use_context().expect("Hamburger menu must have been defined here");
+    let on_click = move |_: ev::MouseEvent| {
+        toggle.get().map(|x| x.set_checked(false));
+    };
     view! {
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li>
                     <article>
-                        <A href=move || {
+                        <A on:click=on_click href=move || {
                             format!("/clog/entry/{}#{}", entry.uid, to_title(entry.title))
                         }>{entry.title.to_owned()}</A>
                         <ul class="tags">

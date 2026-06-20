@@ -1,5 +1,8 @@
+use std::sync::{atomic::AtomicUsize};
+
 use leptos::{
     attr::{Attr, Loading, custom::custom_attribute},
+    ev,
     logging::log,
     prelude::*,
     tachys::view::iterators::StaticVec,
@@ -7,6 +10,7 @@ use leptos::{
 use leptos_meta::Script;
 use leptos_router::{
     MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, components::Outlet,
+    hooks::use_location,
 };
 
 #[cfg_attr(feature = "ssr", allow(unused))]
@@ -197,4 +201,155 @@ type ImgDefAttr = (Attr<Loading, &'static str>,);
 #[component(transparent)]
 pub(crate) fn ImgDef() -> ImgDefAttr {
     (Attr(Loading, "lazy"),)
+}
+
+pub(crate) fn provide_footnote_context() {
+    _ = footnotes(false);
+}
+
+#[derive(Clone)]
+struct FootnoteInner {
+    uid: usize,
+    name: Signal<Oco<'static, str>>,
+    children: ChildrenFn,
+}
+type FootnotesInner = (
+    RwSignal<Option<Oco<'static, str>>>,
+    RwSignal<Vec<FootnoteInner>>,
+);
+#[derive(Clone, Debug)]
+struct FootnotesHolder(FootnotesInner);
+
+fn footnotes(warn: bool) -> FootnotesInner {
+    let FootnotesHolder(signal) = use_context().unwrap_or_else(|| {
+        if warn {
+            leptos::logging::warn!(
+                "Footnotes not created in top context. Please use provide_footnote_context()."
+            );
+        }
+        let footnotes = FootnotesHolder((RwSignal::new(None), RwSignal::new(vec![])));
+        provide_context(footnotes.clone());
+        footnotes
+    });
+    signal
+}
+
+macro_rules! scroll_into_view {
+    ($element:ident) => {
+        #[cfg(feature = "client-side")]
+        {
+            $element.scroll_into_view_with_scroll_into_view_options(&{
+                let opts = web_sys::ScrollIntoViewOptions::new();
+                opts.set_behavior(web_sys::ScrollBehavior::Smooth);
+                opts
+            })
+        }
+        #[cfg(not(feature = "client-side"))]
+        {
+            _ = $element;
+        }
+    };
+}
+
+#[component]
+pub(crate) fn Footnotes() -> impl IntoView {
+    let (active, footnotes) = footnotes(true);
+    let current_hash = use_location().hash;
+    let is_current = move |name| {
+        move || {
+            active.with(|x| x.as_ref().map(|x| *x == name).unwrap_or(false))
+                || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
+        }
+    };
+    let on_click = move |_source_id: Oco<'static, str>| {
+        move |e: ev::MouseEvent| {
+            active.set(None);
+            if let Some(footnote) = document().get_element_by_id(&*_source_id) {
+                scroll_into_view!(footnote);
+                e.prevent_default();
+            }
+        }
+    };
+
+    let return_link = move |target_id: Oco<'static, str>| {
+        view! {
+            <a on:click=on_click(target_id.clone()) class="footnote-return-link" href=format!("#{target_id}") />
+        }
+        .into_inner()
+    };
+    view! {
+        <Show when=move || footnotes.with(|x| !x.is_empty())>
+        <footer>
+        <For each=move || footnotes.with(|x| x.iter().map(|FootnoteInner { name, children, .. }| (name.get(), (*children)())
+        ).collect::<Vec<_>>()) key=|(name, _)| name.clone() let((name, inner))>
+            <div id=name.clone()  aria-current=is_current(name.clone())>
+                <div>
+                    {inner}
+                </div>
+                { return_link(Oco::Owned(format!("{}-source", name))) }
+            </div>
+        </For>
+        </footer>
+        </Show>
+    }
+}
+
+#[component]
+pub(crate) fn Footnote(
+    #[prop(into, optional)] name: Signal<Option<Oco<'static, str>>>,
+    children: ChildrenFn,
+) -> impl IntoView {
+    let (active, footnotes) = footnotes(true);
+    static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
+    let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+    let footnote_name = move || {
+        name.get()
+            .unwrap_or_else(|| Oco::Owned(format!("footer-{uid}")))
+    };
+
+    let my_footnote = FootnoteInner {
+        uid,
+        name: Signal::derive(move || footnote_name()),
+        children,
+    };
+
+    Owner::on_cleanup({
+        move || {
+            footnotes.update(move |x| {
+                if let Some((idx, _)) = x
+                    .iter()
+                    .enumerate()
+                    .find(move |(_, FootnoteInner { uid: elem_uid, .. })| uid == *elem_uid)
+                {
+                    x.remove(idx);
+                }
+            });
+        }
+    });
+
+    footnotes.update(move |x| {
+        x.push(my_footnote);
+    });
+
+    let on_click = move |e: ev::MouseEvent| {
+        let name = footnote_name();
+        if let Some(footnote) = document().get_element_by_id(&name) {
+            active.set(Some(name));
+            scroll_into_view!(footnote);
+            e.prevent_default();
+        }
+    };
+
+    view! {
+        <a on:click=on_click id=move || format!("{}-source", footnote_name()) class="footnote-link" href=move || format!("#{}", footnote_name()) />
+    }
+}
+
+#[component]
+pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
+    let url = (children.into_inner())().into_inner();
+    view! {
+        <a class="just-url" href=url>{url}</a>
+    }
 }
