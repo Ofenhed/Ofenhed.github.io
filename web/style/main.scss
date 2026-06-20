@@ -195,7 +195,7 @@ body {
     a:not(.just-url) {
       &[href^="https://"]::after, &[href^="http://"]::after {
         content: " (" attr(href) ")";
-        text-decoration-line: line-through;
+        text-decoration-line: none;
         color: #000;
         font-weight: normal;
       }
