@@ -204,6 +204,7 @@ pub(crate) fn Contact() -> impl IntoView {
             u32::try_from(height).unwrap().into(),
         );
         context.set_fill_style_str("#ffffff");
+        set_show_canvas.set(None);
         for (pos, (pix, inv)) in QR_CODE.iter_merged().enumerate() {
             let x = (pos % width) as usize;
             let y = (pos / width) as usize;
@@ -349,7 +350,6 @@ pub(crate) fn Contact() -> impl IntoView {
                 create_worm(state);
             },
         );
-        set_show_canvas.set(None);
         use base64::{Engine as _, engine::general_purpose::STANDARD};
         let content = STANDARD.encode(VCARD.as_bytes());
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
