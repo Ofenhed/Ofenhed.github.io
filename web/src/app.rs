@@ -184,13 +184,12 @@ pub(crate) fn App() -> impl IntoView {
                     <li>
                         <A href="/clog">"Clog"</A>
                     </li>
-                    <li>
-                        //<A
-                        //    href="/planner"
-                        //    on:mouseover=move |_| spawn_local_scoped(Planner::preload())
-                        //>
-                        //    "Planner"
-                        //</A>
+                    <li>// <A
+                    // href="/planner"
+                    // on:mouseover=move |_| spawn_local_scoped(Planner::preload())
+                    // >
+                    // "Planner"
+                    // </A>
                     </li>
                 </menu>
             </nav>
@@ -198,9 +197,9 @@ pub(crate) fn App() -> impl IntoView {
                 <Routes fallback>
                     <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
                     // <Route
-                    //     path=path!("/planner")
-                    //     view=planner
-                    //     ssr=SsrMode::Static(StaticRoute::new())
+                    // path=path!("/planner")
+                    // view=planner
+                    // ssr=SsrMode::Static(StaticRoute::new())
                     // />
                     <Route
                         path=path!("/build")

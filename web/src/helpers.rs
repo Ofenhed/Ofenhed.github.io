@@ -273,23 +273,39 @@ pub(crate) fn Footnotes() -> impl IntoView {
 
     let return_link = move |target_id: Oco<'static, str>| {
         view! {
-            <a on:click=on_click(target_id.clone()) class="footnote-return-link" href=format!("#{target_id}") />
+            <a
+                on:click=on_click(target_id.clone())
+                class="footnote-return-link"
+                href=format!("#{target_id}")
+            />
         }
         .into_inner()
     };
     view! {
         <Show when=move || footnotes.with(|x| !x.is_empty())>
-        <footer>
-        <For each=move || footnotes.with(|x| x.iter().map(|FootnoteInner { name, children, .. }| (name.get(), (*children)())
-        ).collect::<Vec<_>>()) key=|(name, _)| name.clone() let((name, inner))>
-            <div id=name.clone()  aria-current=is_current(name.clone())>
-                <div>
-                    {inner}
-                </div>
-                { return_link(Oco::Owned(format!("{}-source", name))) }
-            </div>
-        </For>
-        </footer>
+            <footer>
+                <For
+                    each=move || {
+                        footnotes
+                            .with(|x| {
+                                x
+                                    .iter()
+                                    .map(|FootnoteInner { name, children, .. }| (
+                                        name.get(),
+                                        (*children)(),
+                                    ))
+                                    .collect::<Vec<_>>()
+                            })
+                    }
+                    key=|(name, _)| name.clone()
+                    let((name, inner))
+                >
+                    <div id=name.clone() aria-current=is_current(name.clone())>
+                        <div>{inner}</div>
+                        {return_link(Oco::Owned(format!("{}-source", name)))}
+                    </div>
+                </For>
+            </footer>
         </Show>
     }
 }
@@ -342,7 +358,12 @@ pub(crate) fn Footnote(
     };
 
     view! {
-        <a on:click=on_click id=move || format!("{}-source", footnote_name()) class="footnote-link" href=move || format!("#{}", footnote_name()) />
+        <a
+            on:click=on_click
+            id=move || format!("{}-source", footnote_name())
+            class="footnote-link"
+            href=move || format!("#{}", footnote_name())
+        />
     }
 }
 
@@ -350,6 +371,8 @@ pub(crate) fn Footnote(
 pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
     let url = (children.into_inner())().into_inner();
     view! {
-        <a class="just-url" href=url>{url}</a>
+        <a class="just-url" href=url>
+            {url}
+        </a>
     }
 }
