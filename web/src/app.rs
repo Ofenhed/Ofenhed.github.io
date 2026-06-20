@@ -1,4 +1,4 @@
-use leptos::{attr::custom::custom_attribute, prelude::*, task::spawn_local_scoped};
+use leptos::{attr::custom::custom_attribute, html, prelude::*, task::spawn_local_scoped};
 use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
     Lazy, LazyRoute as _, SsrMode,
@@ -11,7 +11,8 @@ use leptos_router::{
 use crate::{
     blog::Blog,
     contact::{Contact, PersistentQrLogo},
-    helpers::ImgDef,
+    helpers::{Footnotes, ImgDef, provide_footnote_context},
+    planner::Planner,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -26,6 +27,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta name="referrer" content="no-referrer" />
                 <AutoReload options=options.clone() />
                 <HydrationScripts options />
                 <Stylesheet href=css_path />
@@ -96,10 +98,16 @@ pub(crate) fn NotFound() -> impl IntoView {
     }
 }
 
+#[derive(Clone)]
+pub(crate) struct HamburgerMenu(pub NodeRef<html::Input>);
+
 #[component]
 pub(crate) fn App() -> impl IntoView {
     provide_meta_context();
+    provide_footnote_context();
     let fallback = || NotFound().into_view();
+    let hamburger_toggle = NodeRef::new();
+    provide_context(HamburgerMenu(hamburger_toggle.clone()));
     const INITIAL_EGG_COUNTER: u8 = 8;
     let (clicks_to_easter, set_clicks_to_easter) = signal(EggCounter::Counter(INITIAL_EGG_COUNTER));
     let (aria_expanded, set_aria_expanded) = signal(false);
@@ -143,12 +151,14 @@ pub(crate) fn App() -> impl IntoView {
         })
     };
     let aria_hidden = Signal::derive(move || if aria_expanded.get() { "false" } else { "true" });
+    let planner = Lazy::<Planner>::new();
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
         <Router>
             <nav id="navigation" class:beta-nav=show_navigation>
                 <input
+                    node_ref=hamburger_toggle
                     type="checkbox"
                     id="hamburger-toggle"
                     aria-label="hamburger"
@@ -175,11 +185,24 @@ pub(crate) fn App() -> impl IntoView {
                     <li>
                         <A href="/clog">"Clog"</A>
                     </li>
+                    <li>
+                        <A
+                            href="/planner"
+                            on:mouseover=move |_| spawn_local_scoped(Planner::preload())
+                        >
+                            "Planner"
+                        </A>
+                    </li>
                 </menu>
             </nav>
             <main {..custom_attribute("path", use_location().pathname)}>
                 <Routes fallback>
                     <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
+                    <Route
+                        path=path!("/planner")
+                        view=planner
+                        ssr=SsrMode::Static(StaticRoute::new())
+                    />
                     <Route
                         path=path!("/build")
                         view=BuildInfo
@@ -188,6 +211,7 @@ pub(crate) fn App() -> impl IntoView {
                     <Blog />
                 </Routes>
             </main>
+            <Footnotes />
         </Router>
     }
 }
