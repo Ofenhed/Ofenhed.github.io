@@ -12,7 +12,6 @@ use crate::{
     blog::Blog,
     contact::{Contact, PersistentQrLogo},
     helpers::{Footnotes, ImgDef, provide_footnote_context},
-    planner::Planner,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -186,23 +185,23 @@ pub(crate) fn App() -> impl IntoView {
                         <A href="/clog">"Clog"</A>
                     </li>
                     <li>
-                        <A
-                            href="/planner"
-                            on:mouseover=move |_| spawn_local_scoped(Planner::preload())
-                        >
-                            "Planner"
-                        </A>
+                        //<A
+                        //    href="/planner"
+                        //    on:mouseover=move |_| spawn_local_scoped(Planner::preload())
+                        //>
+                        //    "Planner"
+                        //</A>
                     </li>
                 </menu>
             </nav>
             <main {..custom_attribute("path", use_location().pathname)}>
                 <Routes fallback>
                     <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
-                    <Route
-                        path=path!("/planner")
-                        view=planner
-                        ssr=SsrMode::Static(StaticRoute::new())
-                    />
+                    //<Route
+                    //    path=path!("/planner")
+                    //    view=planner
+                    //    ssr=SsrMode::Static(StaticRoute::new())
+                    ///>
                     <Route
                         path=path!("/build")
                         view=BuildInfo
