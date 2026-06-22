@@ -260,10 +260,18 @@ macro_rules! scroll_into_view {
 pub(crate) fn Footnotes() -> impl IntoView {
     let (active, footnotes) = footnotes(true);
     let current_hash = use_location().hash;
-    let is_current = move |name| {
+    let is_current = move |name: Oco<'static, str>| {
         move || {
-            active.with(|x| x.as_ref().map(|x| *x == name).unwrap_or(false))
-                || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
+            #[cfg(feature = "client-side")]
+            {
+                active.with(|x| x.as_ref().map(|x| *x == name).unwrap_or(false))
+                    || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
+            }
+            #[cfg(not(feature = "client-side"))]
+            {
+                let _ = (current_hash, name.clone());
+                false
+            }
         }
     };
     let on_click = move |_source_id: Oco<'static, str>| {
