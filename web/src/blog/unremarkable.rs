@@ -25,10 +25,6 @@ impl BlogEntry for Unremarkable {
         )
     }
 
-    fn publish() -> bool {
-        true
-    }
-
     fn locale() -> Option<Locale> {
         Locale::EnglishSimplified.into()
     }
