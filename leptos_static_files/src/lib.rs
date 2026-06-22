@@ -4,12 +4,19 @@ use std::{
     sync::Arc,
 };
 
+use any_spawner::PinnedFuture;
 use futures::StreamExt as _;
 use leptos::{config::LeptosOptions, prelude::*};
-use reactive_graph::owner::Sandboxed;
+use leptos_integration_utils::{BoxedFnOnce, PinnedStream};
+use leptos_router::{
+    Method, PathSegment, RouteList, RouteListing, SsrMode, static_routes::StaticRoute,
+};
 
 pub mod prelude {
-    pub use super::{NoGenerateStatic, StaticFileGeneratorError, StaticFileOptions};
+    pub use super::{
+        NoGenerateStatic, StaticFileGeneratorError, StaticRouteGenerator, add_404,
+        generate_static_files_list,
+    };
 }
 
 pub struct StaticFileOptions<'a, C> {
@@ -20,29 +27,6 @@ pub struct StaticFileOptions<'a, C> {
 
 #[derive(Clone)]
 pub struct NoGenerateStatic(pub WriteSignal<bool>);
-
-impl<'a> StaticFileOptions<'a, ()> {
-    pub fn new(
-        leptos: impl Into<Oco<'a, LeptosOptions>>,
-    ) -> StaticFileOptions<'a, impl Fn() + Clone + Send + 'static> {
-        StaticFileOptions {
-            leptos: leptos.into(),
-            additional_context: || (),
-            excluded_routes: vec![],
-        }
-    }
-
-    pub fn with_additional_context<C: Fn() + Clone + Send + 'a>(
-        self,
-        f: C,
-    ) -> StaticFileOptions<'a, C> {
-        StaticFileOptions {
-            additional_context: f,
-            leptos: self.leptos,
-            excluded_routes: self.excluded_routes,
-        }
-    }
-}
 
 #[derive(thiserror::Error, Debug)]
 pub enum StaticFileGeneratorError {
@@ -104,176 +88,118 @@ fn static_path(
     Ok(Oco::Owned(result))
 }
 
-struct IterDup<I, E> {
-    last: Option<E>,
-    iter: I,
+pub struct StaticRouteGenerator(
+    #[allow(unused)] Owner,
+    Box<dyn FnOnce(&LeptosOptions) -> PinnedFuture<()> + Send>,
+);
+
+#[derive(Clone)]
+struct NoGenerateStaticReader(ReadSignal<bool>);
+
+fn async_stream_builder<IV>(
+    app: IV,
+    chunks: BoxedFnOnce<PinnedStream<String>>,
+    _supports_ooo: bool,
+) -> PinnedFuture<PinnedStream<String>>
+where
+    IV: IntoView + 'static,
+{
+    Box::pin(async move {
+        let app = app.to_html_stream_in_order();
+        let app = app.collect::<String>().await;
+        let chunks = chunks();
+        Box::pin(futures::stream::once(async move { app }).chain(chunks)) as PinnedStream<String>
+    })
 }
 
-impl<E: Eq, I: Iterator<Item = E>> From<I> for IterDup<I, E> {
-    fn from(iter: I) -> Self {
-        Self {
-            last: None,
-            iter: iter,
-        }
-    }
-}
-
-impl<E: Eq, I: Iterator<Item = E>> Iterator for IterDup<I, E> {
-    type Item = E;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        match (self.iter.next(), &self.last) {
-            (Some(x), Some(y)) if x == *y => Some(x),
-            (None, _) => None,
-            (Some(x), _) => {
-                self.last = Some(x);
-                self.next()
-            }
-        }
-    }
-}
-
-impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
-    pub async fn generate_static_files<IV: IntoView>(
-        &self,
-        app_fn: impl Clone + Send + 'static + Fn() -> IV,
-    ) -> Result<(), StaticFileGeneratorError> {
-        init_executor()?;
-        let new_owner =
-            || Owner::new_root(Some(Arc::from(hydration_context::SsrSharedContext::new())));
-        let routes = {
-            let owner = new_owner();
-            let list = owner.with({
-                let additional_context = self.additional_context.clone();
-                let not_found_path = self.leptos.not_found_path.clone();
-                let app_fn = app_fn.clone();
-                move || {
-                    provide_context(leptos_router::location::RequestUrl::new(""));
-                    #[cfg(feature = "meta")]
-                    {
-                        use leptos_meta::*;
-                        let (mock_meta, _) = ServerMetaContext::new();
-                        provide_context(mock_meta);
-                        let (_, mock_writer) = signal(false);
-                        provide_context(NoGenerateStatic(mock_writer));
-                    }
-                    additional_context();
-                    leptos_router::RouteList::generate(app_fn).map(|mut list| {
-                        use leptos_router::{
-                            Method, PathSegment, RouteListing, SsrMode, static_routes::StaticRoute,
-                        };
-                        let route_404 = RouteListing::new(
-                            [PathSegment::Static(Cow::Owned(not_found_path.to_string()))],
-                            SsrMode::Static(StaticRoute::new()),
-                            [Method::Get],
-                            [],
-                        );
-                        if list.iter().find(|x| x.path() == route_404.path()).is_none() {
-                            list.push(route_404);
-                        }
-                        list
-                    })
+impl StaticRouteGenerator {
+    pub fn render_route<IV: IntoView + 'static>(
+        path: Oco<'static, str>,
+        app_fn: impl Fn() -> IV + Clone + Send + 'static,
+        additional_context: impl Fn() + Clone + Send + 'static,
+    ) -> impl Future<Output = (Owner, String)> {
+        #[cfg(feature = "meta")]
+        let (meta_context, meta_output) = leptos_meta::ServerMetaContext::new();
+        let additional_context = {
+            move || {
+                provide_context(leptos_router::location::RequestUrl::new(path.as_ref()));
+                let (read_ignored, write_ignored) = signal(false);
+                provide_context(NoGenerateStatic(write_ignored));
+                provide_context(NoGenerateStaticReader(read_ignored));
+                #[cfg(feature = "meta")]
+                {
+                    provide_context(meta_context);
                 }
-            });
-            owner.unset_with_forced_cleanup();
-            list
+                additional_context();
+            }
         };
-
-        let known_paths = Box::leak(
-            {
-                #[cfg(feature = "tokio")]
-                {
-                    tokio::sync::Mutex::new(Vec::new())
-                }
-                #[cfg(not(feature = "tokio"))]
-                {
-                    std::sync::Mutex::new(Vec::new())
-                }
-            }
-            .into(),
+        let (owner, stream) = leptos_integration_utils::build_response(
+            app_fn.clone(),
+            additional_context,
+            async_stream_builder,
+            false,
         );
-        let known_paths = || {
-            #[cfg(feature = "tokio")]
-            {
-                known_paths.lock()
-            }
-            #[cfg(not(feature = "tokio"))]
-            {
-                let l = known_paths.lock();
-                async move { l }
-            }
-        };
 
-        for route in routes
-            .ok_or(StaticFileGeneratorError::NoRoutesGenerated)?
-            .into_inner()
-        {
-            #[derive(Clone)]
-            struct NoGenerateStaticReader(ReadSignal<bool>);
-            route
-                .clone()
-                .generate_static_files(
-                    {
-                        let additional_context = self.additional_context.clone();
-                        let app_fn = app_fn.clone();
+        let sc = owner.shared_context().unwrap();
+
+        async move {
+            let stream = stream.await;
+            while let Some(pending) = sc.await_deferred() {
+                pending.await;
+            }
+
+            #[cfg(feature = "meta")]
+            let html = meta_output.inject_meta_context(stream).await;
+            #[cfg(not(feature = "meta"))]
+            let html = stream;
+            let html = html.collect::<String>().await;
+            (owner, html)
+        }
+    }
+
+    pub fn new<IV>(
+        routes: &RouteList,
+        app_fn: impl Fn() -> IV + Clone + Send + 'static,
+        additional_context: impl Fn() + Clone + Send + 'static,
+    ) -> Self
+    where
+        IV: IntoView + 'static,
+    {
+        let owner = Owner::new();
+        Self(owner.clone(), {
+            let routes = routes.clone();
+            Box::new(move |options| {
+                let options = options.clone();
+                let app_fn = app_fn.clone();
+                let additional_context = additional_context.clone();
+                let additional_context = move || {
+                    let (read_ignored, write_ignored) = signal(false);
+                    provide_context(NoGenerateStatic(write_ignored));
+                    provide_context(NoGenerateStaticReader(read_ignored));
+                    additional_context();
+                };
+
+                owner.with(|| {
+                    additional_context();
+                    Box::pin(ScopedFuture::new(routes.generate_static_files(
                         move |path| {
-                            let path = path.clone();
-                            let additional_context = additional_context.clone();
-                            let app_fn = app_fn.clone();
-                            Sandboxed::new(async move {
-                                eprintln!("Building {path}");
-                                known_paths().await.push(path.to_string());
-                                let owner = new_owner();
-                                let inject_meta = owner.with(move || {
-                                    provide_context(leptos_router::location::RequestUrl::new(
-                                        path.as_ref(),
-                                    ));
-                                    let (read_ignored, write_ignored) = signal(false);
-                                    provide_context(NoGenerateStatic(write_ignored));
-                                    provide_context(NoGenerateStaticReader(read_ignored));
-                                    #[cfg(feature = "meta")]
-                                    {
-                                        use leptos_meta::*;
-                                        let (mock_meta, set_meta) = ServerMetaContext::new();
-                                        provide_context(mock_meta);
-                                        additional_context();
-                                        |x| set_meta.inject_meta_context(x)
-                                    }
-                                    #[cfg(not(feature = "meta"))]
-                                    |x| async move { x }
-                                });
-                                let reply = owner
-                                    .with(move || {
-                                        let v = (app_fn)();
-                                        async move {
-                                            let v = v.resolve().await;
-                                            let stream = inject_meta(
-                                                v.resolve().await.to_html_stream_in_order(),
-                                            )
-                                            .await;
-                                            stream.collect().await
-                                        }
-                                    })
-                                    .await;
-
-                                (owner, reply)
-                            })
-                        }
-                    },
-                    {
-                        let leptos_options = self.leptos.clone();
-                        move |path, owner, content| {
-                            let leptos_options = leptos_options.clone();
-                            let target = static_path(&leptos_options, Oco::Borrowed(path.as_ref()))
+                            eprintln!("Generating {path}");
+                            Self::render_route(
+                                Oco::Owned(path.to_string()),
+                                app_fn.clone(),
+                                additional_context.clone(),
+                            )
+                        },
+                        move |path, _owner, content| {
+                            let target = static_path(&options, Oco::Borrowed(path.as_ref()))
                                 .map_err(std::io::Error::other);
                             let path = path.to_owned();
-                            let child = owner.child();
                             async move {
-                                let dont_generate = child.with(|| {
+                                let dont_generate = {
                                     let NoGenerateStaticReader(r) =
                                         use_context().expect("Inserted above");
                                     r.get()
-                                });
+                                };
                                 if dont_generate {
                                     eprintln!("Ignoring path {path}");
                                     return Ok(());
@@ -293,21 +219,47 @@ impl<'a, C: Fn() + Clone + Send + 'static> StaticFileOptions<'a, C> {
                                     unimplemented!()
                                 }
                             }
-                        }
-                    },
-                    |_owner| false,
-                )
-                .await;
-        }
-        let mut known_paths = known_paths().await;
-        known_paths.sort_unstable();
-        let mut duplicates = IterDup::from(known_paths.iter()).peekable();
-        if let Some(_) = duplicates.peek() {
-            Err(StaticFileGeneratorError::DuplicatePath(
-                duplicates.cloned().collect(),
-            ))
-        } else {
-            Ok(())
-        }
+                        },
+                        |_owner| false,
+                    )))
+                })
+            })
+        })
     }
+
+    pub async fn generate(self, options: &LeptosOptions) {
+        (self.1)(options).await
+    }
+}
+
+pub fn add_404(list: &mut RouteList, options: &LeptosOptions) {
+    let not_found_path = options.not_found_path.clone();
+    let route_404 = RouteListing::new(
+        [PathSegment::Static(Cow::Owned(not_found_path.to_string()))],
+        SsrMode::Static(StaticRoute::new()),
+        [Method::Get],
+        [],
+    );
+    if list.iter().find(|x| x.path() == route_404.path()).is_none() {
+        list.push(route_404);
+    }
+}
+
+pub async fn generate_static_files_list<IV: IntoView + 'static>(
+    app_fn: impl Clone + Send + 'static + Fn() -> IV,
+    additional_context: impl Clone + Send + 'static + Fn(),
+) -> Result<RouteList, StaticFileGeneratorError> {
+    init_executor()?;
+    let _owner = Owner::new_root(Some(Arc::from(hydration_context::SsrSharedContext::new())));
+    provide_context(leptos_router::location::RequestUrl::new(""));
+    #[cfg(feature = "meta")]
+    {
+        use leptos_meta::*;
+        let (mock_meta, _) = ServerMetaContext::new();
+        provide_context(mock_meta);
+    }
+    let (_, mock_writer) = signal(false);
+    provide_context(NoGenerateStatic(mock_writer));
+    additional_context();
+    leptos_router::RouteList::generate(app_fn).ok_or(StaticFileGeneratorError::NoRoutesGenerated)
 }
