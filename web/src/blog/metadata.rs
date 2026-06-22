@@ -1,8 +1,8 @@
-use std::{marker::PhantomData, pin::Pin};
+use std::{iter, marker::PhantomData, pin::Pin};
 
 use chrono::{DateTime, Utc};
 use futures::FutureExt as _;
-use leptos_router::LazyRoute;
+use leptos_router::{LazyRoute, MatchNestedRoutes};
 use strum::{AsRefStr, EnumString, VariantArray};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
@@ -93,5 +93,28 @@ impl BlogEntryHandler for PreloadUids {
                 self.0.swap_remove(idx);
                 B::preload().boxed_local()
             })
+    }
+}
+
+#[derive(Clone)]
+pub struct NoMatch;
+impl MatchNestedRoutes for NoMatch {
+    type Data = ();
+
+    type Match = ();
+
+    fn match_nested<'a>(
+        &'a self,
+        path: &'a str,
+    ) -> (Option<(leptos_router::RouteMatchId, Self::Match)>, &'a str) {
+        (None, path)
+    }
+
+    fn generate_routes(&self) -> impl IntoIterator<Item = leptos_router::GeneratedRouteData> + '_ {
+        iter::empty()
+    }
+
+    fn optional(&self) -> bool {
+        todo!()
     }
 }

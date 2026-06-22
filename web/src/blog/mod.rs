@@ -1,12 +1,13 @@
 pub mod ai;
 pub mod metadata;
 pub mod unremarkable;
+pub mod why;
 
 use crate::{
     app::HamburgerMenu,
     blog::{
         metadata::{
-            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag,
+            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, NoMatch, PreloadUids, Tag,
             with_blog_simple,
         },
         unremarkable::Unremarkable,
@@ -14,7 +15,9 @@ use crate::{
     helpers::{AddContext, ForRoute},
 };
 use chrono::{DateTime, Utc};
-use leptos::{ev, prelude::*, task::spawn_local_scoped};
+use leptos::{
+    attr::custom::custom_attribute, either::Either, ev, prelude::*, task::spawn_local_scoped,
+};
 use leptos_meta::{Meta, use_head};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
@@ -35,6 +38,7 @@ const ENTRIES_PER_PAGE: usize = 10;
 
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
     [
+        b.with_blog(why::WhyBlog),
         b.with_blog(Unremarkable),
         b.with_blog(ai::WhatAreLLMs),
     ]
@@ -55,22 +59,30 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
     fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
         let metadata = with_blog_simple::<BlogEntryMeta>(blog.clone());
         let b = Lazy::<B>::new();
-        view! {
-            <ParentRoute
-                path=metadata
-                view=move || {
-                    view! {
-                        <BlogHeading entry=blog.clone() />
-                        <Outlet />
+        #[cfg(debug_assertions)]
+        let publish = true;
+        #[cfg(not(debug_assertions))]
+        let publish = metadata.publish;
+        if publish {
+            view! {
+                <ParentRoute
+                    path=metadata
+                    view=move || {
+                        view! {
+                            <BlogHeading entry=blog.clone() />
+                            <Outlet />
+                        }
                     }
-                }
-                ssr=SsrMode::OutOfOrder
-            >
-                <Route path=path!("") view=b ssr=SsrMode::Static(StaticRoute::new()) />
-            </ParentRoute>
+                    ssr=SsrMode::OutOfOrder
+                >
+                    <Route path=path!("") view=b ssr=SsrMode::Static(StaticRoute::new()) />
+                </ParentRoute>
+            }
+            .into_inner()
+            .into_any_nested_route()
+        } else {
+            NoMatch.into_any_nested_route()
         }
-        .into_inner()
-        .into_any_nested_route()
     }
 }
 
@@ -204,7 +216,7 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
                 view=|| {
                     view! {
                         <AddContext context=SortInvert(false)>
-                            <AddContext context=SortBy::PublishDate />
+                            <AddContext context=SortBy::Default />
                         </AddContext>
                     }
                 }
@@ -246,7 +258,7 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
                 view=move || view! { <AddContext context=no_tag_filter /> }
                 ssr=SsrMode::OutOfOrder
             >
-                <BlogPaging />
+                <BlogSorting />
             </ParentRoute>
         </ParentRoute>
     }
@@ -467,7 +479,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         <Meta property="og:article:published_time" content=B::publish_date().to_rfc3339() />
         {last_update}
         <h1 id="pageHeader">{B::title()}</h1>
-        <p>{B::publish_date().to_string()}</p>
+        <p>{B::publish_date().date_naive().to_string()}</p>
     }
 }
 
@@ -542,14 +554,33 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
     let on_click = move |_: ev::MouseEvent| {
         toggle.get().map(|x| x.set_checked(false));
     };
+    let article_pinned = |entry: &BlogEntryMeta| {
+        entry
+            .pin
+            .map(|pin| Either::Right(custom_attribute("pinned", pin)))
+            .unwrap_or(Either::Left(()))
+    };
+    let article_unpublished = |entry: &BlogEntryMeta| {
+        if entry.publish {
+            Either::Right(())
+        } else {
+            Either::Left(custom_attribute("unpublished", "unpublished"))
+        }
+    };
     view! {
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
-                <li>
+                <li {..article_pinned(&entry)} {..article_unpublished(&entry)}>
                     <article>
-                        <A on:click=on_click href=move || {
-                            format!("/clog/entry/{}#{}", entry.uid, to_title(entry.title))
-                        }>{entry.title.to_owned()}</A>
+                        <A
+                            on:click=on_click
+                            href=move || {
+                                format!("/clog/entry/{}#{}", entry.uid, to_title(entry.title))
+                            }
+                        >
+                            {entry.title.to_owned()}
+                        </A>
+                        <time datetime=entry.publish_date.date_naive().to_string() />
                         <ul class="tags">
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
                                 <li>

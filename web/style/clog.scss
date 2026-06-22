@@ -28,6 +28,27 @@ ul#blog-entries {
       margin-top: 0.5em;
       padding-top: 0.5em;
     }
+    & > article > time {
+      &::after {
+        content: attr(datetime);
+        margin-left: 1em;
+        opacity: 50%;
+      }
+    }
+    &[pinned] > article > a::before {
+      content: "\1F4CC";
+      display: inline;
+    }
+    &[unpublished] > article > a::after {
+      content: "unpublished";
+      border: 1px red solid;
+      text-decoration: none;
+      color: red;
+      margin-left: 1em;
+      padding: 0.1em;
+      border-radius: 0.2em;
+      display: inline-block;
+    }
     & a {
       text-decoration: none;
     }
