@@ -63,11 +63,16 @@ async fn main() {
     #[cfg(feature = "statics")]
     {
         use leptos_static_files::prelude::*;
-        let do_generate = StaticFileOptions::new(Oco::Borrowed(&leptos_options));
-        let do_generate = do_generate.generate_static_files({
+        let app = {
             let leptos_options = leptos_options.clone();
             move || shell(leptos_options.clone())
-        });
+        };
+        let mut routes = generate_static_files_list(app.clone(), || ())
+            .await
+            .unwrap();
+        add_404(&mut routes, &leptos_options);
+        let generator = StaticRouteGenerator::new(&routes, app, || ());
+        let do_generate = generator.generate(&leptos_options);
         pin!(do_generate);
         let [mut routes_saved, mut qr_saved] = [false; 2];
         loop {
@@ -76,8 +81,7 @@ async fn main() {
                     _ = q.expect("qr code can always be constructed");
                     qr_saved = true;
                 }
-                r = &mut do_generate, if !routes_saved => {
-                    r.expect("Can always generate routes");
+                () = &mut do_generate, if !routes_saved => {
                     routes_saved = true;
                 }
                 else => {
