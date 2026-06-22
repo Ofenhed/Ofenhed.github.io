@@ -288,8 +288,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
                     each=move || {
                         footnotes
                             .with(|x| {
-                                x
-                                    .iter()
+                                x.iter()
                                     .map(|FootnoteInner { name, children, .. }| (
                                         name.get(),
                                         (*children)(),

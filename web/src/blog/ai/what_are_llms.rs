@@ -194,7 +194,8 @@ impl LazyRoute for WhatAreLLMs {
                         ". It's a programmed response which (despite it literally claiming the opposite) makes it feel more human."
                     </li>
                     <li>
-                        "You "<i>"could"</i>" argue that \"reasoning models\" are "<em>"reasoning"</em>
+                        "You "<i>"could"</i>" argue that \"reasoning models\" are "
+                        <em>"reasoning"</em>
                         ", but it's really more about creating a separate context with a more predictable path in the massive branching tree that is "
                         {llm}"s."
                     </li>
@@ -212,13 +213,15 @@ impl LazyRoute for WhatAreLLMs {
                 {llm}
                 " models as lossy text compression, and not intelligence, it will help you understand what "
                 {llm}
-                "s are capable of, and even what they will be capable of in the future. We may some day create an actual "{ai}"."
+                "s are capable of, and even what they will be capable of in the future. We may some day create an actual "
+                {ai}
+                "."
             </section>
-            //<section>
-            //    "There is a common saying: "<quote>"A bad workman blames his tools"</quote>.
-            //    "As with many sayings, this is a misquote, this perticular one from the 13th century. The first known instance of the quote was "<quote cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">a bad workman will never find a good tool</quote>" (as translated from "<quote lang="fr" cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">"mauvés ovriers ne trovera ja bon hostill"</quote>")."
-            //</section>
         }
         .into_any()
+        //<section>
+        //    "There is a common saying: "<quote>"A bad workman blames his tools"</quote>.
+        //    "As with many sayings, this is a misquote, this perticular one from the 13th century. The first known instance of the quote was "<quote cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">a bad workman will never find a good tool</quote>" (as translated from "<quote lang="fr" cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">"mauvés ovriers ne trovera ja bon hostill"</quote>")."
+        //</section>
     }
 }
