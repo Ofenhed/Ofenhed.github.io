@@ -217,7 +217,8 @@ type FootnotesInner = (
     RwSignal<Option<Oco<'static, str>>>,
     RwSignal<Vec<FootnoteInner>>,
 );
-#[derive(Clone, Debug)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Clone)]
 struct FootnotesHolder(FootnotesInner);
 
 fn footnotes(warn: bool) -> FootnotesInner {

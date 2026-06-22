@@ -509,7 +509,8 @@ struct FilteredEntities(Vec<BlogEntryMeta>);
 #[allow(unused)]
 struct CurrentPageEntries(Vec<BlogEntryMeta>);
 
-#[derive(Clone, Default, Debug, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Clone, Default, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub enum SortBy {
     #[default]
@@ -519,10 +520,12 @@ pub enum SortBy {
     Title,
 }
 
-#[derive(Clone, Default, Debug, PartialEq, Eq)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Clone, Default, PartialEq, Eq)]
 pub struct SortInvert(bool);
 
-#[derive(Clone, Copy, Debug)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(Clone, Copy)]
 pub struct TagFilter(Tag);
 
 #[derive(Clone, Copy)]

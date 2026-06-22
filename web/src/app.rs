@@ -14,7 +14,8 @@ use crate::{
     helpers::{Footnotes, ImgDef, provide_footnote_context},
 };
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub(crate) struct ShowNavigation(pub bool);
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
@@ -83,7 +84,8 @@ pub(crate) fn BuildInfo() -> impl IntoView {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(PartialEq, Eq, Clone, Copy)]
 enum EggCounter {
     Counter(u8),
     Triggered,

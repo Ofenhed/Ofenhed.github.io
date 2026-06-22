@@ -95,7 +95,8 @@ pub(crate) fn Email() -> impl IntoView {
     view! { <a node_ref=a_ref style:display=display></a> }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]
+#[cfg_attr(debug_assertions, derive(Debug))]
+#[derive(PartialEq, Eq, Clone, Copy, Default)]
 pub(crate) struct PersistentQrLogo {
     logo_animated: bool,
     log_written: bool,
