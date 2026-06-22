@@ -8,7 +8,7 @@ pub(crate) struct Unremarkable;
 
 impl BlogEntry for Unremarkable {
     fn uid() -> u32 {
-        1
+        2
     }
 
     fn publish_date() -> DateTime<Utc> {

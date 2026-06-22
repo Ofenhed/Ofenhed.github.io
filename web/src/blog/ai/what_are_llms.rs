@@ -12,7 +12,7 @@ pub(crate) struct WhatAreLLMs;
 
 impl BlogEntry for WhatAreLLMs {
     fn uid() -> u32 {
-        3
+        4
     }
 
     fn publish_date() -> DateTime<Utc> {
@@ -50,6 +50,9 @@ impl LazyRoute for WhatAreLLMs {
         let agi =
             || view! { <abbr title="Artificial General Intelligence">AGI</abbr> }.into_inner();
         view! {
+            <Style>
+                "@media screen {ul.lies em {color: #f00; text-shadow: 0 0 0.8em light-dark(#000, #555);}}"
+            </Style>
             <section>
                 "When we talk about "{ai}" today, we pretty much talk about "{llm}
                 "s. We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. "
@@ -157,9 +160,6 @@ impl LazyRoute for WhatAreLLMs {
                 </ul>
             </section>
             <section>
-                <Style>
-                    "@media screen { ul.lies em { color: #f00; text-shadow: 0 0 0.8em light-dark(#000, #555); } }"
-                </Style>
                 <h2>"Anthropomorphism"</h2>
                 <ul class="lies">
                     <li>
