@@ -144,26 +144,30 @@ pub(crate) fn AddContext<T: Send + Sync + 'static>(
     }
 }
 
+pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
+    x: T,
+    f: impl Fn() -> R,
+) -> Option<R> {
+    let root = {
+        let mut owner = Owner::current().unwrap();
+        while let Some(parent) = owner.parent() {
+            owner = parent;
+        }
+        owner
+    };
+    if let Some(_) = root.use_context_bidirectional::<T>() {
+        None
+    } else {
+        provide_context(x);
+        Some(f())
+    }
+}
+
 #[component]
 pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
     #[derive(Clone, Copy)]
     struct NoWasmScriptLoaded;
-    let load_init_script = {
-        let root = {
-            let mut owner = Owner::current().unwrap();
-            while let Some(parent) = owner.parent() {
-                owner = parent;
-            }
-            owner
-        };
-        if let Some(NoWasmScriptLoaded) = root.use_context_bidirectional() {
-            None
-        } else {
-            provide_context(NoWasmScriptLoaded);
-            Some(())
-        }
-    };
-    let init_script = load_init_script.map(|()| {
+    let init_script = once_by_type(NoWasmScriptLoaded, || {
         let script = js_macro::minify_js! {
             addEventListener("DOMContentLoaded", (event) => {
                 const has_wasm = (() => {
