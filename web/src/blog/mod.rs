@@ -358,6 +358,7 @@ pub fn BlogListing(
     }
     .into_inner()
 }
+
 #[component(transparent)]
 pub fn Blog() -> impl MatchNestedRoutes + Clone {
     let blogs = with_blogs_simple::<AnyNestedRoute>().collect::<Vec<_>>();
