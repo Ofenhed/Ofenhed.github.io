@@ -29,10 +29,10 @@ ul#blog-entries {
       padding-top: 0.5em;
     }
     & > article > time {
-      &::after {
+      margin-left: 1em;
+      opacity: 50%;
+      &:empty::after {
         content: attr(datetime);
-        margin-left: 1em;
-        opacity: 50%;
       }
     }
     &[pinned] > article > a::before {
