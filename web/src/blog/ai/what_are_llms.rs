@@ -1,6 +1,6 @@
 use crate::{
     blog::metadata::{BlogEntry, Locale, Tag},
-    helpers::{Footnote, Url},
+    helpers::{Abbr, Footnote, Url},
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
@@ -49,17 +49,23 @@ impl LazyRoute for WhatAreLLMs {
     }
 
     fn view(_this: Self) -> AnyView {
-        let ai = || view! { <abbr title="Artificial Intelligence">AI</abbr> }.into_inner();
-        let llm = || view! { <abbr title="Large Language Model">LLM</abbr> }.into_inner();
+        let ai = || view! { <Abbr title="Artificial Intelligence">AI</Abbr> }.into_inner();
+        let llm = || view! { <Abbr title="Large Language Model">LLM</Abbr> }.into_inner();
+        let llms =
+            || view! {
+                <Abbr title="Large Language Model" suffix="s">
+                    LLM
+                </Abbr>
+            }.into_inner();
         let agi =
-            || view! { <abbr title="Artificial General Intelligence">AGI</abbr> }.into_inner();
+            || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         view! {
             <Style>
                 "@media screen {ul.lies em {color: #f00; text-shadow: 0 0 0.8em light-dark(#000, #555);}}"
             </Style>
             <section>
-                "When we talk about "{ai}" today, we pretty much talk about "{llm}
-                "s. We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. "
+                "When we talk about "{ai}" today, we pretty much talk about "{llms}
+                ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. "
             </section>
             <section>
                 "To be able to understand what an "{llm}
@@ -74,10 +80,10 @@ impl LazyRoute for WhatAreLLMs {
                     " means that you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for JPEG images sometimes being blocky."
                 </details>
                 "Historically, text has almost exclusively been used with lossless compression. "
-                {llm}"s are a revolutionary change to that. "{llm}
-                "s are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data. With "
-                {llm}
-                "s you create the output file from the start, then you take an arbitrary amount of data and optimize that existing output file to be able to approximate the data you provide."
+                {llms}" are a revolutionary change to that. "{llms}
+                " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data. With "
+                {llms}
+                " you create the output file from the start, then you take an arbitrary amount of data and optimize that existing output file to be able to approximate the data you provide."
             </section>
             <section>
                 "I get that some of you will have an instant reaction of this comparison being ridiculous. I would like to direct you to a study"
@@ -108,10 +114,10 @@ impl LazyRoute for WhatAreLLMs {
                             <a href="https://en.wikipedia.org/wiki/Apophenia">Apophenia</a>
                         </b>
                         ": "
-                        {llm}
-                        "s are really good at making you feel listened to. If you talk to "
-                        {llm}
-                        "s as you would a friend, then I would expect that you want there to be a meaning to those conversations."
+                        {llms}
+                        " are really good at making you feel listened to. If you talk to "
+                        {llms}
+                        " as you would a friend, then I would expect that you want there to be a meaning to those conversations."
                     </li>
                     <li>
                         <b>"Authority"</b>
@@ -167,26 +173,26 @@ impl LazyRoute for WhatAreLLMs {
                 <ul class="lies">
                     <li>
                         "You don't "<em>"train"</em>" an "{ai}
-                        " model. You optimize a model to be able to predict specific data. This claim would be "
+                        " model. You optimize a model to be able to predict specific data. This interpretation would be "
                         <a href="https://openai.com/new-york-times/#ai-training-is-fair-use">
                             "legally problematic"
                         </a>"."
                     </li>
                     <li>
-                        {llm}"s doesn't "<em>"make mistakes"</em>
+                        {llms}" don't "<em>"make mistakes"</em>
                         ". Mistakes require intention. For they same reason, they don't "
                         <em>"lie"</em>
                         ", but they are optimized to be able to recreate every single Sci-Fi story ever written that contains an "
                         {ai}". I don't really know which is worse."
                     </li>
                     <li>
-                        {llm}"s are not "<em>"intelligent"</em>
+                        {llms}" are not "<em>"intelligent"</em>
                         ". We all know this, even those that design them are open about this. The point where we don't agree is that they think that "
-                        {llm}
-                        "s are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as \"the singularity\" or as \""
+                        {llms}
+                        " are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as \"the singularity\" or as \""
                         {agi}
                         "\", through the magic of \"recursive self-improvement\". That makes the water into wine routine look like child's play in comparison. Note that there is intelligence in text generated by "
-                        {llm}"s, but that doesn't mean that the "{llm}
+                        {llms}", but that doesn't mean that the "{llm}
                         " is the source of that intelligence, no more than your fax machine is the source of the intelligence it prints."
                     </li>
                     <li>
@@ -197,13 +203,13 @@ impl LazyRoute for WhatAreLLMs {
                         "You "<i>"could"</i>" argue that \"reasoning models\" are "
                         <em>"reasoning"</em>
                         ", but it's really more about creating a separate context with a more predictable path in the massive branching tree that is "
-                        {llm}"s."
+                        {llms}"."
                     </li>
                     <li>
-                        {llm}"s do "<b>"not"</b>" "<em>"hallucinate"</em>
+                        {llms}" do "<b>"not"</b>" "<em>"hallucinate"</em>
                         ". The terminology suggests that this is a minor solvable issue, which ignores the truth; What they refer to as \"hallucination\" is in reality the only thing "
-                        {llm}
-                        "s actually do. What's so cool about the technology is that the generated text often matches reality."
+                        {llms}
+                        " actually do. What's so cool about the technology is that the generated text often matches reality."
                     </li>
                 </ul>
             </section>
@@ -212,9 +218,11 @@ impl LazyRoute for WhatAreLLMs {
                 "My point with this clog post is that we all help perpetuate their illusion. Terminology and framing matters. If you think of "
                 {llm}
                 " models as lossy text compression, and not intelligence, it will help you understand what "
-                {llm}
-                "s are capable of, and even what they will be capable of in the future. We may some day create an actual "
+                {llms}
+                " are capable of, and even what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; Any belief to the contrary is dangerous. We may some day create an actual "
                 {ai}
+                ", but it will not be an "
+                {llm}
                 "."
             </section>
         }

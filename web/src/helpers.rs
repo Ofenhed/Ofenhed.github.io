@@ -2,6 +2,7 @@ use std::sync::atomic::AtomicUsize;
 
 use leptos::{
     attr::{Attr, Loading, custom::custom_attribute},
+    either::Either,
     ev,
     logging::log,
     prelude::*,
@@ -386,5 +387,24 @@ pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
         <a class="just-url" href=url>
             {url}
         </a>
+    }
+}
+
+#[component]
+pub(crate) fn Abbr<T: IntoView + 'static>(
+    #[prop(into)] title: Signal<String>,
+    #[prop(into, optional)] suffix: Signal<Option<String>>,
+    children: TypedChildrenMut<T>,
+) -> impl IntoView {
+    let suffix = Signal::derive(move || {
+        suffix.with(|x| match x {
+            Some(x) => Either::Right(custom_attribute("suffix", x.clone())),
+            None => Either::Left(()),
+        })
+    });
+    view! {
+        <abbr title=move || title.get() {..suffix.get()}>
+            {children.into_inner()}
+        </abbr>
     }
 }

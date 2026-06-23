@@ -43,6 +43,10 @@ body {
 
   height: 100vh;
   counter-reset: footnote-link footnote-text;
+  abbr[suffix]::after {
+    text-decoration: none;
+    content: attr(suffix);
+  }
   & > main {
     grid-area: main-start / main-start / main-end / main-end;
     padding: 1em;
