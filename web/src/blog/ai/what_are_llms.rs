@@ -216,7 +216,7 @@ impl LazyRoute for WhatAreLLMs {
                 </ul>
             </section>
             <section>
-                <h2>"What's the point?"</h2>
+                <h2>"Why does it matter?"</h2>
                 "My point with this clog post is that we all help perpetuate their illusion. Terminology and framing matters. If you think of "
                 {llm}
                 " models as lossy text compression, and not intelligence, it will help you understand what "
