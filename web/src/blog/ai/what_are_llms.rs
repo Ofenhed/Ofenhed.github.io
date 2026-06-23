@@ -34,7 +34,7 @@ impl BlogEntry for WhatAreLLMs {
     }
 
     fn title() -> &'static str {
-        "How do I understand LLMs?"
+        "An intuitive understanding of LLM"
     }
 
     fn tags() -> &'static [Tag] {
@@ -51,12 +51,14 @@ impl LazyRoute for WhatAreLLMs {
     fn view(_this: Self) -> AnyView {
         let ai = || view! { <Abbr title="Artificial Intelligence">AI</Abbr> }.into_inner();
         let llm = || view! { <Abbr title="Large Language Model">LLM</Abbr> }.into_inner();
-        let llms =
-            || view! {
+        let llms = || {
+            view! {
                 <Abbr title="Large Language Model" suffix="s">
                     LLM
                 </Abbr>
-            }.into_inner();
+            }
+            .into_inner()
+        };
         let agi =
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         view! {
@@ -180,7 +182,7 @@ impl LazyRoute for WhatAreLLMs {
                     </li>
                     <li>
                         {llms}" don't "<em>"make mistakes"</em>
-                        ". Mistakes require intention. For they same reason, they don't "
+                        ". Mistakes require intention. For the same reason, they don't "
                         <em>"lie"</em>
                         ", but they are optimized to be able to recreate every single Sci-Fi story ever written that contains an "
                         {ai}". I don't really know which is worse."
