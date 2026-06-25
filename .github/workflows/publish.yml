@@ -104,7 +104,7 @@ jobs:
       run: target/release/conditionraise
 
     - name: Workaround for cargo-leptos#659
-      run: find ./target/site -name '*.js' -exec sed -Ei "s#\"/pkg/([^\"]*\.js)\"#\"/$LEPTOS_SITE_PKG_DIR/\1\"#g" {} +
+      run: find ./target/site -name '*.js' -exec sed -Ei 's#"/pkg/([^"]*\.js)"#"/'"$LEPTOS_SITE_PKG_DIR"'/\1"#g' {} +
 
     - name: Upload site root
       uses: actions/upload-pages-artifact@v5
