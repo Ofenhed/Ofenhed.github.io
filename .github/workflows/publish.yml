@@ -103,8 +103,8 @@ jobs:
     - name: Generate static files
       run: target/release/conditionraise
 
-    - name: Create dummy pkg link
-      run: ln -s "./$LEPTOS_SITE_PKG_DIR" target/site/pkg
+    - name: Workaround for cargo-leptos#659
+      run: sed -Ei "s#\"/pkg/([^\"]*\.js)\"#\"/$LEPTOS_SITE_PKG_DIR/\1\"#g" "target/site/$LEPTOS_SITE_PKG_DIR/*.js"
 
     - name: Upload site root
       uses: actions/upload-pages-artifact@v5
