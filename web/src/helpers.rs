@@ -257,6 +257,10 @@ macro_rules! scroll_into_view {
     };
 }
 
+pub(crate) fn footnote_ref(target: &str) -> Oco<'static, str> {
+    Oco::Owned(format!("{target}-source"))
+}
+
 #[component]
 pub(crate) fn Footnotes() -> impl IntoView {
     let (active, footnotes) = footnotes(true);
@@ -275,10 +279,10 @@ pub(crate) fn Footnotes() -> impl IntoView {
             }
         }
     };
-    let on_click = move |_source_id: Oco<'static, str>| {
+    let on_click = move |source_id: Oco<'static, str>| {
         move |e: ev::MouseEvent| {
-            active.set(None);
-            if let Some(footnote) = document().get_element_by_id(&*_source_id) {
+            if let Some(footnote) = document().get_element_by_id(&*source_id) {
+                active.set(Some(source_id.clone()));
                 scroll_into_view!(footnote);
                 e.prevent_default();
             }
@@ -290,6 +294,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
             <a
                 on:click=on_click(target_id.clone())
                 class="footnote-return-link"
+                aria-label="Back to content"
                 href=format!("#{target_id}")
             />
         }
@@ -343,6 +348,24 @@ pub(crate) fn Footnote(
         children,
     };
 
+    let current_hash = use_location().hash;
+    let is_current = move |name: Signal<Oco<'static, str>>| {
+        move || {
+            #[cfg(feature = "client-side")]
+            {
+                name.with(|name| {
+                    active.with(move |x| x.as_ref().map(move |x| *x == *name).unwrap_or(false))
+                        || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
+                })
+            }
+            #[cfg(not(feature = "client-side"))]
+            {
+                let _ = (current_hash, name.clone());
+                false
+            }
+        }
+    };
+
     Owner::on_cleanup({
         move || {
             footnotes.update(move |x| {
@@ -370,10 +393,13 @@ pub(crate) fn Footnote(
         }
     };
 
+    let footnote_source = Signal::derive(move || footnote_ref(&*footnote_name()));
     view! {
         <a
             on:click=on_click
-            id=move || format!("{}-source", footnote_name())
+            id=footnote_source
+            aria-describedby=move || footnote_name()
+            aria-current=move || is_current(footnote_source)
             class="footnote-link"
             href=move || format!("#{}", footnote_name())
         />
