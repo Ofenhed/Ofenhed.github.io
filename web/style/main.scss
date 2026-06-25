@@ -131,6 +131,7 @@ body {
       margin: -50vh 0;
     }
     &:target, &[aria-current] {
+      border: none;
       &::after {
         animation-name: scale-footnote-number;
         animation-timing-function: ease-in-out;

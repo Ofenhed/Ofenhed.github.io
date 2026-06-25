@@ -282,9 +282,9 @@ pub(crate) fn Footnotes() -> impl IntoView {
     let on_click = move |source_id: Oco<'static, str>| {
         move |e: ev::MouseEvent| {
             if let Some(footnote) = document().get_element_by_id(&*source_id) {
-                active.set(Some(source_id.clone()));
-                scroll_into_view!(footnote);
                 e.prevent_default();
+                scroll_into_view!(footnote);
+                active.set(Some(source_id.clone()));
             }
         }
     };
