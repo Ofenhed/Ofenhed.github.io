@@ -87,7 +87,7 @@ jobs:
     - name: Compile targets
       run: cargo leptos build --split --release --bin-features ssr,statics
       env:
-        LEPTOS_SITE_PKG_DIR: ${{ github.run_number }}
+        LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
     - name: Save full cache
       uses: actions/cache/save@v5
