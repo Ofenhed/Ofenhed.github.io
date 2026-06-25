@@ -31,6 +31,14 @@ body {
   &:not(:has(> footer)) {
     grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] 0 [footer-end menu-end];
   }
+  time {
+    white-space: nowrap;
+    &:before {
+      content: "";
+      display: inline-block;
+      white-space: revert;
+    }
+  }
   footer {
     border-top: 1px solid light-dark(#000, #fff);
     padding: 1ex;
