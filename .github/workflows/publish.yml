@@ -103,6 +103,8 @@ jobs:
 
     - name: Generate static files
       run: target/release/conditionraise
+      env:
+        LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
     - name: Upload site root
       uses: actions/upload-pages-artifact@v5
