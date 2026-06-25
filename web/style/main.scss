@@ -181,7 +181,6 @@ body {
       font: var(--symbol-font-text);
       font-family: u1f400;
       text-rendering: optimizeLegibility;
-      //aspect-ratio: 1/1;
       display: block;
       position: relative;
       height: fit-content;
@@ -189,13 +188,6 @@ body {
       height: 0;
       overflow: visible;
       left: -1.5em;
-      //background: light-dark(#a4cefe,#044c9f);
-      //$color: light-dark(#000044, #a4cefe);
-      //color: $color;
-      //border-color: $color;
-      //border-width: 1px;
-      //border-style: solid;
-      //border-radius: 5em;
     }
   }
   kbd {

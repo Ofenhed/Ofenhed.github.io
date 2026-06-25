@@ -114,8 +114,6 @@ ul#blog-entries {
               line to calc(100% - var(--open-burger-leak-right)) 100%,
               line to 0 100%,
               line to 0 0,
-              //line to 0 2cm,
-              //curve to 2cm 0 with 0 0,
               );
             }
         }
@@ -163,7 +161,6 @@ ul#blog-entries {
               @include no-mask-support {
                 border-radius: 2cm 0 2cm 0;
               }
-              //transform: rotate(-90deg);
               top: 0;
               left: 0;
               border: 0px solid;
