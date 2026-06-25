@@ -8,6 +8,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   cargo_leptos_version: ./target/.cargo-leptos-version
+  LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
 jobs:
   build:
@@ -86,8 +87,6 @@ jobs:
 
     - name: Compile targets
       run: cargo leptos build --split --release --bin-features ssr,statics
-      env:
-        LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
     - name: Save full cache
       uses: actions/cache/save@v5
@@ -103,8 +102,9 @@ jobs:
 
     - name: Generate static files
       run: target/release/conditionraise
-      env:
-        LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
+
+    - name: Create dummy pkg link
+      run: ln -s "./$LEPTOS_SITE_PKG_DIR" target/site/pkg
 
     - name: Upload site root
       uses: actions/upload-pages-artifact@v5
