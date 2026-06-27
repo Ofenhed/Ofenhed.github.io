@@ -83,9 +83,9 @@ impl LazyRoute for WhatAreLLMs {
                 </details>
                 "Historically, text has almost exclusively been used with lossless compression. "
                 {llms}" are a revolutionary change to that. "{llms}
-                " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data. With "
+                " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
                 {llms}
-                " you create the output file from the start, then you take an arbitrary amount of data and optimize that existing output file to be able to approximate the data you provide."
+                " you create the output file from the start, then you take an arbitrary amount of data and optimize the parameters in that existing output file to be able to approximate the data you provide."
             </section>
             <section>
                 "I get that some of you will have an instant reaction of this comparison being ridiculous. I would like to direct you to a study"
