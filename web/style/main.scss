@@ -165,10 +165,16 @@ body {
         counter-increment: footnote-text;
         content: counter(footnote-text);
       }
-      & > a.footnote-return-link::after {
+      & > a.footnote-return-link {
         grid-column: 3;
-        content: "\1F519";
         text-decoration: none;
+        display: grid;
+        grid-template-rows: 1fr [start] auto [end] 1fr;
+        grid-template-columns: [start] auto [end];
+        &::after {
+          grid-area: start / start / end / end;
+          content: "\1F519";
+        }
       }
     }
   }
