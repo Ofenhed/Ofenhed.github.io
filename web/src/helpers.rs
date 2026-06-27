@@ -2,7 +2,6 @@ use std::sync::atomic::AtomicUsize;
 
 use leptos::{
     attr::{Attr, Loading, custom::custom_attribute},
-    either::Either,
     ev,
     logging::log,
     prelude::*,
@@ -429,15 +428,62 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
     #[prop(into, optional)] suffix: Signal<Option<String>>,
     children: TypedChildrenMut<T>,
 ) -> impl IntoView {
-    let suffix = Signal::derive(move || {
-        suffix.with(|x| match x {
-            Some(x) => Either::Right(custom_attribute("suffix", x.clone())),
-            None => Either::Left(()),
-        })
+    let (read_abbrs, write_abbrs) = {
+        #[derive(Clone)]
+        struct AllAbbrs<T>(ReadSignal<T>, WriteSignal<T>);
+        once_by_type(
+            || {
+                let (reader, writer) = signal::<Vec<(usize, Signal<String>)>>(vec![]);
+                (AllAbbrs(reader, writer), (reader, writer))
+            },
+            |AllAbbrs(reader, writer)| (reader, writer),
+        )
+    };
+    static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
+    let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+    write_abbrs.update(|abbrs| abbrs.push((uid, title)));
+
+    Owner::on_cleanup(move || {
+        write_abbrs.update(move |abbrs| {
+            if let Some(index) = abbrs
+                .iter()
+                .enumerate()
+                .find(|(_, (id, _))| *id == uid)
+                .map(|(index, _)| index)
+            {
+                abbrs.remove(index);
+            }
+        });
     });
+
+    let first_of_abbr = move || {
+        title.with(|abbr| {
+            read_abbrs.with(move |abbrs| {
+                abbrs
+                    .iter()
+                    .find(|(_, name)| name.with(|name| name == abbr))
+                    .map(|x| x.0)
+                    == Some(uid)
+            })
+        })
+    };
     view! {
-        <abbr title=move || title.get() {..suffix.get()}>
+        <abbr
+            title=move || {
+                suffix
+                    .with(|s| {
+                        if let Some(s) = s {
+                            title.with(|title| format!("{title}{s}"))
+                        } else {
+                            title.get()
+                        }
+                    })
+            }
+            class:first-of-abbr=first_of_abbr
+        >
             {children.into_inner()}
+            {suffix}
         </abbr>
     }
 }
