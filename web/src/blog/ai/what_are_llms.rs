@@ -63,7 +63,7 @@ impl LazyRoute for WhatAreLLMs {
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         view! {
             <Style>
-                "@media screen {ul.lies em {color: #f00; text-shadow: 0 0 0.8em light-dark(#000, #555);}}"
+                "@media screen {ul.lies em {color: #f00; text-shadow: 0 0 0.8em light-dark(#000, #555);}} @media print and (color) {ul.lies em {text-shadow: 0 0 0.8em #f00}}"
             </Style>
             <section>
                 "When we talk about "{ai}" today, we pretty much talk about "{llms}
