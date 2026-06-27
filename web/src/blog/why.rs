@@ -1,4 +1,7 @@
-use crate::blog::metadata::{BlogEntry, Locale, Tag};
+use crate::{
+    blog::metadata::{BlogEntry, Locale, Tag},
+    helpers::Abbr,
+};
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
@@ -45,7 +48,7 @@ impl LazyRoute for WhyBlog {
     }
 
     fn view(_this: Self) -> AnyView {
-        let llm = || view! { <abbr title="Large Language Model">LLM</abbr> }.into_inner();
+        let llm = || view! { <Abbr title="Large Language Model">LLM</Abbr> }.into_inner();
         view! {
             "This is an experiment with this new concept I thought of, where someone could share their thought in some kind of captain's log on the web, like web captain's log, or a captain's web log. With all "
             {llm}
