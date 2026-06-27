@@ -446,12 +446,7 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
 
     Owner::on_cleanup(move || {
         write_abbrs.update(move |abbrs| {
-            if let Some(index) = abbrs
-                .iter()
-                .enumerate()
-                .find(|(_, (id, _))| *id == uid)
-                .map(|(index, _)| index)
-            {
+            if let Some((index, _)) = abbrs.iter().enumerate().find(|(_, (id, _))| *id == uid) {
                 abbrs.remove(index);
             }
         });
