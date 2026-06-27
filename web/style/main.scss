@@ -137,9 +137,9 @@ body {
     &::after {
       padding: 50vh 0;
       margin: -50vh 0;
+      outline-offset: -50vh 0;
     }
     &:target, &[aria-current] {
-      border: none;
       &::after {
         animation-name: scale-footnote-number;
         animation-timing-function: ease-in-out;
