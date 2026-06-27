@@ -67,7 +67,7 @@ impl LazyRoute for WhatAreLLMs {
             </Style>
             <section>
                 "When we talk about "{ai}" today, we pretty much talk about "{llms}
-                ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. "
+                ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
             </section>
             <section>
                 "To be able to understand what an "{llm}
@@ -225,10 +225,12 @@ impl LazyRoute for WhatAreLLMs {
                 {llm}
                 " models as lossy text compression, and not intelligence, it will help you understand what "
                 {llms}
-                " are capable of, and even what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; Any belief to the contrary is dangerous. We may some day create an actual "
+                " are capable of, and even what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; It's not your friend; Any belief to the contrary is dangerous. We may some day create an actual "
                 {ai}
                 ", but it will not be an "
                 {llm}
+                ". You may rightfully argue that this is an oversimplification, but at least it's an oversimplification where you don't have to argue the philosophic point of "
+                <quote>"well, what is intelligence, really?"</quote>
                 "."
             </section>
         }
