@@ -237,7 +237,7 @@ impl LazyRoute for WhatAreLLMs {
         .into_any()
         //<section>
         //    "There is a common saying: "<quote>"A bad workman blames his tools"</quote>.
-        //    "As with many sayings, this is a misquote, this perticular one from the 13th century. The first known instance of the quote was "<quote cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">a bad workman will never find a good tool</quote>" (as translated from "<quote lang="fr" cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">"mauvés ovriers ne trovera ja bon hostill"</quote>")."
+        //    "As with many sayings, this is a misquote, this particular one from the 13th century. The first known instance of the quote was "<quote cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">a bad workman will never find a good tool</quote>" (as translated from "<quote lang="fr" cite="https://www.oxfordreference.com/display/10.1093/acref/9780199539536.001.0001/acref-9780199539536-e-83">"mauvés ovriers ne trovera ja bon hostill"</quote>")."
         //</section>
     }
 }
