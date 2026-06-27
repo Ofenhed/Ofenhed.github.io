@@ -19,7 +19,6 @@ use crate::{
 pub(crate) struct ShowNavigation(pub bool);
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
-    //let css_path = format!("/{}/{}.css", options.site_pkg_dir, options.output_name);
     let css_path = options.css_path();
     view! {
         <!DOCTYPE html>
