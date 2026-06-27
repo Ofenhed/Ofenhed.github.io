@@ -146,9 +146,9 @@ pub(crate) fn AddContext<T: Send + Sync + 'static>(
 }
 
 pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
-    x: T,
-    f: impl Fn() -> R,
-) -> Option<R> {
+    x: impl Fn() -> (T, R),
+    f: impl Fn(T) -> R,
+) -> R {
     let root = {
         let mut owner = Owner::current().unwrap();
         while let Some(parent) = owner.parent() {
@@ -156,11 +156,12 @@ pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
         }
         owner
     };
-    if let Some(_) = root.use_context_bidirectional::<T>() {
-        None
+    if let Some(context) = root.use_context_bidirectional() {
+        f(context)
     } else {
-        provide_context(x);
-        Some(f())
+        let (context, r) = x();
+        provide_context(context);
+        r
     }
 }
 
@@ -168,30 +169,36 @@ pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
 pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
     #[derive(Clone, Copy)]
     struct NoWasmScriptLoaded;
-    let init_script = once_by_type(NoWasmScriptLoaded, || {
-        let script = js_macro::minify_js! {
-            addEventListener("DOMContentLoaded", (event) => {
-                const has_wasm = (() => {
-                    try {
-                        if (typeof WebAssembly === "object"
-                            && typeof WebAssembly.instantiate === "function") {
-                            const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
-                            if (module instanceof WebAssembly.Module)
-                                return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+    let init_script = once_by_type(
+        || {
+            let script = js_macro::minify_js! {
+                addEventListener("DOMContentLoaded", (event) => {
+                    const has_wasm = (() => {
+                        try {
+                            if (typeof WebAssembly === "object"
+                                && typeof WebAssembly.instantiate === "function") {
+                                const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+                                if (module instanceof WebAssembly.Module)
+                                    return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+                            }
+                        } catch (e) {
                         }
-                    } catch (e) {
+                        return false;
+                    })();
+                    if (!has_wasm) {
+                        document.querySelectorAll("template.wasm-fallback").forEach((template) => {
+                            template.parentElement.replaceChild(document.importNode(template.content, true), template);
+                        });
                     }
-                    return false;
-                })();
-                if (!has_wasm) {
-                    document.querySelectorAll("template.wasm-fallback").forEach((template) => {
-                        template.parentElement.replaceChild(document.importNode(template.content, true), template);
-                    });
-                }
-            });
-        };
-        view! { <Script>{script}</Script> }
-    });
+                });
+            };
+            (
+                NoWasmScriptLoaded,
+                Some(view! { <Script>{script}</Script> }),
+            )
+        },
+        |_| None,
+    );
 
     view! {
         {init_script}
