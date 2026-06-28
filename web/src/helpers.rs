@@ -1,9 +1,8 @@
-use std::sync::atomic::AtomicUsize;
+use std::{cell::LazyCell, sync::atomic::AtomicUsize};
 
 use leptos::{
     attr::{Attr, Loading, custom::custom_attribute},
-    ev,
-    logging::log,
+    ev, logging,
     prelude::*,
     tachys::view::iterators::StaticVec,
 };
@@ -70,7 +69,7 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
     pub(crate) fn into_scoped_timeout(mut self) {
         let Some(i) = self.it.next() else { return };
         let Some(owner) = self.owner.upgrade() else {
-            log!("Lost iterator owner");
+            logging::warn!("Lost iterator owner");
             return;
         };
         let interval = self.interval;
@@ -145,22 +144,30 @@ pub(crate) fn AddContext<T: Send + Sync + 'static>(
 }
 
 pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
+    in_root: bool,
     x: impl Fn() -> (T, R),
     f: impl Fn(T) -> R,
 ) -> R {
-    let root = {
+    let root_context = LazyCell::new(|| {
         let mut owner = Owner::current().unwrap();
         while let Some(parent) = owner.parent() {
             owner = parent;
         }
         owner
-    };
-    if let Some(context) = root.use_context_bidirectional() {
+    });
+    if let Some(context) = use_context().or_else(|| root_context.use_context_bidirectional()) {
         f(context)
     } else {
-        let (context, r) = x();
-        provide_context(context);
-        r
+        let make_context = move || {
+            let (context, r) = x();
+            provide_context(context);
+            r
+        };
+        if in_root {
+            root_context.with(make_context)
+        } else {
+            make_context()
+        }
     }
 }
 
@@ -169,6 +176,7 @@ pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoV
     #[derive(Clone, Copy)]
     struct NoWasmScriptLoaded;
     let init_script = once_by_type(
+        false,
         || {
             let script = js_macro::minify_js! {
                 addEventListener("DOMContentLoaded", (event) => {
@@ -214,10 +222,6 @@ pub(crate) fn ImgDef() -> ImgDefAttr {
     (Attr(Loading, "lazy"),)
 }
 
-pub(crate) fn provide_footnote_context() {
-    _ = footnotes(false);
-}
-
 #[derive(Clone)]
 struct FootnoteInner {
     uid: usize,
@@ -228,22 +232,36 @@ type FootnotesInner = (
     RwSignal<Option<Oco<'static, str>>>,
     RwSignal<Vec<FootnoteInner>>,
 );
-#[cfg_attr(debug_assertions, derive(Debug))]
-#[derive(Clone)]
-struct FootnotesHolder(FootnotesInner);
+fn footnotes() -> FootnotesInner {
+    #[cfg_attr(debug_assertions, derive(Debug))]
+    #[derive(Clone)]
+    struct FootnotesHolder(FootnotesInner);
 
-fn footnotes(warn: bool) -> FootnotesInner {
-    let FootnotesHolder(signal) = use_context().unwrap_or_else(|| {
-        if warn {
-            leptos::logging::warn!(
-                "Footnotes not created in top context. Please use provide_footnote_context()."
-            );
-        }
-        let footnotes = FootnotesHolder((RwSignal::new(None), RwSignal::new(vec![])));
-        provide_context(footnotes.clone());
-        footnotes
-    });
-    signal
+    once_by_type(
+        true,
+        || {
+            let (active, visible) = (RwSignal::new(None), RwSignal::new(vec![]));
+            (FootnotesHolder((active, visible)), (active, visible))
+        },
+        |FootnotesHolder((active, visible))| (active, visible),
+    )
+}
+
+fn abbrs() -> (
+    ReadSignal<Vec<(usize, Signal<String>)>>,
+    WriteSignal<Vec<(usize, Signal<String>)>>,
+) {
+    #[cfg_attr(debug_assertions, derive(Debug))]
+    #[derive(Clone)]
+    struct AllAbbrs<T>(ReadSignal<T>, WriteSignal<T>);
+    once_by_type(
+        true,
+        || {
+            let (reader, writer) = signal::<Vec<(usize, Signal<String>)>>(vec![]);
+            (AllAbbrs(reader, writer), (reader, writer))
+        },
+        |AllAbbrs(reader, writer)| (reader, writer),
+    )
 }
 
 macro_rules! scroll_into_view {
@@ -269,7 +287,7 @@ pub(crate) fn footnote_ref(target: &str) -> Oco<'static, str> {
 
 #[component]
 pub(crate) fn Footnotes() -> impl IntoView {
-    let (active, footnotes) = footnotes(true);
+    let (active, footnotes) = footnotes();
     let current_hash = use_location().hash;
     let is_current = move |name: Oco<'static, str>| {
         move || {
@@ -339,7 +357,7 @@ pub(crate) fn Footnote(
     #[prop(into, optional)] name: Signal<Option<Oco<'static, str>>>,
     children: ChildrenFn,
 ) -> impl IntoView {
-    let (active, footnotes) = footnotes(true);
+    let (active, footnotes) = footnotes();
     static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
     let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
@@ -428,17 +446,7 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
     #[prop(into, optional)] suffix: Signal<Option<String>>,
     children: TypedChildrenMut<T>,
 ) -> impl IntoView {
-    let (read_abbrs, write_abbrs) = {
-        #[derive(Clone)]
-        struct AllAbbrs<T>(ReadSignal<T>, WriteSignal<T>);
-        once_by_type(
-            || {
-                let (reader, writer) = signal::<Vec<(usize, Signal<String>)>>(vec![]);
-                (AllAbbrs(reader, writer), (reader, writer))
-            },
-            |AllAbbrs(reader, writer)| (reader, writer),
-        )
-    };
+    let (read_abbrs, write_abbrs) = abbrs();
     static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
     let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
