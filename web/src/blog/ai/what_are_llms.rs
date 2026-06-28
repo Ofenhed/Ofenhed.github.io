@@ -1,5 +1,5 @@
 use crate::{
-    blog::metadata::{BlogEntry, Locale, Tag},
+    blog::metadata::{BlogEntry, Locale, Tag, date},
     helpers::{Abbr, Footnote, Url},
 };
 use chrono::{DateTime, Utc};
@@ -11,35 +11,19 @@ use leptos_router::{LazyRoute, lazy_route};
 pub(crate) struct WhatAreLLMs;
 
 impl BlogEntry for WhatAreLLMs {
-    fn uid() -> u32 {
-        4
-    }
+    const UID: u32 = 4;
 
-    fn publish() -> bool {
-        true
-    }
+    const PUBLISH: bool = true;
 
-    fn publish_date() -> DateTime<Utc> {
-        DateTime::parse_from_rfc3339("2026-06-06T12:00:00+01:00")
-            .unwrap()
-            .into()
-    }
+    const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 6);
 
-    fn last_updated() -> Option<DateTime<Utc>> {
-        None
-    }
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 27));
 
-    fn locale() -> Option<Locale> {
-        Locale::EnglishSimplified.into()
-    }
+    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
-    fn title() -> &'static str {
-        "An intuitive understanding of LLM"
-    }
+    const TITLE: &'static str = "An intuitive understanding of LLM";
 
-    fn tags() -> &'static [Tag] {
-        &[Tag::Ai, Tag::Tech]
-    }
+    const TAGS: &'static [Tag] = &[Tag::Ai, Tag::Tech];
 }
 
 #[lazy_route]

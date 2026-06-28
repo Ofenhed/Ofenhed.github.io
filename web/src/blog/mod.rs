@@ -382,6 +382,7 @@ pub struct BlogEntryMeta {
     publish_date: DateTime<Utc>,
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
+    path_locale: bool,
     publish: bool,
     title: &'static str,
     tags: &'static [Tag],
@@ -399,14 +400,15 @@ impl BlogEntryHandler for BlogEntryHandlerFor<BlogEntryMeta> {
 impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
     fn from(_: T) -> Self {
         BlogEntryMeta {
-            uid: T::uid(),
-            publish_date: T::publish_date(),
-            last_updated: T::last_updated(),
-            locale: T::locale(),
-            publish: T::publish(),
-            title: T::title(),
-            tags: T::tags(),
-            pin: T::pin(),
+            uid: T::UID,
+            publish_date: T::PUBLISH_DATE,
+            last_updated: T::LAST_UPDATED,
+            locale: T::LOCALE,
+            path_locale: T::PATH_LOCALE,
+            publish: T::PUBLISH,
+            title: T::TITLE,
+            tags: T::TAGS,
+            pin: T::PIN,
         }
     }
 }
@@ -441,16 +443,57 @@ impl PossibleRouteMatch for BlogEntryMeta {
 
         let matched_num = &path[param_offset..param_len + param_offset];
         match u32::from_str(matched_num) {
-            Ok(id) if id == self.uid => Some(PartialPathMatch::new(
-                &path[param_offset + param_len..],
-                vec![],
-                &path[param_offset..param_offset + param_len],
-            )),
+            Ok(id) if id == self.uid => {
+                if let (Some(locale), true) = (self.locale, self.path_locale) {
+                    locale
+                        .test(&path[param_offset + param_len..])
+                        .map(|m| {
+                            let path_bytes = path.as_bytes();
+                            let param_offset_bytes = path[param_offset..]
+                                .as_bytes()
+                                .first()
+                                .map(|f| path_bytes.element_offset(f))
+                                .flatten()
+                                .unwrap();
+                            let remaining = if let Some(first) = m.remaining().as_bytes().first() {
+                                unsafe {
+                                    str::from_utf8_unchecked(
+                                        &path_bytes[path_bytes.element_offset(first).unwrap()..],
+                                    )
+                                }
+                            } else {
+                                &path[path.len()..]
+                            };
+                            let matched = m.matched().as_bytes();
+                            let matched = matched
+                                .first()
+                                .map(|f| unsafe {
+                                    str::from_utf8_unchecked(
+                                        &path_bytes[param_offset_bytes
+                                            ..path_bytes.element_offset(f).unwrap()
+                                                + matched.len()],
+                                    )
+                                })
+                                .unwrap_or(remaining);
+                            PartialPathMatch::new(remaining, vec![], matched)
+                        })
+                        .or_else(|| None)
+                } else {
+                    Some(PartialPathMatch::new(
+                        &path[param_offset + param_len..],
+                        vec![],
+                        &path[param_offset..param_offset + param_len],
+                    ))
+                }
+            }
             _ => None,
         }
     }
     fn generate_path(&self, path: &mut Vec<PathSegment>) {
-        path.push(PathSegment::Static(Cow::Owned(self.uid.to_string())))
+        path.push(PathSegment::Static(Cow::Owned(self.uid.to_string())));
+        if let (Some(locale), true) = (self.locale, self.path_locale) {
+            locale.generate_path(path)
+        }
     }
 }
 
@@ -459,28 +502,28 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
     use leptos_meta::Title;
     _ = entry;
     use_head();
-    let last_update = B::last_updated().map(|x| {
+    let last_update = B::LAST_UPDATED.map(|x| {
         view! { <Meta property="og:modified_time" content=x.to_rfc3339() /> }
     });
-    let locale = B::locale().map(|x| {
+    let locale = B::LOCALE.map(|x| {
         view! { <Meta property="og:locale" content=x.as_ref().to_string() /> }
     });
     view! {
-        <Title formatter=|title: String| format!("{title} - Captains Log") text=B::title() />
+        <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
         {locale}
-        <Meta property="og:title" content=B::title() />
+        <Meta property="og:title" content=B::TITLE />
         <Meta property="og:article:author" content="Marcus Ofenhed" />
         <For
-            each=move || B::tags().iter()
+            each=move || B::TAGS.iter()
             key=|x| x.to_owned()
             children=|tag| {
                 view! { <Meta property="og:article:tag" content=tag.as_ref().to_string() /> }
             }
         />
-        <Meta property="og:article:published_time" content=B::publish_date().to_rfc3339() />
+        <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
         {last_update}
-        <h1 id="pageHeader">{B::title()}</h1>
-        <p>{B::publish_date().date_naive().to_string()}</p>
+        <h1 id="pageHeader">{B::TITLE}</h1>
+        <p>{B::PUBLISH_DATE.date_naive().to_string()}</p>
     }
 }
 
@@ -571,15 +614,39 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             Either::Left(custom_attribute("unpublished", "unpublished"))
         }
     };
+    let lang = move |meta: &BlogEntryMeta| {
+        meta.locale
+            .map(|x| {
+                let s = x.as_ref();
+                let lang = match s.replace("_", "-") {
+                    new if new == s => Cow::Borrowed(s),
+                    new => Cow::Owned(new),
+                };
+                Either::Right(view! { <{..} lang=lang /> })
+            })
+            .unwrap_or(Either::Left(()))
+    };
     view! {
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li {..article_pinned(&entry)} {..article_unpublished(&entry)}>
-                    <article>
+                    <article {..lang(&entry)}>
                         <A
                             on:click=on_click
-                            href=move || {
-                                format!("/clog/entry/{}#{}", entry.uid, to_title(entry.title))
+                            href={
+                                let mut path = vec![
+                                    PathSegment::Static(Cow::Borrowed("clog")),
+                                    PathSegment::Static(Cow::Borrowed("entry")),
+                                ];
+                                entry.generate_path(&mut path);
+                                format!(
+                                    "{}#{}",
+                                    path
+                                        .iter()
+                                        .map(|x| format!("/{}", x.as_raw_str()))
+                                        .collect::<String>(),
+                                    to_title(entry.title),
+                                )
                             }
                         >
                             {entry.title.to_owned()}

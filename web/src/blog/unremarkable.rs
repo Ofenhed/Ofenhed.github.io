@@ -1,4 +1,4 @@
-use crate::blog::metadata::{BlogEntry, Locale, Tag};
+use crate::blog::metadata::{BlogEntry, Locale, Tag, date};
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
@@ -7,35 +7,17 @@ use leptos_router::{LazyRoute, lazy_route};
 pub(crate) struct Unremarkable;
 
 impl BlogEntry for Unremarkable {
-    fn uid() -> u32 {
-        2
-    }
+    const UID: u32 = 2;
 
-    fn publish_date() -> DateTime<Utc> {
-        DateTime::parse_from_rfc3339("2022-01-20T15:38:00+01:00")
-            .unwrap()
-            .into()
-    }
+    const PUBLISH_DATE: DateTime<Utc> = date(2022, 1, 20);
 
-    fn last_updated() -> Option<DateTime<Utc>> {
-        Some(
-            DateTime::parse_from_rfc3339("2026-06-08T09:00:00+01:00")
-                .unwrap()
-                .into(),
-        )
-    }
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 08));
 
-    fn locale() -> Option<Locale> {
-        Locale::EnglishSimplified.into()
-    }
+    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
-    fn title() -> &'static str {
-        "(un)Remarkable 2"
-    }
+    const TITLE: &'static str = "(un)Remarkable 2";
 
-    fn tags() -> &'static [Tag] {
-        &[Tag::Review, Tag::Tech]
-    }
+    const TAGS: &'static [Tag] = &[Tag::Review, Tag::Tech];
 }
 
 #[lazy_route]
