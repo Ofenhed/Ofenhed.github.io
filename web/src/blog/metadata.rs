@@ -1,8 +1,10 @@
-use std::{iter, marker::PhantomData, pin::Pin};
+use std::{borrow::Cow, iter, marker::PhantomData, pin::Pin};
 
 use chrono::{DateTime, Utc};
 use futures::FutureExt as _;
-use leptos_router::{LazyRoute, MatchNestedRoutes};
+use leptos_router::{
+    LazyRoute, MatchNestedRoutes, PartialPathMatch, PathSegment, PossibleRouteMatch,
+};
 use strum::{AsRefStr, EnumString, VariantArray};
 
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -19,35 +21,77 @@ pub enum Tag {
 #[derive(Clone, Copy, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Locale {
-    #[strum(serialize = "sv_SE")]
+    #[strum(serialize = "sv_SE", serialize = "sv")]
     Swedish,
-    #[strum(serialize = "en_UK")]
-    English,
-    #[strum(serialize = "en_US")]
+    #[strum(serialize = "en_US", serialize = "en")]
     EnglishSimplified,
 }
 
-pub trait BlogEntry: Sized + LazyRoute + Clone + Sync + 'static {
-    fn uid() -> u32;
-    fn publish_date() -> DateTime<Utc>;
-    fn title() -> &'static str;
-    fn tags() -> &'static [Tag];
-
-    fn publish() -> bool {
+impl PossibleRouteMatch for Locale {
+    fn optional(&self) -> bool {
         false
     }
+    fn test<'a>(&self, path: &'a str) -> Option<PartialPathMatch<'a>> {
+        let mut param_offset = 0;
+        let mut param_len = 0;
+        let mut test = path.chars();
 
-    fn locale() -> Option<Locale> {
-        None
-    }
+        if let Some('/') = test.next() {
+            param_offset = 1;
+        }
 
-    fn last_updated() -> Option<DateTime<Utc>> {
-        None
-    }
+        let locale = match (test.next(), test.next()) {
+            (Some('s'), Some('v')) => Some(Locale::Swedish),
+            (Some('e'), Some('n')) => Some(Locale::EnglishSimplified),
+            _ => None,
+        };
 
-    fn pin() -> Option<usize> {
-        None
+        if locale.is_some() {
+            param_len += 2;
+        }
+
+        match locale {
+            Some(locale) if locale == *self => Some(PartialPathMatch::new(
+                &path[param_offset + param_len..],
+                vec![],
+                &path[param_offset..param_offset + param_len],
+            )),
+            _ => None,
+        }
     }
+    fn generate_path(&self, path: &mut Vec<PathSegment>) {
+        path.push(PathSegment::Static(Cow::Borrowed(match self {
+            Locale::Swedish => "sv",
+            Locale::EnglishSimplified => "en",
+        })))
+    }
+}
+
+pub const fn date(year: i32, month: u32, day: u32) -> DateTime<Utc> {
+    DateTime::from_naive_utc_and_offset(
+        chrono::NaiveDateTime::new(
+            chrono::NaiveDate::from_ymd_opt(year, month, day).expect("No user controlled input"),
+            chrono::NaiveTime::from_hms_opt(0, 0, 0).unwrap(),
+        ),
+        Utc,
+    )
+}
+
+pub trait BlogEntry: LazyRoute + Clone + Sync {
+    const UID: u32;
+    const PUBLISH_DATE: DateTime<Utc>;
+    const TITLE: &'static str;
+    const TAGS: &'static [Tag];
+
+    const PUBLISH: bool = false;
+
+    const LOCALE: Option<Locale> = None;
+
+    const PATH_LOCALE: bool = false;
+
+    const LAST_UPDATED: Option<DateTime<Utc>> = None;
+
+    const PIN: Option<usize> = None;
 }
 
 pub trait BlogEntryHandler {
@@ -90,7 +134,7 @@ impl BlogEntryHandler for PreloadUids {
         self.0
             .iter()
             .enumerate()
-            .find_map(|(idx, uid)| if *uid == B::uid() { Some(idx) } else { None })
+            .find_map(|(idx, uid)| if *uid == B::UID { Some(idx) } else { None })
             .map(|idx| {
                 self.0.swap_remove(idx);
                 B::preload().boxed_local()
