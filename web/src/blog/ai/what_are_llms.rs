@@ -13,8 +13,6 @@ pub(crate) struct WhatAreLLMs;
 impl BlogEntry for WhatAreLLMs {
     const UID: u32 = 4;
 
-    const PUBLISH: bool = true;
-
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 6);
 
     const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 27));

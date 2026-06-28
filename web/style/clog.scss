@@ -39,16 +39,6 @@ ul#blog-entries {
       content: "\1F4CC";
       display: inline;
     }
-    &[unpublished] > article > a::after {
-      content: "unpublished";
-      border: 1px red solid;
-      text-decoration: none;
-      color: red;
-      margin-left: 1em;
-      padding: 0.1em;
-      border-radius: 0.2em;
-      display: inline-block;
-    }
     & a {
       text-decoration: none;
     }

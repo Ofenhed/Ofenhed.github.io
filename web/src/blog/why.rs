@@ -14,8 +14,6 @@ impl BlogEntry for WhyBlog {
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 22);
 
-    const PUBLISH: bool = true;
-
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "Another voice on the internet";
