@@ -1,10 +1,8 @@
-use std::{borrow::Cow, iter, marker::PhantomData, pin::Pin};
+use std::{borrow::Cow, marker::PhantomData, pin::Pin};
 
 use chrono::{DateTime, Utc};
 use futures::FutureExt as _;
-use leptos_router::{
-    LazyRoute, MatchNestedRoutes, PartialPathMatch, PathSegment, PossibleRouteMatch,
-};
+use leptos_router::{LazyRoute, PartialPathMatch, PathSegment, PossibleRouteMatch};
 use strum::{EnumString, IntoStaticStr, VariantArray};
 
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -83,8 +81,6 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
     const TITLE: &'static str;
     const TAGS: &'static [Tag];
 
-    const PUBLISH: bool = false;
-
     const LOCALE: Option<Locale> = None;
 
     const PATH_LOCALE: bool = false;
@@ -139,28 +135,5 @@ impl BlogEntryHandler for PreloadUids {
                 self.0.swap_remove(idx);
                 B::preload().boxed_local()
             })
-    }
-}
-
-#[derive(Clone)]
-pub struct NoMatch;
-impl MatchNestedRoutes for NoMatch {
-    type Data = ();
-
-    type Match = ();
-
-    fn match_nested<'a>(
-        &'a self,
-        path: &'a str,
-    ) -> (Option<(leptos_router::RouteMatchId, Self::Match)>, &'a str) {
-        (None, path)
-    }
-
-    fn generate_routes(&self) -> impl IntoIterator<Item = leptos_router::GeneratedRouteData> + '_ {
-        iter::empty()
-    }
-
-    fn optional(&self) -> bool {
-        todo!()
     }
 }

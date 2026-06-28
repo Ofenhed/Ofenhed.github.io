@@ -7,7 +7,7 @@ use crate::{
     app::HamburgerMenu,
     blog::{
         metadata::{
-            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, NoMatch, PreloadUids, Tag,
+            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag,
             with_blog_simple,
         },
         unremarkable::Unremarkable,
@@ -37,12 +37,18 @@ use strum::{AsRefStr, EnumString, VariantArray};
 const ENTRIES_PER_PAGE: usize = 10;
 
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
-    [
-        b.with_blog(why::WhyBlog),
-        b.with_blog(Unremarkable),
-        b.with_blog(ai::WhatAreLLMs),
-    ]
-    .into_iter()
+    let published = [b.with_blog(why::WhyBlog), b.with_blog(ai::WhatAreLLMs)];
+    let unpublished = {
+        #[cfg(not(debug_assertions))]
+        {
+            []
+        }
+        #[cfg(debug_assertions)]
+        {
+            [b.with_blog(Unremarkable)]
+        }
+    };
+    published.into_iter().chain(unpublished.into_iter())
 }
 
 pub fn with_blogs_simple<B>()
@@ -58,31 +64,23 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
 
     fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
         let metadata = with_blog_simple::<BlogEntryMeta>(blog.clone());
-        #[cfg(debug_assertions)]
-        let publish = true;
-        #[cfg(not(debug_assertions))]
-        let publish = metadata.publish;
-        if publish {
-            let b = Lazy::<B>::new();
-            view! {
-                <ParentRoute
-                    path=metadata
-                    view=move || {
-                        view! {
-                            <BlogHeading entry=blog.clone() />
-                            <Outlet />
-                        }
+        let b = Lazy::<B>::new();
+        view! {
+            <ParentRoute
+                path=metadata
+                view=move || {
+                    view! {
+                        <BlogHeading entry=blog.clone() />
+                        <Outlet />
                     }
-                    ssr=SsrMode::OutOfOrder
-                >
-                    <Route path=path!("") view=b ssr=SsrMode::Static(StaticRoute::new()) />
-                </ParentRoute>
-            }
-            .into_inner()
-            .into_any_nested_route()
-        } else {
-            NoMatch.into_any_nested_route()
+                }
+                ssr=SsrMode::OutOfOrder
+            >
+                <Route path=path!("") view=b ssr=SsrMode::Static(StaticRoute::new()) />
+            </ParentRoute>
         }
+        .into_inner()
+        .into_any_nested_route()
     }
 }
 
@@ -284,12 +282,6 @@ pub fn BlogListing(
                 let filter = tags.get();
                 b.into_iter()
                     .filter(|x| {
-                        #[cfg(not(debug_assertions))]
-                        {
-                            if !x.publish {
-                                return false;
-                            }
-                        }
                         if let Some(TagFilter(filter)) = filter {
                             x.tags.contains(&filter)
                         } else {
@@ -383,7 +375,6 @@ pub struct BlogEntryMeta {
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
     path_locale: bool,
-    publish: bool,
     title: &'static str,
     tags: &'static [Tag],
     pin: Option<usize>,
@@ -405,7 +396,6 @@ impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
             last_updated: T::LAST_UPDATED,
             locale: T::LOCALE,
             path_locale: T::PATH_LOCALE,
-            publish: T::PUBLISH,
             title: T::TITLE,
             tags: T::TAGS,
             pin: T::PIN,
@@ -607,13 +597,6 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             .map(|pin| Either::Right(custom_attribute("pinned", pin)))
             .unwrap_or(Either::Left(()))
     };
-    let article_unpublished = |entry: &BlogEntryMeta| {
-        if entry.publish {
-            Either::Right(())
-        } else {
-            Either::Left(custom_attribute("unpublished", "unpublished"))
-        }
-    };
     let lang = move |meta: &BlogEntryMeta| {
         meta.locale
             .map(|x| {
@@ -629,7 +612,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
     view! {
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
-                <li {..article_pinned(&entry)} {..article_unpublished(&entry)}>
+                <li {..article_pinned(&entry)}>
                     <article {..lang(&entry)}>
                         <A
                             on:click=on_click
