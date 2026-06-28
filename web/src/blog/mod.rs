@@ -58,12 +58,12 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
 
     fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
         let metadata = with_blog_simple::<BlogEntryMeta>(blog.clone());
-        let b = Lazy::<B>::new();
         #[cfg(debug_assertions)]
         let publish = true;
         #[cfg(not(debug_assertions))]
         let publish = metadata.publish;
         if publish {
+            let b = Lazy::<B>::new();
             view! {
                 <ParentRoute
                     path=metadata
