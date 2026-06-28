@@ -5,10 +5,10 @@ use futures::FutureExt as _;
 use leptos_router::{
     LazyRoute, MatchNestedRoutes, PartialPathMatch, PathSegment, PossibleRouteMatch,
 };
-use strum::{AsRefStr, EnumString, VariantArray};
+use strum::{EnumString, IntoStaticStr, VariantArray};
 
 #[cfg_attr(debug_assertions, derive(Debug))]
-#[derive(Clone, Copy, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, IntoStaticStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Tag {
     Ai,
@@ -18,7 +18,7 @@ pub enum Tag {
 }
 
 #[cfg_attr(debug_assertions, derive(Debug))]
-#[derive(Clone, Copy, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, IntoStaticStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Locale {
     #[strum(serialize = "sv_SE", serialize = "sv")]
