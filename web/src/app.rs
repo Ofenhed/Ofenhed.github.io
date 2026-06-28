@@ -11,7 +11,7 @@ use leptos_router::{
 use crate::{
     blog::Blog,
     contact::{Contact, PersistentQrLogo},
-    helpers::{Footnotes, ImgDef, provide_footnote_context},
+    helpers::{Footnotes, ImgDef},
 };
 
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -104,7 +104,6 @@ pub(crate) struct HamburgerMenu(pub NodeRef<html::Input>);
 #[component]
 pub(crate) fn App() -> impl IntoView {
     provide_meta_context();
-    provide_footnote_context();
     let fallback = || NotFound().into_view();
     let hamburger_toggle = NodeRef::new();
     provide_context(HamburgerMenu(hamburger_toggle.clone()));
