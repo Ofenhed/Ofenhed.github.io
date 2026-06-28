@@ -80,6 +80,13 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
     }
 }
 
+pub fn into_static_str<T>(source: T) -> &'static str
+where
+    T: Into<&'static str>,
+{
+    source.into()
+}
+
 #[cfg_attr(feature = "ssr", allow(unused))]
 pub(crate) trait IntoIntervalIterator<F>
 where

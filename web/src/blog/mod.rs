@@ -12,7 +12,7 @@ use crate::{
         },
         unremarkable::Unremarkable,
     },
-    helpers::{AddContext, ForRoute},
+    helpers::{AddContext, ForRoute, into_static_str},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -240,7 +240,7 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
                     children=|key| {
                         view! {
                             <ParentRoute
-                                path=(StaticSegment(key.as_ref()),)
+                                path=(StaticSegment(into_static_str(key)),)
                                 view=move || {
                                     view! { <AddContext context=Some(TagFilter(key.to_owned())) /> }
                                 }
@@ -506,7 +506,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         view! { <Meta property="og:modified_time" content=x.to_rfc3339() /> }
     });
     let locale = B::LOCALE.map(|x| {
-        view! { <Meta property="og:locale" content=x.as_ref().to_string() /> }
+        view! { <Meta property="og:locale" content=into_static_str(x) /> }
     });
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
@@ -517,7 +517,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
             each=move || B::TAGS.iter()
             key=|x| x.to_owned()
             children=|tag| {
-                view! { <Meta property="og:article:tag" content=tag.as_ref().to_string() /> }
+                view! { <Meta property="og:article:tag" content=into_static_str(tag) /> }
             }
         />
         <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
@@ -617,7 +617,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
     let lang = move |meta: &BlogEntryMeta| {
         meta.locale
             .map(|x| {
-                let s = x.as_ref();
+                let s = into_static_str(x);
                 let lang = match s.replace("_", "-") {
                     new if new == s => Cow::Borrowed(s),
                     new => Cow::Owned(new),
@@ -656,8 +656,8 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
                                 <li>
                                     <A href=move || {
-                                        format!("/clog/tag/{}", tag.as_ref())
-                                    }>{tag.as_ref().to_string()}</A>
+                                        format!("/clog/tag/{}", into_static_str(tag))
+                                    }>{into_static_str(tag)}</A>
                                 </li>
                             </For>
                         </ul>
