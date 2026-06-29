@@ -493,8 +493,21 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
     _ = entry;
     use_head();
     let last_update = B::LAST_UPDATED.map(|x| {
-        view! { <Meta property="og:modified_time" content=x.to_rfc3339() /> }
+        let mut date: Oco<'static, str> = Oco::Owned(x.date_naive().to_string());
+        date.upgrade_inplace();
+        view! {
+            <Meta property="og:modified_time" content=x.to_rfc3339() />
+            <time class="update" datetime=date.clone()>{date.clone()}</time>
+        }
     });
+    let publish = {
+        let mut date: Oco<'static, str> = Oco::Owned(B::PUBLISH_DATE.date_naive().to_string());
+        date.upgrade_inplace();
+        view! {
+            <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
+            <time class="publish" datetime=B::PUBLISH_DATE.date_naive().to_string()>{B::PUBLISH_DATE.date_naive().to_string()}</time>
+        }
+    };
     let locale = B::LOCALE.map(|x| {
         view! { <Meta property="og:locale" content=into_static_str(x) /> }
     });
@@ -510,10 +523,11 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
                 view! { <Meta property="og:article:tag" content=into_static_str(tag) /> }
             }
         />
-        <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
-        {last_update}
         <h1 id="pageHeader">{B::TITLE}</h1>
-        <p>{B::PUBLISH_DATE.date_naive().to_string()}</p>
+        <section class="article-info">
+            {publish}
+            {last_update}
+        </section>
     }
 }
 
