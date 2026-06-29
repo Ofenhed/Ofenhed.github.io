@@ -88,6 +88,13 @@ ul#blog-entries {
         }
       }
 
+      & > #hamburger, & > #menu > li {
+        transition: none !important;
+        &:hover {
+          filter: brightness(115%);
+        }
+      }
+
       @include nav.open($selector: &) {
         background: none;
       }
