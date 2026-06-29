@@ -134,7 +134,7 @@ pub(crate) fn App() -> impl IntoView {
             if !path.with(|path| path == "/") {
                 clicks_to_easter.track();
                 set_clicks_to_easter.update_untracked(|x| match x {
-                    EggCounter::Counter(count) => {
+                    EggCounter::Counter(count) | EggCounter::TriggeredOnce(count) => {
                         *count = INITIAL_EGG_COUNTER;
                     }
                     _ => (),
