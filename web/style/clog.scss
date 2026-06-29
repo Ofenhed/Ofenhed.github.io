@@ -61,6 +61,17 @@ ul#blog-entries {
 }
 
 @include nav.with-path-prefix("/clog", $base: body) {
+  main .article-info {
+    time {
+      margin-left: 1ex;
+    }
+    &:has(> time.update) {
+      & > time.publish {
+        text-decoration: line-through;
+        opacity: 0.5;
+      }
+    }
+  }
   @media screen {
     background: var(--space-body-background);
     grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;

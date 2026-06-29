@@ -623,6 +623,23 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             })
             .unwrap_or(Either::Left(()))
     };
+    let info = |meta: &BlogEntryMeta| {
+        let update = meta.last_updated.map(|time| {
+            let mut date: Oco<'static, str> = Oco::Owned(time.date_naive().to_string());
+            date.upgrade_inplace();
+            view! {
+                    <time class="update" datetime=date.clone()>{date.clone()}</time>
+            }
+        });
+        let mut date: Oco<'static, str> = Oco::Owned(meta.publish_date.date_naive().to_string());
+        date.upgrade_inplace();
+        view! {
+            <span class="article-info">
+                <time class="publish" datetime=date.clone()>{date.clone()}</time>
+                {update}
+            </span>
+        }
+    };
     view! {
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
@@ -648,7 +665,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                         >
                             {entry.title.to_owned()}
                         </A>
-                        <time datetime=entry.publish_date.date_naive().to_string() />
+                        {info(&entry)}
                         <ul class="tags">
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
                                 <li>
