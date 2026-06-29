@@ -34,6 +34,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
             </head>
             <body>
                 <App />
+                <NoInitTransition />
             </body>
         </html>
     }
@@ -100,6 +101,26 @@ pub(crate) fn NotFound() -> impl IntoView {
 
 #[derive(Clone)]
 pub(crate) struct HamburgerMenu(pub NodeRef<html::Input>);
+
+#[component]
+pub(crate) fn NoInitTransition() -> impl IntoView {
+    #[cfg(feature = "ssr")]
+    {
+        let script = js_macro::minify_js! {
+            addEventListener("DOMContentLoaded", (event) => {
+                const job = () => {
+                    document.body.setAttribute("data-activate-transitions", "");
+                };
+                if (window.requestIdleCallback) {
+                    window.requestIdleCallback(job);
+                } else {
+                    setTimeout(job, 1000);
+                }
+            });
+        };
+        view! { <script>{script}</script> }
+    }
+}
 
 #[component]
 pub(crate) fn App() -> impl IntoView {
