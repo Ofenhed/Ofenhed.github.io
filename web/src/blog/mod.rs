@@ -497,7 +497,9 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         date.upgrade_inplace();
         view! {
             <Meta property="og:modified_time" content=x.to_rfc3339() />
-            <time class="update" datetime=date.clone()>{date.clone()}</time>
+            <time class="update" datetime=date.clone()>
+                {date.clone()}
+            </time>
         }
     });
     let publish = {
@@ -505,7 +507,9 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         date.upgrade_inplace();
         view! {
             <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
-            <time class="publish" datetime=B::PUBLISH_DATE.date_naive().to_string()>{B::PUBLISH_DATE.date_naive().to_string()}</time>
+            <time class="publish" datetime=B::PUBLISH_DATE.date_naive().to_string()>
+                {B::PUBLISH_DATE.date_naive().to_string()}
+            </time>
         }
     };
     let locale = B::LOCALE.map(|x| {
@@ -524,10 +528,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
             }
         />
         <h1 id="pageHeader">{B::TITLE}</h1>
-        <section class="article-info">
-            {publish}
-            {last_update}
-        </section>
+        <section class="article-info">{publish} {last_update}</section>
     }
 }
 
@@ -628,14 +629,18 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             let mut date: Oco<'static, str> = Oco::Owned(time.date_naive().to_string());
             date.upgrade_inplace();
             view! {
-                    <time class="update" datetime=date.clone()>{date.clone()}</time>
+                <time class="update" datetime=date.clone()>
+                    {date.clone()}
+                </time>
             }
         });
         let mut date: Oco<'static, str> = Oco::Owned(meta.publish_date.date_naive().to_string());
         date.upgrade_inplace();
         view! {
             <span class="article-info">
-                <time class="publish" datetime=date.clone()>{date.clone()}</time>
+                <time class="publish" datetime=date.clone()>
+                    {date.clone()}
+                </time>
                 {update}
             </span>
         }
