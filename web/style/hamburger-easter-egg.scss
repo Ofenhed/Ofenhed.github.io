@@ -3,7 +3,7 @@
 @use 'sass:math';
 @use 'nav.scss';
 
-#navigation #hamburger.egg {
+#navigation #hamburger.ultra-realistic {
   $sword_length: 40px;
   $sword_width: 0.75px;
   $handle_length: 8px;
@@ -11,8 +11,8 @@
   $glow_side: 16px;
   @include nav.with-path('/', $selector: &) {
     .slice {
-      margin: 0;
       @include nav.closed($selector: &) {
+        margin: 0;
         &:nth-child(1) {
           margin-top: 5px;
           height: 20%;
@@ -41,115 +41,118 @@
       }
     }
     @include nav.open($selector: &) {
-      .slice {
-        $colors: (1: #f55, 2: #78f);
-        @each $index, $color in $colors {
-          &:nth-child(#{$index}) {
-            opacity: 1;
-            box-shadow: 0 0 1px 1px $color;
-            height: $sword_width;
-            width: $sword_length;
-            background: color.scale($color, $lightness: +80%);
-            border: none;
-            &::after {
-              content: '';
-              display: block;
-              background: #444;
-              position: absolute;
-              border-radius: 1px;
-              left: -$handle_length+0.25px;
-              top: ($sword_width - $handle_width) / 2;
-              height: $handle_width;
-              width: $handle_length;
-            }
-          }
-        }
-        &:nth-child(1), &:nth-child(2) {
-          animation-duration: 1s;
-        }
-        &:nth-child(1) {
-          @keyframes red-sword-in {
-            10% {
-              transform: translate(20px, -2px) rotate(-120deg);
-            }
-            45% {
-              transform: translate(20px, 1px) rotate(-135deg);
-            }
-            60% {
-              transform: translate(20px, -3px) rotate(-120deg);
-            }
-            70% {
-              transform: translate(18px, -1px) rotate(-94deg);
-            }
-            80% {
-              transform: translate(24px, -15px) rotate(-40deg);
-            }
-            100% {
-              transform: rotate(-135deg);
-            }
-          }
-          z-index: 3;
-          top: calc(50%);
-          transform: rotate(-135deg);
-          animation-timing-function: linear;
-          animation-name: red-sword-in;
-        }
-        &:nth-child(2) {
-          @keyframes blue-sword-in {
-            10% {
-              transform: translate(-10px, 0px) rotate(-45deg);
-            }
-            65% {
-              transform: translate(-12px, 2px) rotate(-50deg);
-            }
-            70% {
-              transform: translate(-12px, -1px) rotate(-40deg);
-            }
-            80% {
-              transform: translate(-30px, 30px) rotate(-160deg);
-            }
-            90% {
-              transform: translate(-25px, 35px) rotate(-255deg);
-            }
-            100% {
-              transform: rotate(-45deg);
-            }
-          }
-          z-index: 5;
-          top: calc(50% - $sword_width);
-          left: 0;
-          transform: rotate(-45deg);
-          animation-name: blue-sword-in;
-          animation-timing-function: ease-in;
-        }
-        &:nth-child(3) {
-          @keyframes sword-sparcles {
-            0% {
-              opacity: 0;
-              transform: scale(0.2);
-            }
-            95% {
-              opacity: 0;
-              transform: scale(0.2);
-            }
-            98% {
+      &.inner-conflict {
+        .slice {
+          margin: 0;
+          $colors: (1: #f55, 2: #78f);
+          @each $index, $color in $colors {
+            &:nth-child(#{$index}) {
               opacity: 1;
-              transform: scale(2);
+              box-shadow: 0 0 1px 1px $color;
+              height: $sword_width;
+              width: $sword_length;
+              background: color.scale($color, $lightness: +80%);
+              border: none;
+              &::after {
+                content: '';
+                display: block;
+                background: #444;
+                position: absolute;
+                border-radius: 1px;
+                left: -$handle_length+0.25px;
+                top: ($sword_width - $handle_width) / 2;
+                height: $handle_width;
+                width: $handle_length;
+              }
             }
           }
-          transform: scale(0.8);
-          width: $glow_side;
-          height: $glow_side;
-          opacity: 1;
-          top: calc(50% - 2 * $sword_width - $glow_side / 2);
-          left: math.div(math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px, 2) - $sword_width;
-          z-index: 4;
-          border: none;
-          animation-name: sword-sparcles;
-          animation-duration: 1s;
-          background: none;
-          background-image: radial-gradient(#ffff00, #ffffff10, #ffff0000);
-          padding: 0;
+          &:nth-child(1), &:nth-child(2) {
+            animation-duration: 1s;
+          }
+          &:nth-child(1) {
+            @keyframes red-sword-in {
+              10% {
+                transform: translate(20px, -2px) rotate(-120deg);
+              }
+              45% {
+                transform: translate(20px, 1px) rotate(-135deg);
+              }
+              60% {
+                transform: translate(20px, -3px) rotate(-120deg);
+              }
+              70% {
+                transform: translate(18px, -1px) rotate(-94deg);
+              }
+              80% {
+                transform: translate(24px, -15px) rotate(-40deg);
+              }
+              100% {
+                transform: rotate(-135deg);
+              }
+            }
+            z-index: 3;
+            top: calc(50%);
+            transform: rotate(-135deg);
+            animation-timing-function: linear;
+            animation-name: red-sword-in;
+          }
+          &:nth-child(2) {
+            @keyframes blue-sword-in {
+              10% {
+                transform: translate(-10px, 0px) rotate(-45deg);
+              }
+              65% {
+                transform: translate(-12px, 2px) rotate(-50deg);
+              }
+              70% {
+                transform: translate(-12px, -1px) rotate(-40deg);
+              }
+              80% {
+                transform: translate(-30px, 30px) rotate(-160deg);
+              }
+              90% {
+                transform: translate(-25px, 35px) rotate(-255deg);
+              }
+              100% {
+                transform: rotate(-45deg);
+              }
+            }
+            z-index: 5;
+            top: calc(50% - $sword_width);
+            left: 0;
+            transform: rotate(-45deg);
+            animation-name: blue-sword-in;
+            animation-timing-function: ease-in;
+          }
+          &:nth-child(3) {
+            @keyframes sword-sparcles {
+              0% {
+                opacity: 0;
+                transform: scale(0.2);
+              }
+              95% {
+                opacity: 0;
+                transform: scale(0.2);
+              }
+              98% {
+                opacity: 1;
+                transform: scale(2);
+              }
+            }
+            transform: scale(0.8);
+            width: $glow_side;
+            height: $glow_side;
+            opacity: 1;
+            top: calc(50% - 2 * $sword_width - $glow_side / 2);
+            left: math.div(math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px, 2) - $sword_width;
+            z-index: 4;
+            border: none;
+            animation-name: sword-sparcles;
+            animation-duration: 1s;
+            background: none;
+            background-image: radial-gradient(#ffff00, #ffffff10, #ffff0000);
+            padding: 0;
+          }
         }
       }
     }
