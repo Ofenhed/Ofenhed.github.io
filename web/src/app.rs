@@ -178,8 +178,12 @@ pub(crate) fn App() -> impl IntoView {
                     for="hamburger-toggle"
                     id="hamburger"
                     aria-hidden="true"
-                    class:inner-conflict=move || clicks_to_easter.with(|x| *x == EggCounter::Triggered)
-                    class:ultra-realistic=move || clicks_to_easter.with(|x| !matches!(x, EggCounter::Counter(_)))
+                    class:inner-conflict=move || {
+                        clicks_to_easter.with(|x| *x == EggCounter::Triggered)
+                    }
+                    class:ultra-realistic=move || {
+                        clicks_to_easter.with(|x| !matches!(x, EggCounter::Counter(_)))
+                    }
                 >
                     <span class="slice" />
                     <span class="slice" />
