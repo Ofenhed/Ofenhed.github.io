@@ -9,7 +9,7 @@
   $handle_length: 8px;
   $handle_width: 2.5px;
   $glow_side: 16px;
-  @include nav.with-path('/', $selector: &) {
+  @include nav.with-path-prefix('/clog', $invert-path: true, $selector: &) {
     .slice {
       @include nav.closed($selector: &) {
         margin: 0;
