@@ -46,7 +46,8 @@ ul#blog-entries {
       list-style-type: none;
       ul.tags {
         li {
-          clear: none;
+          display: inline;
+          margin-left: 1ex;
           a {
             color: light-dark(#555, bbb);
             &::before {
