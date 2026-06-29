@@ -14,10 +14,6 @@ use crate::{
     helpers::{Footnotes, ImgDef},
 };
 
-#[cfg_attr(debug_assertions, derive(Debug))]
-#[derive(PartialEq, Eq, Clone, Copy)]
-pub(crate) struct ShowNavigation(pub bool);
-
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     let css_path = options.css_path();
     view! {
@@ -88,6 +84,7 @@ pub(crate) fn BuildInfo() -> impl IntoView {
 #[derive(PartialEq, Eq, Clone, Copy)]
 enum EggCounter {
     Counter(u8),
+    TriggeredOnce(u8),
     Triggered,
 }
 
@@ -148,8 +145,9 @@ pub(crate) fn App() -> impl IntoView {
             let _e = e;
             set_aria_expanded.set(event_target_checked(&event));
             set_clicks_to_easter.update(move |c| match c {
-                EggCounter::Counter(0) => *c = EggCounter::Triggered,
-                EggCounter::Counter(x) => {
+                EggCounter::TriggeredOnce(0) => *c = EggCounter::Triggered,
+                EggCounter::Counter(0) => *c = EggCounter::TriggeredOnce(INITIAL_EGG_COUNTER),
+                EggCounter::Counter(x) | EggCounter::TriggeredOnce(x) => {
                     *x -= 1;
                 }
                 EggCounter::Triggered => (),
@@ -159,23 +157,12 @@ pub(crate) fn App() -> impl IntoView {
     let (get_logo_status, save_logo_status) = signal(PersistentQrLogo::default());
     provide_context(get_logo_status);
     provide_context(save_logo_status);
-    let show_navigation = {
-        let (should_show_navigation, set_show_navigation) = signal(ShowNavigation(false));
-        provide_context(set_show_navigation);
-        Signal::derive(move || {
-            if ShowNavigation(true) == should_show_navigation.get() {
-                true
-            } else {
-                false
-            }
-        })
-    };
     let aria_hidden = Signal::derive(move || if aria_expanded.get() { "false" } else { "true" });
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
         <Router>
-            <nav id="navigation" class:beta-nav=show_navigation>
+            <nav id="navigation">
                 <input
                     node_ref=hamburger_toggle
                     type="checkbox"
@@ -191,7 +178,8 @@ pub(crate) fn App() -> impl IntoView {
                     for="hamburger-toggle"
                     id="hamburger"
                     aria-hidden="true"
-                    class:egg=move || clicks_to_easter.get() == EggCounter::Triggered
+                    class:inner-conflict=move || clicks_to_easter.with(|x| *x == EggCounter::Triggered)
+                    class:ultra-realistic=move || clicks_to_easter.with(|x| !matches!(x, EggCounter::Counter(_)))
                 >
                     <span class="slice" />
                     <span class="slice" />

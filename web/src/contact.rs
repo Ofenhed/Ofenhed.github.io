@@ -1,9 +1,6 @@
 use leptos::{html, prelude::*};
 
-use crate::{
-    app::ShowNavigation,
-    helpers::{ImgDef, NoWasm},
-};
+use crate::helpers::{ImgDef, NoWasm};
 
 #[cfg(not(feature = "ssr"))]
 mod qr_settings {
@@ -350,22 +347,6 @@ pub(crate) fn Contact() -> impl IntoView {
         let content = STANDARD.encode(VCARD.as_bytes());
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
     });
-    let counter = RwSignal::new(0);
-    let maybe_activate_nav = Action::new(move |_| {
-        let mut value = 0;
-        counter.update(|x| {
-            *x += 1;
-            value = *x;
-        });
-        async move {
-            if value > 5 {
-                let Some(signal) = use_context::<WriteSignal<ShowNavigation>>() else {
-                    return;
-                };
-                signal.set(ShowNavigation(true));
-            }
-        }
-    });
     view! {
         <div class="contact">
             <div class="qr-code">
@@ -385,9 +366,7 @@ pub(crate) fn Contact() -> impl IntoView {
             <p class="linked-in">
                 <a href="https://linkedin.com/in/conditionraisemarcus">Marcus Ofenhed</a>
             </p>
-            <p on:click=move |_| {
-                maybe_activate_nav.dispatch(());
-            }>Senior IT Security Consultant</p>
+            <p>Senior IT Security Consultant</p>
             <Email />
         </div>
     }

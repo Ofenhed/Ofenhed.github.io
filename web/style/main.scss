@@ -177,13 +177,8 @@ body {
       }
     }
   }
-  @include nav.with-path("/", $base: &) {
-    &, main {
-      background: light-dark(#ffffff, #222222);
-    }
-    nav#navigation:not(.beta-nav) {
-      display: none;
-    }
+  &, main {
+    background: light-dark(#ffffff, #222222);
   }
   div.note {
     border-radius: 0.25em;
