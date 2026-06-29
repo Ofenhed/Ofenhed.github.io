@@ -28,8 +28,9 @@ jobs:
       id: cache-primes-restore
       uses: actions/cache/restore@v5
       with:
-        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/Cargo.toml') }}
         restore-keys: |
+          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}-
           ${{ runner.os }}-leptos-
         path: |
           ~/.cargo/registry
