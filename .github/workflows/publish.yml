@@ -5,6 +5,10 @@ on:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      ref:
+        required: true
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
@@ -14,7 +18,6 @@ env:
 jobs:
   build:
     name: Build static files
-    if: github.event_name != 'workflow_dispatch'
 
     runs-on: ubuntu-latest
 
@@ -23,6 +26,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+      with:
+        ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
 
     - name: Restore cache
       id: cache-primes-restore
@@ -123,7 +128,7 @@ jobs:
 
   check:
     name: Check source code rules
-    if: ${{ github.event_name != 'workflow_dispatch' && !cancelled() }}
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     needs: build
 
@@ -231,6 +236,7 @@ jobs:
 
   deploy:
     name: Deploy to Github Pages
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     needs: build
     concurrency:
