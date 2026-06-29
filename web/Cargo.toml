@@ -103,3 +103,5 @@ lib-default-features = false
 lib-profile-release = "wasm-release"
 
 js-minify = true
+
+wasm-opt-features = ["-Oz","--enable-bulk-memory","--enable-nontrapping-float-to-int", "--converge"]
