@@ -17,8 +17,10 @@ nav {
   }
 }
 
-body[data-activate-transitions] * {
-  transition: var(--default-transition);
+body[data-activate-transitions] {
+  &, & * {
+    transition: var(--default-transition);
+  }
 }
 
 body {
