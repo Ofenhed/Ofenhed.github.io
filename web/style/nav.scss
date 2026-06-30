@@ -17,7 +17,7 @@
   }
   @if $path != null {
     $p: string.quote(#{$path});
-    $p-sel: ":has(main[path#{$path-match}=\"#{$p}\"])";
+    $p-sel: ":has(main[data-path#{$path-match}=\"#{$p}\"])";
     @if $invert-path {
       $p-sel: ":not(#{$p-sel})";
     }
