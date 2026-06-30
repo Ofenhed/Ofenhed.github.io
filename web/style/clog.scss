@@ -72,6 +72,19 @@ ul#blog-entries {
       }
     }
   }
+  main div.pagination {
+    margin: 0 auto;
+    text-align: center;
+    a {
+      display: inline-block;
+      margin: 0.5ex 1ex;
+      text-decoration: none;
+      color: light-dark(#000, #fff);
+      &[aria-current] {
+        opacity: 0.5;
+      }
+    }
+  }
   @media screen {
     background: var(--space-body-background);
     grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;
