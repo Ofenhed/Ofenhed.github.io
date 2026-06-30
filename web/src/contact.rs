@@ -1,4 +1,5 @@
 use leptos::{html, prelude::*};
+use leptos_meta::Style;
 
 use crate::helpers::{ImgDef, NoWasm};
 
@@ -348,6 +349,9 @@ pub(crate) fn Contact() -> impl IntoView {
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
     });
     view! {
+        <Style>
+            "div.qr-code{display:block;aspect-ratio: 1/1;width:calc(min(308px,100%));margin:0 auto}"
+        </Style>
         <div class="contact">
             <div class="qr-code">
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
