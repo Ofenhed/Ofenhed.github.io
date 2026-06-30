@@ -1,11 +1,11 @@
 use leptos::{attr::custom::custom_attribute, html, prelude::*};
-use leptos_meta::{provide_meta_context, Meta, MetaTags, Stylesheet, Title};
+use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
 use leptos_router::{
-    components::{Route, Router, Routes, A},
+    SsrMode,
+    components::{A, Route, Router, Routes},
     hooks::use_location,
     path,
     static_routes::StaticRoute,
-    SsrMode,
 };
 
 use crate::{
