@@ -123,9 +123,6 @@ impl StaticRouteGenerator {
         let additional_context = {
             move || {
                 provide_context(leptos_router::location::RequestUrl::new(path.as_ref()));
-                let (read_ignored, write_ignored) = signal(false);
-                provide_context(NoGenerateStatic(write_ignored));
-                provide_context(NoGenerateStaticReader(read_ignored));
                 #[cfg(feature = "meta")]
                 {
                     provide_context(meta_context);
@@ -190,16 +187,17 @@ impl StaticRouteGenerator {
                                 additional_context.clone(),
                             )
                         },
-                        move |path, _owner, content| {
+                        move |path, owner, content| {
                             let target = static_path(&options, Oco::Borrowed(path.as_ref()))
                                 .map_err(std::io::Error::other);
                             let path = path.to_owned();
+                            let dont_generate = owner.with(|| {
+                                let NoGenerateStaticReader(r) =
+                                    use_context().expect("Inserted above");
+                                r.get()
+                            });
+
                             async move {
-                                let dont_generate = {
-                                    let NoGenerateStaticReader(r) =
-                                        use_context().expect("Inserted above");
-                                    r.get()
-                                };
                                 if dont_generate {
                                     eprintln!("Ignoring path {path}");
                                     return Ok(());
