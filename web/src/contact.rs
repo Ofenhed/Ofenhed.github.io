@@ -350,7 +350,7 @@ pub(crate) fn Contact() -> impl IntoView {
     });
     view! {
         <Style>
-            "div.qr-code{display:block;aspect-ratio:1/1;width:calc(min(308px,100%));margin:0 auto}"
+            "div.qr-code{display:block;box-sizing:border-box;aspect-ratio:1/1;width:calc(min(308px,100%));margin:0 auto}"
         </Style>
         <div class="contact">
             <div class="qr-code">

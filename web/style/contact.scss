@@ -3,14 +3,11 @@ div.contact {
     text-align: center;
   }
   div.qr-code {
-    img, canvas {
+    img, canvas, div#canvasHolder {
       width: 100%;
     }
     &, img, canvas {
       image-rendering: pixelated;
-    }
-    img, div#canvasHolder {
-      width: calc(min(var(--qr-size), 100%));
     }
     noscript > img::after {
       content: '';
