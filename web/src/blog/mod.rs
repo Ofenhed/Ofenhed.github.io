@@ -129,7 +129,7 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
         let num_pages = move || num_pages(blogs.with(|x| x.0.len()));
         let pagination = move || {
             let num_pages = num_pages();
-            if num_pages > 0 {
+            if num_pages > 1 {
                 Some(view! {
                     <div class="pagination">
                         <For each=move || 0..num_pages key=|x| *x let(page)>
