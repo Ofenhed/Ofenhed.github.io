@@ -115,6 +115,96 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
     }
 }
 
+#[component]
+pub(crate) fn BlogPagingLinks() -> impl IntoView {
+    let current_page =
+        use_context::<Signal<CurrentPage>>().expect("Current page always defined here");
+    let blogs = use_context::<Signal<FilteredEntities>>()
+        .expect("Filtered entities are always defined here");
+    let num_pages = |entries| {
+        let entry_count = entries;
+        let pages_full = entry_count + ENTRIES_PER_PAGE - 1;
+        let pages = pages_full / ENTRIES_PER_PAGE;
+        pages
+    };
+    let num_pages = move || num_pages(blogs.with(|x| x.0.len()));
+    let previous_page = move || {
+        current_page.with(move |CurrentPage(p)| {
+            let p = *p;
+            if p != 0 {
+                Some(view! {
+                    <a href=current_url_with(move || provide_context(
+                        Signal::derive(move || CurrentPage(p - 1)),
+                    ))>"<"</a>
+                })
+            } else {
+                None
+            }
+        })
+    };
+    let next_page = move || {
+        current_page.with(move |CurrentPage(p)| {
+            let p = *p + 1;
+            let num_pages = num_pages();
+            if p < num_pages {
+                Some(view! {
+                    <a href=current_url_with(move || provide_context(
+                        Signal::derive(move || CurrentPage(p)),
+                    ))>">"</a>
+                })
+            } else {
+                None
+            }
+        })
+    };
+    let pagination = move || {
+        let num_pages = num_pages();
+        let is_current = move |p| {
+            move || {
+                if current_page.with(|CurrentPage(c)| p == *c) {
+                    Some("page")
+                } else {
+                    None
+                }
+            }
+        };
+        if num_pages > 1 {
+            Some(view! {
+                <div class="pagination">
+                    {previous_page} <For each=move || 0..num_pages key=|x| *x let(page)>
+                        <a
+                            aria-current=is_current(page)
+                            href=current_url_with(|| provide_context(
+                                Signal::derive(move || CurrentPage(page)),
+                            ))
+                        >
+                            {page + 1}
+                        </a>
+                    </For> {next_page}
+                </div>
+            })
+        } else {
+            None
+        }
+    };
+    #[cfg(not(feature = "statics"))]
+    let maybe_ignore = ();
+    #[cfg(feature = "statics")]
+    let maybe_ignore = {
+        let leptos_static_files::NoGenerateStatic(ignore) =
+            use_context().expect("This should be defined by static_files");
+        Signal::derive(move || {
+            let CurrentPage(page) = current_page.get();
+            let page = page + 1;
+            let last_page = num_pages();
+            if last_page < page {
+                ignore.set(true);
+            }
+        })
+    };
+    (maybe_ignore, pagination)
+}
+
 #[component(transparent)]
 pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
     let num_pages = |entries| {
@@ -122,45 +212,6 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
         let pages_full = entry_count + ENTRIES_PER_PAGE - 1;
         let pages = pages_full / ENTRIES_PER_PAGE;
         pages
-    };
-    let pagination = {
-        let blogs = use_context::<Signal<FilteredEntities>>()
-            .expect("Filtered entities are always defined here");
-        let num_pages = move || num_pages(blogs.with(|x| x.0.len()));
-        let pagination = move || {
-            let num_pages = num_pages();
-            if num_pages > 1 {
-                Some(view! {
-                    <div class="pagination">
-                        <For each=move || 0..num_pages key=|x| *x let(page)>
-                            <a href=current_url_with(|| provide_context(
-                                Signal::derive(move || CurrentPage(page)),
-                            ))>{page + 1}</a>
-                        </For>
-                    </div>
-                })
-            } else {
-                None
-            }
-        };
-        #[cfg(not(feature = "statics"))]
-        let maybe_ignore = ();
-        #[cfg(feature = "statics")]
-        let maybe_ignore = {
-            let current_page =
-                use_context::<Signal<CurrentPage>>().expect("Current page always defined here");
-            let leptos_static_files::NoGenerateStatic(ignore) =
-                use_context().expect("This should be defined by static_files");
-            Signal::derive(move || {
-                let CurrentPage(page) = current_page.get();
-                let page = page + 1;
-                let last_page = num_pages();
-                if last_page < page {
-                    ignore.set(true);
-                }
-            })
-        };
-        (maybe_ignore, pagination)
     };
     let max_pages = num_pages(with_blogs(()).count());
     view! {
@@ -174,7 +225,6 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
                             view! {
                                 <AddContext context=CurrentPage(key) />
                                 <Outlet />
-                                {pagination.clone()}
                             }
                         }
                         ssr=SsrMode::Static(StaticRoute::new())
@@ -327,8 +377,9 @@ pub fn BlogListing(
                     }
                 });
                 view! {
-                    <Outlet />
                     <BlogEntryList entries=blogs />
+                    <Outlet />
+                    <BlogPagingLinks />
                 }
             }
             ssr=SsrMode::OutOfOrder
