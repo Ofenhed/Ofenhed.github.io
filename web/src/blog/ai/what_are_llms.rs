@@ -43,6 +43,7 @@ impl LazyRoute for WhatAreLLMs {
         };
         let agi =
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
+        let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
             <Style>
                 "@media screen {ul.lies em {color: #f00; text-shadow: 0 0 0.8em light-dark(#000, #555);}} @media print and (color) {ul.lies em {text-shadow: 0 0 0.8em #f00}}"
@@ -173,8 +174,8 @@ impl LazyRoute for WhatAreLLMs {
                         {llms}" are not "<em>"intelligent"</em>
                         ". We all know this, even those that design them are open about this. The point where we don't agree is that they think that "
                         {llms}
-                        " are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as \"the singularity\" or as \""
-                        {agi}
+                        " are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as \"the singularity\", \""
+                        {agi} "\", or \""{asi}
                         "\", through the magic of \"recursive self-improvement\". That makes the water into wine routine look like child's play in comparison, and completely ignores the fact that \"recursive self-improvement\" is known as "
                         <a href="https://www.ibm.com/think/topics/model-collapse">
                             "model collapse"
