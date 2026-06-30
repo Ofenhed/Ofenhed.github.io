@@ -120,6 +120,14 @@ pub(crate) fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X
     entries.into_any_nested_route()
 }
 
+pub(crate) fn context_signal<T: Send + Sync + 'static>(val: T) -> (Signal<T>, WriteSignal<T>) {
+    let (read, write) = signal(val);
+    let read = read.into();
+    provide_context(read);
+    provide_context(write);
+    (read, write)
+}
+
 #[component]
 pub(crate) fn AddContext<T: Send + Sync + 'static>(
     context: T,
@@ -495,5 +503,116 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
             {children.into_inner()}
             {suffix}
         </abbr>
+    }
+}
+
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+pub(crate) enum StrOffsetError {
+    #[error("Not contained")]
+    NotContained,
+    #[error(transparent)]
+    Utf8(#[from] std::str::Utf8Error),
+}
+
+pub(crate) unsafe fn str_offset_unchecked(
+    haystack: &str,
+    needle: &str,
+) -> Result<usize, StrOffsetError> {
+    let b_hs = haystack.as_bytes();
+    let ptr_hs = b_hs.as_ptr();
+    let ptr_end_hs = unsafe { ptr_hs.offset(b_hs.len().try_into().unwrap()) };
+    let b_needle = needle.as_bytes();
+    let ptr_needle = b_needle.as_ptr();
+    if ptr_needle < ptr_hs || ptr_needle > ptr_end_hs {
+        return Err(StrOffsetError::NotContained);
+    }
+    let needle_offset = unsafe { ptr_needle.offset_from_unsigned(ptr_hs) };
+    let before_needle = &b_hs[..needle_offset];
+    #[cfg(debug_assertions)]
+    let str_before = str::from_utf8(&before_needle)?;
+    #[cfg(not(debug_assertions))]
+    let str_before = unsafe { str::from_utf8_unchecked(&before_needle) }?;
+    Ok(str_before.len())
+}
+
+pub(crate) fn split_prefix<'a>(s: &'a str, prefix: &'_ str) -> Option<(&'a str, &'a str)> {
+    if prefix.len() > s.len() {
+        return None;
+    }
+    let ret @ (maybe_prefix, _) = s.split_at(prefix.len());
+    if prefix == maybe_prefix {
+        Some(ret)
+    } else {
+        None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn str_offset_same() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[..];
+        assert_eq!(unsafe { str_offset_unchecked(string, other) }?, 0);
+        Ok(())
+    }
+    #[test]
+    fn str_offset_inside() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[2..4];
+        assert_eq!(unsafe { str_offset_unchecked(string, other) }?, 2);
+        Ok(())
+    }
+    #[test]
+    fn str_offset_inside_empty() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[2..2];
+        assert_eq!(other, "");
+        assert_eq!(unsafe { str_offset_unchecked(string, other) }?, 2);
+        Ok(())
+    }
+    #[test]
+    fn str_offset_last() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[string.len()..];
+        assert_eq!(
+            unsafe { str_offset_unchecked(string, other) }?,
+            string.len()
+        );
+        Ok(())
+    }
+    #[test]
+    fn str_offset_before() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[3..];
+        assert!(matches!(
+            unsafe { str_offset_unchecked(other, string) },
+            Err(StrOffsetError::NotContained)
+        ));
+        Ok(())
+    }
+    #[test]
+    fn str_offset_after() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[0..2];
+        let string = &string[3..];
+        assert_eq!(other, "My");
+        assert_eq!(string, "string");
+        assert!(matches!(
+            unsafe { str_offset_unchecked(other, string) },
+            Err(StrOffsetError::NotContained)
+        ));
+        Ok(())
+    }
+    #[test]
+    fn str_offset_after_but_not_contained() -> Result<(), StrOffsetError> {
+        let string = "My string";
+        let other = &string[0..3];
+        let string = &string[3..];
+        assert_eq!(other, "My ");
+        assert_eq!(string, "string");
+        assert_eq!(unsafe { str_offset_unchecked(other, string) }?, other.len());
+        Ok(())
     }
 }

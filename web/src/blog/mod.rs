@@ -1,5 +1,6 @@
 pub mod ai;
 pub mod metadata;
+pub mod path;
 pub mod unremarkable;
 pub mod why;
 
@@ -10,9 +11,10 @@ use crate::{
             BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag,
             with_blog_simple,
         },
+        path::format_path,
         unremarkable::Unremarkable,
     },
-    helpers::{AddContext, ForRoute, into_static_str},
+    helpers::{AddContext, ForRoute, context_signal, into_static_str},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -22,19 +24,48 @@ use leptos_meta::{Meta, use_head};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
 use leptos_router::{
-    Lazy, PartialPathMatch, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
+    Lazy, PathSegment, PossibleRouteMatch, SsrMode,
     any_nested_route::{AnyNestedRoute, IntoAnyNestedRoute},
     components::{A, ParentRoute, Route},
-    hooks::use_params,
     nested_router::Outlet,
-    params::Params,
     path,
     static_routes::StaticRoute,
 };
-use std::{borrow::Cow, cmp::max, str::FromStr};
-use strum::{AsRefStr, EnumString, VariantArray};
+use std::{borrow::Cow, str::FromStr};
+use strum::{EnumString, IntoStaticStr, VariantArray};
 
 const ENTRIES_PER_PAGE: usize = 10;
+
+fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
+    let owner = Owner::current().unwrap();
+    let mut ret = vec![PathSegment::Static(Cow::Borrowed("clog"))];
+    owner.child().with(|| {
+        f();
+        if let Some(tag) = use_context::<Signal<Option<TagFilter>>>()
+            .map(|x| x.get())
+            .flatten()
+        {
+            tag.generate_path(&mut ret);
+        }
+        use_context::<Signal<SortBy>>()
+            .unwrap()
+            .get()
+            .generate_path(&mut ret);
+        use_context::<Signal<SortInvert>>()
+            .unwrap()
+            .get()
+            .generate_path(&mut ret);
+        use_context::<Signal<CurrentPage>>()
+            .unwrap()
+            .get()
+            .generate_path(&mut ret);
+    });
+    ret
+}
+
+fn current_url_with(f: impl Fn()) -> String {
+    format_path(current_path_with(f)).into_owned()
+}
 
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
     let published = [b.with_blog(why::WhyBlog), b.with_blog(ai::WhatAreLLMs)];
@@ -86,91 +117,72 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
 
 #[component(transparent)]
 pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
-    #[derive(Params, PartialEq)]
-    struct Page {
-        page: usize,
-    }
-    let page = || {
-        let page = use_params::<Page>();
-        Signal::derive(move || {
-            CurrentPage(
-                max(
-                    page.with(|x| x.as_ref().expect("Params always set here").page),
-                    1,
-                ) - 1,
-            )
-        })
-    };
     let num_pages = |entries| {
         let entry_count = entries;
         let pages_full = entry_count + ENTRIES_PER_PAGE - 1;
         let pages = pages_full / ENTRIES_PER_PAGE;
         pages
     };
-    let maybe_ignore = {
+    let pagination = {
+        let blogs = use_context::<Signal<FilteredEntities>>()
+            .expect("Filtered entities are always defined here");
+        let num_pages = move || num_pages(blogs.with(|x| x.0.len()));
+        let pagination = move || {
+            let num_pages = num_pages();
+            if num_pages > 0 {
+                Some(view! {
+                    <div class="pagination">
+                        <For each=move || 0..num_pages key=|x| *x let(page)>
+                            <a href=current_url_with(|| provide_context(
+                                Signal::derive(move || CurrentPage(page)),
+                            ))>{page + 1}</a>
+                        </For>
+                    </div>
+                })
+            } else {
+                None
+            }
+        };
         #[cfg(not(feature = "statics"))]
-        {
-            ()
-        }
+        let maybe_ignore = ();
         #[cfg(feature = "statics")]
-        {
+        let maybe_ignore = {
+            let current_page =
+                use_context::<Signal<CurrentPage>>().expect("Current page always defined here");
             let leptos_static_files::NoGenerateStatic(ignore) =
                 use_context().expect("This should be defined by static_files");
-            let blogs = use_context::<Signal<FilteredEntities>>()
-                .expect("Filtered entities are always defined here");
-            let page = use_context::<ReadSignal<CurrentPage>>()
-                .expect("Current page always available here");
             Signal::derive(move || {
-                let CurrentPage(page) = page.get();
+                let CurrentPage(page) = current_page.get();
                 let page = page + 1;
-                let last_page = num_pages(blogs.with(|x| x.0.len()));
+                let last_page = num_pages();
                 if last_page < page {
                     ignore.set(true);
                 }
             })
-        }
+        };
+        (maybe_ignore, pagination)
     };
+    let max_pages = num_pages(with_blogs(()).count());
     view! {
-        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
-            <Route
-                path=path!("/page/:page")
-                view=move || {
-                    let page = page().get();
-                    view! {
-                        <AddContext context=page />
-                        {maybe_ignore.clone()}
-                    }
-                }
-                ssr=SsrMode::Static(
-                    StaticRoute::new()
-                        .prerender_params(move || {
-                            async move {
-                                let max_pages = num_pages(with_blogs(()).count());
-                                [
-                                    (
-                                        "page".to_string(),
-                                        (1..max_pages)
-                                            .map(|x| (x + 1).to_string())
-                                            .collect::<Vec<_>>(),
-                                    ),
-                                ]
-                                    .into_iter()
-                                    .collect()
+        <ForRoute
+            each=0..max_pages
+            children=move |key| {
+                view! {
+                    <Route
+                        path=CurrentPage(key)
+                        view=move || {
+                            view! {
+                                <AddContext context=CurrentPage(key) />
+                                <Outlet />
+                                {pagination.clone()}
                             }
-                        }),
-                )
-            />
-            <Route
-                path=path!("/")
-                view=move || {
-                    view! {
-                        <AddContext context=CurrentPage(0) />
-                        {maybe_ignore}
-                    }
+                        }
+                        ssr=SsrMode::Static(StaticRoute::new())
+                    />
                 }
-                ssr=SsrMode::Static(StaticRoute::new())
-            />
-        </ParentRoute>
+                    .into_inner()
+            }
+        />
     }
     .into_inner()
 }
@@ -178,51 +190,34 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
 #[component(transparent)]
 pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
     view! {
-        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
-            <ParentRoute path=path!("/sort") view=Outlet ssr=SsrMode::OutOfOrder>
-                <ForRoute
-                    each=SortBy::VARIANTS.iter()
-                    children=|key| {
-                        view! {
-                            <ParentRoute
-                                path=(StaticSegment(key.as_ref()),)
-                                view=move || view! { <AddContext context=key.to_owned() /> }
-                                ssr=SsrMode::OutOfOrder
-                            >
-                                <ParentRoute
-                                    path=path!("/invert")
-                                    view=|| view! { <AddContext context=SortInvert(true) /> }
-                                    ssr=SsrMode::OutOfOrder
-                                >
-                                    <BlogPaging />
-                                </ParentRoute>
-                                <ParentRoute
-                                    path=path!("/")
-                                    view=|| view! { <AddContext context=SortInvert(false) /> }
-                                    ssr=SsrMode::OutOfOrder
-                                >
-                                    <BlogPaging />
-                                </ParentRoute>
-                            </ParentRoute>
-                        }
-                            .into_inner()
-                    }
-                />
-            </ParentRoute>
-            <ParentRoute
-                path=path!("/")
-                view=|| {
-                    view! {
-                        <AddContext context=SortInvert(false)>
-                            <AddContext context=SortBy::Default />
-                        </AddContext>
-                    }
+        <ForRoute
+            each=SortBy::VARIANTS.iter()
+            children=|key| {
+                view! {
+                    <ParentRoute
+                        path=*key
+                        view=move || view! { <AddContext context=key.to_owned() /> }
+                        ssr=SsrMode::OutOfOrder
+                    >
+                        <ParentRoute
+                            path=SortInvert(true)
+                            view=|| view! { <AddContext context=SortInvert(true) /> }
+                            ssr=SsrMode::OutOfOrder
+                        >
+                            <BlogPaging />
+                        </ParentRoute>
+                        <ParentRoute
+                            path=SortInvert(false)
+                            view=|| view! { <AddContext context=SortInvert(false) /> }
+                            ssr=SsrMode::OutOfOrder
+                        >
+                            <BlogPaging />
+                        </ParentRoute>
+                    </ParentRoute>
                 }
-                ssr=SsrMode::OutOfOrder
-            >
-                <BlogPaging />
-            </ParentRoute>
-        </ParentRoute>
+                    .into_inner()
+            }
+        />
     }
     .into_inner()
 }
@@ -232,27 +227,25 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
     let no_tag_filter: Option<TagFilter> = None;
     view! {
         <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
-            <ParentRoute path=path!("/tag") view=Outlet ssr=SsrMode::OutOfOrder>
-                <ForRoute
-                    each=Tag::VARIANTS.iter()
-                    children=|key| {
-                        view! {
-                            <ParentRoute
-                                path=(StaticSegment(into_static_str(key)),)
-                                view=move || {
-                                    view! { <AddContext context=Some(TagFilter(key.to_owned())) /> }
-                                }
-                                ssr=SsrMode::OutOfOrder
-                            >
-                                <BlogSorting />
-                            </ParentRoute>
-                        }
-                            .into_inner()
+            <ForRoute
+                each=Tag::VARIANTS.iter().map(|x| TagFilter(*x))
+                children=|key| {
+                    view! {
+                        <ParentRoute
+                            path=key
+                            view=move || {
+                                view! { <AddContext context=Some(key) /> }
+                            }
+                            ssr=SsrMode::OutOfOrder
+                        >
+                            <BlogSorting />
+                        </ParentRoute>
                     }
-                />
-            </ParentRoute>
+                        .into_inner()
+                }
+            />
             <ParentRoute
-                path=path!("/")
+                path=path!("")
                 view=move || view! { <AddContext context=no_tag_filter /> }
                 ssr=SsrMode::OutOfOrder
             >
@@ -268,15 +261,10 @@ pub fn BlogListing(
     #[prop(into)] blogs: Signal<Vec<BlogEntryMeta>>,
 ) -> impl MatchNestedRoutes + Clone {
     let blogs = {
-        let (sort_by, writer) = signal(SortBy::PublishDate);
-        provide_context(writer);
-        let (inverted, writer) = signal(SortInvert(false));
-        provide_context(writer);
-        let (page, writer) = signal(CurrentPage(0));
-        provide_context(page);
-        provide_context(writer);
-        let (tags, writer) = signal(None::<TagFilter>);
-        provide_context(writer);
+        let (sort_by, _) = context_signal(SortBy::Default);
+        let (inverted, _) = context_signal(SortInvert(false));
+        let (page, _) = context_signal(CurrentPage(0));
+        let (tags, _) = context_signal(None::<TagFilter>);
         let filtered_entities = Signal::derive(move || {
             FilteredEntities(blogs.with(|b| {
                 let filter = tags.get();
@@ -330,7 +318,7 @@ pub fn BlogListing(
     };
     view! {
         <ParentRoute
-            path=path!("/")
+            path=path!("")
             view=move || {
                 Effect::new(move |_| {
                     let blogs = blogs.with(|x| x.iter().map(|x| x.uid).collect());
@@ -399,90 +387,6 @@ impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
             title: T::TITLE,
             tags: T::TAGS,
             pin: T::PIN,
-        }
-    }
-}
-
-impl PossibleRouteMatch for BlogEntryMeta {
-    fn optional(&self) -> bool {
-        false
-    }
-    fn test<'a>(&self, path: &'a str) -> Option<PartialPathMatch<'a>> {
-        let mut matched_len = 0;
-        let mut param_offset = 0;
-        let mut param_len = 0;
-        let mut test = path.chars();
-
-        if let Some('/') = test.next() {
-            matched_len += 1;
-            param_offset = 1;
-        }
-
-        for char in test {
-            if char.is_numeric() {
-                matched_len += char.len_utf8();
-                param_len += char.len_utf8();
-            } else {
-                break;
-            }
-        }
-
-        if matched_len == param_offset {
-            return None;
-        }
-
-        let matched_num = &path[param_offset..param_len + param_offset];
-        match u32::from_str(matched_num) {
-            Ok(id) if id == self.uid => {
-                if let (Some(locale), true) = (self.locale, self.path_locale) {
-                    locale
-                        .test(&path[param_offset + param_len..])
-                        .map(|m| {
-                            let path_bytes = path.as_bytes();
-                            let param_offset_bytes = path[param_offset..]
-                                .as_bytes()
-                                .first()
-                                .map(|f| path_bytes.element_offset(f))
-                                .flatten()
-                                .unwrap();
-                            let remaining = if let Some(first) = m.remaining().as_bytes().first() {
-                                unsafe {
-                                    str::from_utf8_unchecked(
-                                        &path_bytes[path_bytes.element_offset(first).unwrap()..],
-                                    )
-                                }
-                            } else {
-                                &path[path.len()..]
-                            };
-                            let matched = m.matched().as_bytes();
-                            let matched = matched
-                                .first()
-                                .map(|f| unsafe {
-                                    str::from_utf8_unchecked(
-                                        &path_bytes[param_offset_bytes
-                                            ..path_bytes.element_offset(f).unwrap()
-                                                + matched.len()],
-                                    )
-                                })
-                                .unwrap_or(remaining);
-                            PartialPathMatch::new(remaining, vec![], matched)
-                        })
-                        .or_else(|| None)
-                } else {
-                    Some(PartialPathMatch::new(
-                        &path[param_offset + param_len..],
-                        vec![],
-                        &path[param_offset..param_offset + param_len],
-                    ))
-                }
-            }
-            _ => None,
-        }
-    }
-    fn generate_path(&self, path: &mut Vec<PathSegment>) {
-        path.push(PathSegment::Static(Cow::Owned(self.uid.to_string())));
-        if let (Some(locale), true) = (self.locale, self.path_locale) {
-            locale.generate_path(path)
         }
     }
 }
@@ -558,9 +462,9 @@ struct FilteredEntities(Vec<BlogEntryMeta>);
 struct CurrentPageEntries(Vec<BlogEntryMeta>);
 
 #[cfg_attr(debug_assertions, derive(Debug))]
-#[derive(Clone, Default, PartialEq, Eq, Hash, AsRefStr, VariantArray, EnumString)]
+#[derive(Clone, Copy, Default, PartialEq, Eq, Hash, IntoStaticStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
-pub enum SortBy {
+pub(crate) enum SortBy {
     #[default]
     Default,
     PublishDate,
@@ -570,14 +474,14 @@ pub enum SortBy {
 
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[derive(Clone, Default, PartialEq, Eq)]
-pub struct SortInvert(bool);
+pub(crate) struct SortInvert(bool);
 
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[derive(Clone, Copy)]
-pub struct TagFilter(Tag);
+pub(crate) struct TagFilter(Tag);
 
 #[derive(Clone, Copy)]
-struct CurrentPage(usize);
+pub(crate) struct CurrentPage(usize);
 
 impl AsRef<usize> for CurrentPage {
     fn as_ref(&self) -> &usize {
@@ -658,14 +562,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                                     PathSegment::Static(Cow::Borrowed("entry")),
                                 ];
                                 entry.generate_path(&mut path);
-                                format!(
-                                    "{}#{}",
-                                    path
-                                        .iter()
-                                        .map(|x| format!("/{}", x.as_raw_str()))
-                                        .collect::<String>(),
-                                    to_title(entry.title),
-                                )
+                                format!("{}#{}", format_path(path), to_title(entry.title))
                             }
                         >
                             {entry.title.to_owned()}
@@ -675,7 +572,11 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
                                 <li>
                                     <A href=move || {
-                                        format!("/clog/tag/{}", into_static_str(tag))
+                                        let mut path = vec![
+                                            PathSegment::Static(Cow::Borrowed("clog")),
+                                        ];
+                                        TagFilter(*tag).generate_path(&mut path);
+                                        format_path(path).into_owned()
                                     }>{into_static_str(tag)}</A>
                                 </li>
                             </For>
