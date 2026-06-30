@@ -158,7 +158,7 @@ impl LazyRoute for WhatAreLLMs {
                 <ul class="lies">
                     <li>
                         "You don't "<em>"train"</em>" an "{ai}
-                        " model. You optimize a model to be able to predict specific data. This interpretation would be "
+                        " model. You optimize a model to be able to generate specific data. This interpretation would be "
                         <a href="https://openai.com/new-york-times/#ai-training-is-fair-use">
                             "legally problematic"
                         </a>"."
