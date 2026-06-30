@@ -1,5 +1,5 @@
 use leptos::{attr::custom::custom_attribute, html, prelude::*};
-use leptos_meta::{Meta, MetaTags, Stylesheet, Title, provide_meta_context};
+use leptos_meta::{Meta, MetaTags, Title, provide_meta_context};
 use leptos_router::{
     SsrMode,
     components::{A, Route, Router, Routes},
@@ -20,6 +20,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <!DOCTYPE html>
         <html lang="sv">
             <head>
+                <link rel="stylesheet" href=css_path />
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="referrer" content="no-referrer" />
@@ -29,7 +30,6 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <meta name="format-detection" content="email=no" />
                 <AutoReload options=options.clone() />
                 <HydrationScripts options />
-                <Stylesheet href=css_path />
                 <MetaTags />
             </head>
             <body>
