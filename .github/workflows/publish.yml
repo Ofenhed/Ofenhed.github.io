@@ -97,7 +97,7 @@ jobs:
 
     - name: Save full cache
       uses: actions/cache/save@v5
-      if: ${{ !steps.cache-primes-restore.outputs.cache-hit }}
+      if: always()
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
         path: |
