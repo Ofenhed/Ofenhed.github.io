@@ -531,7 +531,7 @@ pub(crate) unsafe fn str_offset_unchecked(
     #[cfg(debug_assertions)]
     let str_before = str::from_utf8(&before_needle)?;
     #[cfg(not(debug_assertions))]
-    let str_before = unsafe { str::from_utf8_unchecked(&before_needle) }?;
+    let str_before = unsafe { str::from_utf8_unchecked(&before_needle) };
     Ok(str_before.len())
 }
 
