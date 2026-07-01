@@ -31,18 +31,28 @@ jobs:
 
     - name: Restore cache
       id: cache-primes-restore
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/Cargo.toml') }}
         restore-keys: |
           ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}-
-          ${{ runner.os }}-leptos-
         path: |
           ~/.cargo/registry
           ~/.cargo/git
           ~/.cargo/bin/cargo-leptos
           target/release
           target/front
+
+    - name: Restore cargo-leptos
+      id: cache-leptos-restore
+      if: ${{ steps.cache-primes-restore.outcome == 'failure' && !cancelled() }}
+      uses: actions/cache/restore@v6
+      with:
+        key: you-wouldnt-download-a-car
+        restore-keys: |
+          ${{ runner.os }}-leptos-
+        path: |
+          ~/.cargo/bin/cargo-leptos
 
     - name: Use nightly rust
       run: rustup override set nightly
@@ -70,7 +80,7 @@ jobs:
       id: check-cache-cargo-leptos-version
       if: ${{ steps.write-cargo-leptos-version.outcome == 'success' && !cancelled() }}
       continue-on-error: true
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         lookup-only: true
@@ -80,7 +90,7 @@ jobs:
 
     - name: Save leptos cache
       if: ${{ steps.check-cache-cargo-leptos-version.outcome == 'failure' && !cancelled() }}
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         path: |
@@ -96,7 +106,7 @@ jobs:
       run: cargo leptos build --split --release --bin-features ssr,statics
 
     - name: Save full cache
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       if: always()
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
@@ -138,7 +148,7 @@ jobs:
     - name: Restore tool cache
       id: cache-tools-restore
       continue-on-error: true
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         key: ${{ runner.os }}-check-tools-${{ hashFiles('**/Cargo.lock') }}
         fail-on-cache-miss: true
@@ -177,7 +187,7 @@ jobs:
         CARGO_TARGET_DIR: ./target
 
     - name: Save tool cache
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       if: ${{ steps.cache-tools-restore.outcome == 'failure' && !cancelled() }}
       with:
         key: ${{ steps.cache-tools-restore.outputs.cache-primary-key }}
