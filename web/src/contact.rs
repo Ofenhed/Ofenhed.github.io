@@ -1,5 +1,4 @@
 use leptos::{html, prelude::*};
-use leptos_meta::Style;
 
 use crate::helpers::{ImgDef, NoWasm};
 
@@ -350,7 +349,14 @@ pub(crate) fn Contact() -> impl IntoView {
     });
     view! {
         <div class="contact">
-            <div class="qr-code" style:display="block" style:box-sizing="border-box" style:aspect-ratio="1/1" style:width="calc(min(308px,100%))" style:margin="0 auto 1em auto">
+            <div
+                class="qr-code"
+                style:display="block"
+                style:box-sizing="border-box"
+                style:aspect-ratio="1/1"
+                style:width="calc(min(308px,100%))"
+                style:margin="0 auto 1em auto"
+            >
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
                     <noscript>
                         <img {..ImgDef()} src="qrcode.png" />
