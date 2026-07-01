@@ -4,20 +4,20 @@ resolver = "3"
 
 [workspace.dependencies]
 anyhow = "1.0"
-any_spawner = { version = "0.3" }
+any_spawner = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce" }
 axum = { version = "0.8.1", default-features = false }
 base64 = "0.22.1"
 chrono = { version = "0.4.44", default-features = false, features = ["std", "wasmbind", "alloc"] }
 console_error_panic_hook = "0.1.7"
 console_log = "1.0"
 futures = { version = "0.3", default-features = false }
-hydration_context = "0.3"
+hydration_context = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce" }
 image = { version = "0.25", default-features = false, features = ["png"] }
-leptos = { version = "0.8", default-features = false }
-leptos_axum = "0.8"
-leptos_integration_utils = "0.8"
-leptos_meta = { version = "0.8", default-features = false }
-leptos_router = { version = "0.8", default-features = false }
+leptos = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce", default-features = false }
+leptos_axum = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce" }
+leptos_integration_utils = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce" }
+leptos_meta = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce", default-features = false }
+leptos_router = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce", default-features = false }
 log = "0.4.22"
 qrcode = { version = "0.14.1", default-features = false }
 quote = "1.0.45"
