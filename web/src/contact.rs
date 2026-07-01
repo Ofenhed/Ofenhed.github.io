@@ -354,11 +354,8 @@ pub(crate) fn Contact() -> impl IntoView {
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
     });
     view! {
-        <Style>
-            "div.qr-code{display:block;box-sizing:border-box;aspect-ratio:1/1;width:calc(min(308px,100%));margin:0 auto}"
-        </Style>
         <div class="contact">
-            <div class="qr-code">
+            <div class="qr-code" style:display="block" style:box-sizing="border-box" style:aspect-ratio="1/1" style:width="calc(min(308px,100%))" style:margin="0 auto 1em auto">
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
                     <noscript>
                         <img {..ImgDef()} src="qrcode.png" />
@@ -372,9 +369,7 @@ pub(crate) fn Contact() -> impl IntoView {
                     </div>
                 </a>
             </div>
-            <p class="linked-in">
-                <a href="https://linkedin.com/in/conditionraisemarcus">Marcus Ofenhed</a>
-            </p>
+            <a href="https://linkedin.com/in/conditionraisemarcus">Marcus Ofenhed</a>
             <p>Senior IT Security Consultant</p>
             <Email />
         </div>
