@@ -160,8 +160,7 @@ dependencies = [
 [[package]]
 name = "any_spawner"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1384d3fe1eecb464229fcf6eebb72306591c56bf27b373561489458a7c73027d"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "futures",
  "thiserror 2.0.18",
@@ -716,7 +715,7 @@ dependencies = [
  "flexi_logger",
  "ignore",
  "itertools 0.14.0",
- "leptos_hot_reload",
+ "leptos_hot_reload 0.8.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "libflate",
  "lightningcss",
  "md-5",
@@ -1139,8 +1138,7 @@ dependencies = [
 [[package]]
 name = "const_str_slice_concat"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f67855af358fcb20fac58f9d714c94e2b228fe5694c1c9b4ead4a366343eda1b"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 
 [[package]]
 name = "convert_case"
@@ -1578,8 +1576,7 @@ checksum = "91622ff5e7162018101f2fea40d6ebf4a78bbe5a49736a2020649edf9693679e"
 [[package]]
 name = "either_of"
 version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5060e0a4cbf26a87550792688ade88e6b8aec9208613631a7a363bda7bc2d4cd"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "paste",
  "pin-project-lite",
@@ -2470,12 +2467,11 @@ checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 [[package]]
 name = "hydration_context"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7bbbeb23ee808258cef2c5585ff0dc8e41da21a8dde943f6b290da153a042a96"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "futures",
  "js-sys",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "pin-project-lite",
  "serde",
  "throw_error",
@@ -3024,8 +3020,7 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 [[package]]
 name = "leptos"
 version = "0.8.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "705e2951f3688e0c4f66bbb7a2702282782dcee716971dbd6209c2619d272479"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "any_spawner",
  "base64",
@@ -3036,11 +3031,11 @@ dependencies = [
  "hydration_context",
  "leptos_config",
  "leptos_dom",
- "leptos_hot_reload",
+ "leptos_hot_reload 0.8.6 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "leptos_macro",
  "leptos_server",
  "oco_ref",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "paste",
  "rand 0.9.4",
  "reactive_graph",
@@ -3066,8 +3061,7 @@ dependencies = [
 [[package]]
 name = "leptos_axum"
 version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "513e2dd5fe81512b53304429b9ca77cceb954d23af88921c0c33119380f07cbe"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "any_spawner",
  "axum",
@@ -3078,7 +3072,7 @@ dependencies = [
  "leptos_macro",
  "leptos_meta",
  "leptos_router",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "server_fn",
  "tachys",
  "tokio",
@@ -3089,11 +3083,9 @@ dependencies = [
 [[package]]
 name = "leptos_config"
 version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c06f751315bccc0d193fab302ac01d25bcfcd97474d4676440e7e3250dc3fc3"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "config",
- "regex",
  "serde",
  "thiserror 2.0.18",
  "typed-builder",
@@ -3102,11 +3094,10 @@ dependencies = [
 [[package]]
 name = "leptos_dom"
 version = "0.8.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35742e9ed8f8aaf9e549b454c68a7ac0992536e06856365639b111f72ab07884"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "js-sys",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "reactive_graph",
  "send_wrapper",
  "tachys",
@@ -3123,7 +3114,24 @@ dependencies = [
  "anyhow",
  "camino",
  "indexmap",
- "or_poisoned",
+ "or_poisoned 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2",
+ "quote",
+ "rstml",
+ "serde",
+ "syn 2.0.118",
+ "walkdir",
+]
+
+[[package]]
+name = "leptos_hot_reload"
+version = "0.8.6"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
+dependencies = [
+ "anyhow",
+ "camino",
+ "indexmap",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "proc-macro2",
  "quote",
  "rstml",
@@ -3135,8 +3143,7 @@ dependencies = [
 [[package]]
 name = "leptos_integration_utils"
 version = "0.8.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c097f89cd9aa606297672f56fa5bdda09f01609a9f4eefaccdbb5ab5afea4279"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "futures",
  "hydration_context",
@@ -3150,8 +3157,7 @@ dependencies = [
 [[package]]
 name = "leptos_macro"
 version = "0.8.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96de6e8da9d4f1a7b74b447b317d590ebabb38709f588f7ee20564b773ccbcce"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "attribute-derive",
  "cfg-if",
@@ -3159,7 +3165,7 @@ dependencies = [
  "convert_case_extras",
  "html-escape",
  "itertools 0.14.0",
- "leptos_hot_reload",
+ "leptos_hot_reload 0.8.6 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "prettyplease",
  "proc-macro-error2",
  "proc-macro2",
@@ -3174,13 +3180,12 @@ dependencies = [
 [[package]]
 name = "leptos_meta"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c3efe657b4c55ed2e078922786ffe20acfb71767c3dd913767b09a35c75c890"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "futures",
  "indexmap",
  "leptos",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "send_wrapper",
  "wasm-bindgen",
  "web-sys",
@@ -3189,8 +3194,7 @@ dependencies = [
 [[package]]
 name = "leptos_router"
 version = "0.8.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "253962f9371a2fcf432eff991efc6da58de383c1cbcc332aaff7b8b22f6d778e"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "any_spawner",
  "either_of",
@@ -3199,7 +3203,7 @@ dependencies = [
  "js-sys",
  "leptos",
  "leptos_router_macro",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "percent-encoding",
  "reactive_graph",
  "rustc_version",
@@ -3214,8 +3218,7 @@ dependencies = [
 [[package]]
 name = "leptos_router_macro"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "409c0bd99f986c3cfa1a4db2443c835bc602ded1a12784e22ecb28c3ed5a2ae2"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",
@@ -3226,15 +3229,14 @@ dependencies = [
 [[package]]
 name = "leptos_server"
 version = "0.8.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da974775c5ccbb6bd64be7f53f75e8321542e28f21563a416574dbe4d5447eae"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "any_spawner",
  "base64",
  "codee",
  "futures",
  "hydration_context",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "reactive_graph",
  "send_wrapper",
  "serde",
@@ -3669,8 +3671,7 @@ checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 [[package]]
 name = "next_tuple"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60993920e071b0c9b66f14e2b32740a4e27ffc82854dcd72035887f336a09a28"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 
 [[package]]
 name = "nix"
@@ -3839,8 +3840,7 @@ dependencies = [
 [[package]]
 name = "oco_ref"
 version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed0423ff9973dea4d6bd075934fdda86ebb8c05bdf9d6b0507067d4a1226371d"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "serde",
  "thiserror 2.0.18",
@@ -3931,6 +3931,11 @@ name = "or_poisoned"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c04f5d74368e4d0dfe06c45c8627c81bd7c317d52762d118fb9b3076f6420fd"
+
+[[package]]
+name = "or_poisoned"
+version = "0.1.0"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 
 [[package]]
 name = "ordered-float"
@@ -4648,8 +4653,7 @@ dependencies = [
 [[package]]
 name = "reactive_graph"
 version = "0.2.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00c5a025366836190c7030e883cc2bcd9e384ff555336e3c7954741ca411b177"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "any_spawner",
  "async-lock",
@@ -4657,7 +4661,7 @@ dependencies = [
  "guardian",
  "hydration_context",
  "indexmap",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "paste",
  "pin-project-lite",
  "rustc-hash",
@@ -4672,13 +4676,12 @@ dependencies = [
 [[package]]
 name = "reactive_stores"
 version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c30fd35b7d299c591293bb69fed47a703eb2703b1cff0493e78b16ed007e5382"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "guardian",
  "indexmap",
  "itertools 0.14.0",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "paste",
  "reactive_graph",
  "reactive_stores_macro",
@@ -4689,8 +4692,7 @@ dependencies = [
 [[package]]
 name = "reactive_stores_macro"
 version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68072edd607edd30b9ebf57d984ba45d8ab8809e598d0f6046278373fb76a5a0"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "convert_case 0.11.0",
  "proc-macro-error2",
@@ -5291,8 +5293,7 @@ dependencies = [
 [[package]]
 name = "server_fn"
 version = "0.8.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be8559dd05af1b5b7e363a150616589d5a88af5187273f7f331ba0dae8922812"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "axum",
  "base64",
@@ -5306,7 +5307,7 @@ dependencies = [
  "hyper",
  "inventory",
  "js-sys",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "pin-project-lite",
  "rkyv 0.8.16",
  "rustc_version",
@@ -5332,8 +5333,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro"
 version = "0.8.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1295b54815397d30d986b63f93cfd515fa86d5e528e0bb589ce9d530502f9e0f"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "const_format",
  "convert_case 0.11.0",
@@ -5347,8 +5347,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro_default"
 version = "0.8.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "63eb08f80db903d3c42f64e60ebb3875e0305be502bdc064ec0a0eab42207f00"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "server_fn_macro",
  "syn 2.0.118",
@@ -6636,8 +6635,7 @@ dependencies = [
 [[package]]
 name = "tachys"
 version = "0.2.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a92ba81187437cc5df4281f2326a2e13cc81e8f96448292d1112388e2025ca66"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "any_spawner",
  "async-trait",
@@ -6652,7 +6650,7 @@ dependencies = [
  "js-sys",
  "next_tuple",
  "oco_ref",
- "or_poisoned",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
  "paste",
  "reactive_graph",
  "reactive_stores",
@@ -6801,8 +6799,7 @@ dependencies = [
 [[package]]
 name = "throw_error"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc0ed6038fcbc0795aca7c92963ddda636573b956679204e044492d2b13c8f64"
+source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#dd5663d1519b55ae05cc1744672ea6ce1cc4edd8"
 dependencies = [
  "pin-project-lite",
 ]
