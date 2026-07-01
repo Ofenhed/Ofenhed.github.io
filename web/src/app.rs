@@ -107,6 +107,7 @@ pub(crate) struct HamburgerMenu(pub NodeRef<html::Input>);
 pub(crate) fn NoInitTransition() -> impl IntoView {
     #[cfg(feature = "ssr")]
     {
+        use leptos::nonce::use_nonce;
         let script = js_macro::minify_js! {
             addEventListener("DOMContentLoaded", (event) => {
                 const job = () => {
@@ -119,7 +120,7 @@ pub(crate) fn NoInitTransition() -> impl IntoView {
                 }
             });
         };
-        view! { <script>{script}</script> }
+        view! { <script nonce=use_nonce()>{script}</script> }
     }
 }
 

@@ -6,7 +6,6 @@ use leptos::{
     prelude::*,
     tachys::view::iterators::StaticVec,
 };
-use leptos_meta::Script;
 use leptos_router::{
     MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, components::Outlet,
     hooks::use_location,
@@ -193,6 +192,9 @@ pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoV
     let init_script = once_by_type(
         false,
         || {
+            #[cfg(not(feature = "ssr"))]
+            let script = "";
+            #[cfg(feature = "ssr")]
             let script = js_macro::minify_js! {
                 addEventListener("DOMContentLoaded", (event) => {
                     const has_wasm = (() => {
@@ -216,7 +218,7 @@ pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoV
             };
             (
                 NoWasmScriptLoaded,
-                Some(view! { <Script>{script}</Script> }),
+                Some(view! { <script nonce=use_nonce()>{script}</script> }),
             )
         },
         |_| None,
