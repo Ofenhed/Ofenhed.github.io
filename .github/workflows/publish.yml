@@ -226,7 +226,7 @@ jobs:
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
     - name: Check twiggy garbage
-      run: twiggy garbage target/new/conditionraise.wasm
+      run: twiggy garbage --all target/new/conditionraise.wasm
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
     - name: Download artifact from latest build
