@@ -12,7 +12,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  cargo_leptos_version: ./target/.cargo-leptos-version
+  cargo_leptos_version: ./.cargo-leptos-version
   LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
 jobs:
@@ -29,28 +29,30 @@ jobs:
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
 
+    - name: Check locked cargo-leptos version
+      id: write-cargo-leptos-version
+      run: |
+        awk '/\[\[package\]\]/ { right_place=0; checksum = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /checksum\s*=/ { checksum=$0 }; { if (right_place && checksum != null) { print(checksum); exit }  }' < Cargo.lock | tee "$cargo_leptos_version"
+
     - name: Restore cache
       id: cache-primes-restore
       uses: actions/cache/restore@v6
       with:
-        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/Cargo.toml') }}
+        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.lock') }}-
+          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          ~/.cargo/bin/cargo-leptos
           target/release
           target/front
 
     - name: Restore cargo-leptos
-      id: cache-leptos-restore
-      if: ${{ steps.cache-primes-restore.outcome == 'failure' && !cancelled() }}
+      id: cargo-leptos-restore
+      if: ${{ !cancelled() }}
       uses: actions/cache/restore@v6
       with:
-        key: you-wouldnt-download-a-car
-        restore-keys: |
-          ${{ runner.os }}-leptos-
+        key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         path: |
           ~/.cargo/bin/cargo-leptos
 
@@ -60,39 +62,18 @@ jobs:
     - name: Log rust version
       run: rustup --version
 
-    - name: Check if leptos toolkit was cached
-      id: cargo-leptos-cached
-      run: test -f ~/.cargo/bin/cargo-leptos
-      continue-on-error: true
-
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      if: ${{ steps.cargo-leptos-cached.outcome == 'failure' && !cancelled() }}
+      if: ${{ !steps.cargo-leptos-restore.cache-hit && !cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
 
-    - name: Check cargo-leptos version
-      id: write-cargo-leptos-version
-      run: cargo info cargo-leptos | tee "$cargo_leptos_version"
-
-    - name: Check saved leptos version
-      id: check-cache-cargo-leptos-version
-      if: ${{ steps.write-cargo-leptos-version.outcome == 'success' && !cancelled() }}
-      continue-on-error: true
-      uses: actions/cache/restore@v6
-      with:
-        key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
-        lookup-only: true
-        fail-on-cache-miss: true
-        path: |
-          ~/.cargo/bin/cargo-leptos
-
     - name: Save leptos cache
-      if: ${{ steps.check-cache-cargo-leptos-version.outcome == 'failure' && !cancelled() }}
+      if: ${{ steps.cargo-leptos-build.outcome == 'success' && !cancelled() }}
       uses: actions/cache/save@v6
       with:
-        key: ${{ runner.os }}-leptos-${{ hashFiles(env.cargo_leptos_version) }}
+        key: ${{ steps.cargo-leptos-restore.outputs.cache-primary-key }}
         path: |
           ~/.cargo/bin/cargo-leptos
 
@@ -113,7 +94,6 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          ~/.cargo/bin/cargo-leptos
           target/release
           target/front
 
