@@ -13,6 +13,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   cargo_leptos_version: ./.cargo-leptos-version
+  rust_version: ./.rust-version
   LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
 jobs:
@@ -34,11 +35,17 @@ jobs:
       run: |
         awk '/\[\[package\]\]/ { right_place=0; checksum = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /checksum\s*=/ { checksum=$0 }; { if (right_place && checksum != null) { print(checksum); exit }  }' < Cargo.lock | tee "$cargo_leptos_version"
 
+    - name: Use nightly rust
+      run: rustup override set nightly
+
+    - name: Log rust version
+      run: rustup --version | tee "$rust_version"
+
     - name: Restore cache
       id: cache-primes-restore
       uses: actions/cache/restore@v6
       with:
-        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock', env.rust_version) }}
         restore-keys: |
           ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
         path: |
@@ -55,12 +62,6 @@ jobs:
         key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
         path: |
           ~/.cargo/bin/cargo-leptos
-
-    - name: Use nightly rust
-      run: rustup override set nightly
-
-    - name: Log rust version
-      run: rustup --version
 
     - name: Build leptos toolkit
       id: cargo-leptos-build
