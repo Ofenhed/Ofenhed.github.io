@@ -12,7 +12,6 @@ use crate::{
             with_blog_simple,
         },
         path::format_path,
-        unremarkable::Unremarkable,
     },
     helpers::{AddContext, ForRoute, ZWNJ, context_signal, into_static_str},
 };
@@ -73,6 +72,7 @@ pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Resu
         }
         #[cfg(debug_assertions)]
         {
+            use unremarkable::Unremarkable;
             [b.with_blog(Unremarkable)]
         }
     };
