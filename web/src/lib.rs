@@ -24,7 +24,7 @@ pub fn hydrate() {
             let prev_hook = panic::take_hook();
             std::panic::set_hook(Box::new(move |info| {
                 if let Some(location) = document().location() {
-                    location.reload_with_forceget(true);
+                    _ = location.reload_with_forceget(true);
                 }
                 prev_hook(info);
             }))
