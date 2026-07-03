@@ -14,5 +14,20 @@ pub use app::shell;
 pub fn hydrate() {
     use app::*;
     console_error_panic_hook::set_once();
+
+    #[cfg(not(debug_assertions))]
+    {
+        use std::{panic, sync::Once};
+        static SET_HOOK: Once = Once::new();
+        SET_HOOK.call_once(|| {
+            let prev_hook = panic::panic::take_hook();
+            std::panic::panic::set_hook(Box::new(move |_| {
+                if let Some(location) = document().location() {
+                    location.reload_with_forceget(true);
+                }
+                prev_hook();
+            }))
+        });
+    }
     leptos::mount::hydrate_lazy(App);
 }
