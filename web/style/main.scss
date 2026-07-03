@@ -17,9 +17,11 @@ nav {
   }
 }
 
-body[data-activate-transitions] {
-  &, & * {
-    transition: var(--default-transition);
+@media not (prefers-reduced-motion: reduce) {
+  body[data-activate-transitions] {
+    &, & * {
+      transition: var(--default-transition);
+    }
   }
 }
 
