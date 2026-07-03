@@ -20,21 +20,26 @@ pub fn hydrate() {
     {
         use std::{panic, sync::Once};
         static SET_HOOK: Once = Once::new();
-        SET_HOOK.call_once(|| {
-            let prev_hook = panic::take_hook();
-            std::panic::set_hook(Box::new(move |info| {
-                if let Some(location) = document().location() {
-                    if let Ok(hash) = location.hash() {
-                        if hash != "panic" {
-                            if location.set_hash("panic").is_ok() {
-                                _ = location.reload_with_forceget(true);
+        set_timeout(
+            || {
+                SET_HOOK.call_once(|| {
+                    let prev_hook = panic::take_hook();
+                    std::panic::set_hook(Box::new(move |info| {
+                        if let Some(location) = document().location() {
+                            if let Ok(hash) = location.hash() {
+                                if hash != "panic" {
+                                    if location.set_hash("panic").is_ok() {
+                                        _ = location.reload_with_forceget(true);
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                prev_hook(info);
-            }))
-        });
+                        prev_hook(info);
+                    }))
+                })
+            },
+            Duration::from_secs(3),
+        );
     }
     leptos::mount::hydrate_lazy(App);
 }
