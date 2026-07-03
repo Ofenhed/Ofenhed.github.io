@@ -129,7 +129,7 @@ pub(crate) fn App() -> impl IntoView {
     provide_meta_context();
     let fallback = || NotFound().into_view();
     let hamburger_toggle = NodeRef::new();
-    provide_context(HamburgerMenu(hamburger_toggle.clone()));
+    provide_context(HamburgerMenu(hamburger_toggle));
     const INITIAL_EGG_COUNTER: u8 = 8;
     let (clicks_to_easter, set_clicks_to_easter) = signal(EggCounter::Counter(INITIAL_EGG_COUNTER));
     let (aria_expanded, set_aria_expanded) = signal(false);

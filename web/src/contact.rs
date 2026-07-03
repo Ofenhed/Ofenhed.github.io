@@ -90,7 +90,7 @@ pub(crate) fn Email() -> impl IntoView {
         };
         let mail = format!("marcus@{domain}.{top_domain}");
         a.set_href(&format!("mailto:{mail}"));
-        if let Ok(_) = a.set_text(&mail) {
+        if a.set_text(&mail).is_ok() {
             set_display.set(None);
         }
     });
@@ -182,7 +182,7 @@ pub(crate) fn Contact() -> impl IntoView {
                 .unwrap();
             WormsState {
                 qr_code: vec![vec![false; height]; width],
-                width: width,
+                width,
                 for_dark: worm_for_dark,
                 for_light: worm_for_light,
                 canvas_context: context,

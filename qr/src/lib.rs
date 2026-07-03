@@ -42,7 +42,7 @@ impl<
         let padded = self.inverted.iter().map(move |x| {
             iter::repeat_n(false, left_pad)
                 .clone()
-                .chain(x.into_iter().cloned())
+                .chain(x.iter().cloned())
                 .chain(iter::repeat_n(false, right_pad))
         });
         let bottom_pad = iter::repeat_n(iter::repeat_n(false, W), H - LH - Y);

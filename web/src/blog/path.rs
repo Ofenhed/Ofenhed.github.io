@@ -11,11 +11,7 @@ pub(crate) fn maybe_path_match<'a>(
     segments: Vec<(Cow<'static, str>, String)>,
     matched: &'a str,
 ) -> Option<PartialPathMatch<'a>> {
-    let valid = match remaining.chars().next() {
-        None | Some('/') => true,
-        _ => false,
-    };
-    if valid {
+    if matches!(remaining.chars().next(), None | Some('/')) {
         Some(PartialPathMatch::new(remaining, segments, matched))
     } else {
         None
@@ -80,7 +76,7 @@ impl PossibleRouteMatch for BlogEntryMeta {
                                 &path[param_offset..matched_offset + matched_len],
                             )
                         })
-                        .or_else(|| None)
+                        .or(None)
                 } else {
                     Some(PartialPathMatch::new(
                         &path[param_offset + param_len..],
@@ -109,7 +105,7 @@ impl PossibleRouteMatch for SortBy {
         let path = path.strip_prefix('/').unwrap_or(path);
 
         if let SortBy::Default = self {
-            Some(PartialPathMatch::new(&path, vec![], &path))
+            Some(PartialPathMatch::new(path, vec![], path))
         } else if let Some(sort_argument) = path.strip_prefix("sort/") {
             if let Some(after) = sort_argument.strip_prefix(into_static_str(self)) {
                 let after_offset = unsafe { str_offset_unchecked(path, after) }.unwrap();

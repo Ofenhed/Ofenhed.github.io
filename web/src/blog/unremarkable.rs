@@ -1,7 +1,7 @@
-use crate::blog::metadata::{BlogEntry, Locale, Tag, date};
+use crate::blog::metadata::{date, BlogEntry, Locale, Tag};
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
-use leptos_router::{LazyRoute, lazy_route};
+use leptos_router::{lazy_route, LazyRoute};
 
 #[derive(Clone, Copy)]
 pub(crate) struct Unremarkable;
@@ -11,7 +11,7 @@ impl BlogEntry for Unremarkable {
 
     const PUBLISH_DATE: DateTime<Utc> = date(2022, 1, 20);
 
-    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 08));
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 8));
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 

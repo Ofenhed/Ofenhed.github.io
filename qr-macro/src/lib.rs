@@ -116,16 +116,12 @@ pub fn make_qr(input: TokenStream) -> TokenStream {
                     let [logo_offset_x, logo_offset_y] = res.logo_offset;
                     let inverts = res.logo_inverts;
                     let i_width = res.logo_width;
-                    let i_height = if i_width > 0 {
-                        inverts.len() / i_width
-                    } else {
-                        0
-                    };
+                    let i_height = inverts.len().checked_div(i_width).unwrap_or(0);
                     let logo_data = {
                         let mut logo_data = Default::default();
                         res.code.chunks(width).for_each(|c| {
                             let mut s = Default::default();
-                            c.into_iter().for_each(|x| quote! { #x, }.to_tokens(&mut s));
+                            c.iter().for_each(|x| quote! { #x, }.to_tokens(&mut s));
                             quote! { [ #s ], }.to_tokens(&mut logo_data);
                         });
                         logo_data
@@ -135,7 +131,7 @@ pub fn make_qr(input: TokenStream) -> TokenStream {
                         if i_width > 0 {
                             inverts.chunks(i_width).for_each(|c| {
                                 let mut s = Default::default();
-                                c.into_iter().for_each(|x| quote! { #x, }.to_tokens(&mut s));
+                                c.iter().for_each(|x| quote! { #x, }.to_tokens(&mut s));
                                 quote! { [ #s ], }.to_tokens(&mut inv_data);
                             });
                         }
@@ -157,8 +153,6 @@ pub fn make_qr(input: TokenStream) -> TokenStream {
                 }
             }
         }
-        Err(err) => {
-            return print_error(err);
-        }
+        Err(err) => print_error(err),
     }
 }
