@@ -41,10 +41,7 @@ fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
     let mut ret = vec![PathSegment::Static(Cow::Borrowed("clog"))];
     owner.child().with(|| {
         f();
-        if let Some(tag) = use_context::<Signal<Option<TagFilter>>>()
-            .map(|x| x.get())
-            .flatten()
-        {
+        if let Some(tag) = use_context::<Signal<Option<TagFilter>>>().and_then(|x| x.get()) {
             tag.generate_path(&mut ret);
         }
         use_context::<Signal<SortBy>>()
@@ -79,7 +76,7 @@ pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Resu
             [b.with_blog(Unremarkable)]
         }
     };
-    published.into_iter().chain(unpublished.into_iter())
+    published.into_iter().chain(unpublished)
 }
 
 pub fn with_blogs_simple<B>()
@@ -124,8 +121,7 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
     let num_pages = |entries| {
         let entry_count = entries;
         let pages_full = entry_count + ENTRIES_PER_PAGE - 1;
-        let pages = pages_full / ENTRIES_PER_PAGE;
-        pages
+        pages_full / ENTRIES_PER_PAGE
     };
     let num_pages = move || num_pages(blogs.with(|x| x.0.len()));
     let previous_page = move || {
@@ -210,8 +206,7 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
     let num_pages = |entries| {
         let entry_count = entries;
         let pages_full = entry_count + ENTRIES_PER_PAGE - 1;
-        let pages = pages_full / ENTRIES_PER_PAGE;
-        pages
+        pages_full / ENTRIES_PER_PAGE
     };
     let max_pages = num_pages(with_blogs(()).count());
     view! {
@@ -318,7 +313,7 @@ pub fn BlogListing(
         let filtered_entities = Signal::derive(move || {
             FilteredEntities(blogs.with(|b| {
                 let filter = tags.get();
-                b.into_iter()
+                b.iter()
                     .filter(|x| {
                         if let Some(TagFilter(filter)) = filter {
                             x.tags.contains(&filter)
@@ -343,7 +338,7 @@ pub fn BlogListing(
                         (None, None) => unreachable!("None == None"),
                         (Some(_), None) => std::cmp::Ordering::Less,
                         (None, Some(_)) => std::cmp::Ordering::Greater,
-                        (Some(x), Some(y)) => x.cmp(&y),
+                        (Some(x), Some(y)) => x.cmp(y),
                     },
                     SortBy::Title => a.title.partial_cmp(b.title).unwrap(),
                     SortBy::PublishDate => b.publish_date.partial_cmp(&a.publish_date).unwrap(),
@@ -372,8 +367,8 @@ pub fn BlogListing(
             view=move || {
                 Effect::new(move |_| {
                     let blogs = blogs.with(|x| x.iter().map(|x| x.uid).collect());
-                    for b in with_blogs(PreloadUids(blogs)).filter_map(|x| x) {
-                        spawn_local_scoped(async move { b.await });
+                    for b in with_blogs(PreloadUids(blogs)).flatten() {
+                        spawn_local_scoped(b);
                     }
                 });
                 view! {
@@ -560,7 +555,9 @@ impl FromStr for SortInvert {
 pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl IntoView {
     let HamburgerMenu(toggle) = use_context().expect("Hamburger menu must have been defined here");
     let on_click = move |_: ev::MouseEvent| {
-        toggle.get().map(|x| x.set_checked(false));
+        if let Some(x) = toggle.get() {
+            x.set_checked(false);
+        }
     };
     let article_pinned = |entry: &BlogEntryMeta| {
         entry

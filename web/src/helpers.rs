@@ -146,8 +146,7 @@ pub(crate) fn AddContext<T: Send + Sync + 'static>(
         Owner::current().map(move |x| {
             x.child().with(move || {
                 provide_context(OutletRendered);
-                let child = children();
-                child
+                children()
             })
         })
     });
@@ -269,10 +268,9 @@ fn footnotes() -> FootnotesInner {
     )
 }
 
-fn abbrs() -> (
-    ReadSignal<Vec<(usize, Signal<String>)>>,
-    WriteSignal<Vec<(usize, Signal<String>)>>,
-) {
+type AbbrList = Vec<(usize, Signal<String>)>;
+
+fn abbrs() -> (ReadSignal<AbbrList>, WriteSignal<AbbrList>) {
     #[cfg_attr(debug_assertions, derive(Debug))]
     #[derive(Clone)]
     struct AllAbbrs<T>(ReadSignal<T>, WriteSignal<T>);
@@ -327,7 +325,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
     };
     let on_click = move |source_id: Oco<'static, str>| {
         move |e: ev::MouseEvent| {
-            if let Some(footnote) = document().get_element_by_id(&*source_id) {
+            if let Some(footnote) = document().get_element_by_id(&source_id) {
                 e.prevent_default();
                 scroll_into_view!(footnote);
                 active.set(Some(source_id.clone()));
@@ -390,7 +388,7 @@ pub(crate) fn Footnote(
 
     let my_footnote = FootnoteInner {
         uid,
-        name: Signal::derive(move || footnote_name()),
+        name: Signal::derive(footnote_name),
         children,
     };
 
@@ -439,12 +437,12 @@ pub(crate) fn Footnote(
         }
     };
 
-    let footnote_source = Signal::derive(move || footnote_ref(&*footnote_name()));
+    let footnote_source = Signal::derive(move || footnote_ref(&footnote_name()));
     view! {
         <a
             on:click=on_click
             id=footnote_source
-            aria-describedby=move || footnote_name()
+            aria-describedby=footnote_name
             aria-current=move || is_current(footnote_source)
             class="footnote-link"
             href=move || format!("#{}", footnote_name())
@@ -536,7 +534,7 @@ pub(crate) unsafe fn str_offset_unchecked(
     let needle_offset = unsafe { ptr_needle.offset_from_unsigned(ptr_hs) };
     let before_needle = &b_hs[..needle_offset];
     #[cfg(debug_assertions)]
-    let str_before = str::from_utf8(&before_needle)?;
+    let str_before = str::from_utf8(before_needle)?;
     #[cfg(not(debug_assertions))]
     let str_before = unsafe { str::from_utf8_unchecked(&before_needle) };
     Ok(str_before.len())

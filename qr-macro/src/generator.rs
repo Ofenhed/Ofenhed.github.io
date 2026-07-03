@@ -5,11 +5,11 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum QrGeneratorError {
     #[error("Qr generator error: {0}")]
-    QrError(#[from] qrcode::types::QrError),
+    Qr(#[from] qrcode::types::QrError),
     #[error("Qr image error: {0}")]
-    ImageError(#[from] image::error::ImageError),
+    Image(#[from] image::error::ImageError),
     #[error("Syntax error")]
-    SynError(#[from] syn::Error),
+    Syn(#[from] syn::Error),
 }
 
 pub struct QrLogo {
@@ -130,8 +130,7 @@ pub fn generate_qr_code_with_logo(
             .into_iter()
             .skip(y)
             .take(h - y + 1)
-            .map(|line| line.into_iter().skip(x).take(w - x + 1))
-            .flatten()
+            .flat_map(|line| line.into_iter().skip(x).take(w - x + 1))
             .collect();
     }
     Ok(result)

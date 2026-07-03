@@ -66,10 +66,7 @@ fn static_path(
     if p.components()
         .find(|x| {
             use std::path::Component as C;
-            match x {
-                C::Normal(_) | C::CurDir => false,
-                _ => true,
-            }
+            !matches!(x, C::Normal(_) | C::CurDir)
         })
         .is_some()
     {
@@ -88,10 +85,8 @@ fn static_path(
     Ok(Oco::Owned(result))
 }
 
-pub struct StaticRouteGenerator(
-    #[allow(unused)] Owner,
-    Box<dyn FnOnce(&LeptosOptions) -> PinnedFuture<()> + Send>,
-);
+pub type StaticRouteGeneratorFunction = Box<dyn FnOnce(&LeptosOptions) -> PinnedFuture<()> + Send>;
+pub struct StaticRouteGenerator(#[allow(unused)] Owner, StaticRouteGeneratorFunction);
 
 #[derive(Clone)]
 struct NoGenerateStaticReader(ReadSignal<bool>);
