@@ -64,7 +64,7 @@ jobs:
 
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      if: ${{ !steps.cargo-leptos-restore.cache-hit && !cancelled() }}
+      if: ${{ !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
