@@ -198,7 +198,7 @@ impl StaticRouteGenerator {
                                     return Ok(());
                                 }
                                 let target = target?;
-                                eprintln!("Saving {path}");
+                                eprintln!("Saving {path} as {}", target.display());
                                 #[cfg(feature = "tokio")]
                                 {
                                     if let Some(parent) = target.parent() {
