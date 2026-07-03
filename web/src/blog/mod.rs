@@ -453,6 +453,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         view! {
             <Meta property="og:modified_time" content=x.to_rfc3339() />
             <time class="update" datetime=date.clone()>
+                "&zwj;"
                 {date.clone()}
             </time>
         }
