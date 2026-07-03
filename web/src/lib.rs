@@ -26,8 +26,9 @@ pub fn hydrate() {
                 if let Some(location) = document().location() {
                     if let Ok(hash) = location.hash() {
                         if hash != "panic" {
-                            location.set_hash("panic");
-                            _ = location.reload_with_forceget(true);
+                            if location.set_hash("panic").is_ok() {
+                                _ = location.reload_with_forceget(true);
+                            }
                         }
                     }
                 }
