@@ -41,7 +41,7 @@ jobs:
     - name: Log rust version
       run: rustc --version | tee "$rust_version"
 
-    - name: Restore cache
+    - name: Restore build cache
       id: cache-primes-restore
       uses: actions/cache/restore@v6
       with:
@@ -88,7 +88,7 @@ jobs:
       id: compile
       run: cargo leptos build --split --release --bin-features ssr,statics
 
-    - name: Save full cache
+    - name: Save build cache
       uses: actions/cache/save@v6
       if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' }}
       with:
@@ -143,6 +143,22 @@ jobs:
     - name: Use nightly rust
       run: rustup override set nightly && rustup component add rustfmt clippy
 
+    - name: Log rust version
+      run: rustc --version | tee "$rust_version"
+
+    - name: Restore build cache
+      id: cache-primes-restore
+      uses: actions/cache/restore@v6
+      with:
+        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock', env.rust_version) }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target/release
+          target/front
+
     - name: Check if leptosfmt was cached
       id: leptosfmt-cached
       continue-on-error: true
@@ -182,7 +198,7 @@ jobs:
 
     - name: Clippy analysis
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
-      run: cargo clippy --all-features -- -Dwarnings
+      run: cargo clippy --release --all-features -- -Dwarnings
 
     - name: Rust formatting
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
