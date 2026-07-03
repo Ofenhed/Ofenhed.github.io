@@ -8,7 +8,6 @@ pub(crate) mod third_party;
 pub use contact::qr_generator::save_qrcode;
 
 pub use app::shell;
-pub use leptos::prelude::document;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]
@@ -18,7 +17,8 @@ pub fn hydrate() {
 
     #[cfg(not(debug_assertions))]
     {
-        use std::{panic, sync::Once};
+        pub use leptos::prelude::*;
+        use std::{panic, sync::Once, time::Duration};
         static SET_HOOK: Once = Once::new();
         set_timeout(
             || {
