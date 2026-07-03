@@ -172,6 +172,7 @@ ul#blog-entries {
               margin: 0px;
               opacity: 0.2;
               width: 0.5cm;
+              transition: none !important;
             }
             &:nth-child(2) {
               transform: none;
