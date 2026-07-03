@@ -14,7 +14,7 @@ use crate::{
         path::format_path,
         unremarkable::Unremarkable,
     },
-    helpers::{AddContext, ForRoute, context_signal, into_static_str},
+    helpers::{AddContext, ForRoute, ZWNJ, context_signal, into_static_str},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -464,7 +464,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
             <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
             <time class="publish" datetime=B::PUBLISH_DATE.date_naive().to_string()>
                 {B::PUBLISH_DATE.date_naive().to_string()}
-                "\u{200C}"
+                {ZWNJ}
             </time>
         }
     };
