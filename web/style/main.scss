@@ -29,15 +29,6 @@ body {
   display: grid;
   margin: 0px;
   grid-template-columns: [menu-start] 0px [menu-end main-start footer-start] 0px 100% 0px [footer-end main-end];
-  a[x-apple-data-detectors] { // Apple is incredibly shit
-    color: inherit !important;
-    text-decoration: none !important;
-    font-size: inherit !important;
-    font-family: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    pointer-events: none !important;
-  }
   &:has(> footer) {
     grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] min-content [footer-end menu-end];
   }
