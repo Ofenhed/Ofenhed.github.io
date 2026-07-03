@@ -11,6 +11,11 @@ use leptos_router::{
     hooks::use_location,
 };
 
+/// Zero Width Non-Joiner
+///
+/// Can be used to block phone number detection for browsers that ignore the meta tag
+pub(crate) const ZWNJ: char = '\u{200C}';
+
 #[cfg_attr(feature = "ssr", allow(unused))]
 pub(crate) trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
