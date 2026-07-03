@@ -1,7 +1,7 @@
-use crate::blog::metadata::{date, BlogEntry, Locale, Tag};
+use crate::blog::metadata::{BlogEntry, Locale, Tag, date};
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
-use leptos_router::{lazy_route, LazyRoute};
+use leptos_router::{LazyRoute, lazy_route};
 
 #[derive(Clone, Copy)]
 pub(crate) struct Unremarkable;
