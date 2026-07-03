@@ -25,14 +25,12 @@ pub fn hydrate() {
                 SET_HOOK.call_once(|| {
                     let prev_hook = panic::take_hook();
                     std::panic::set_hook(Box::new(move |info| {
-                        if let Some(location) = document().location() {
-                            if let Ok(hash) = location.hash() {
-                                if hash != "panic" {
-                                    if location.set_hash("panic").is_ok() {
-                                        _ = location.reload_with_forceget(true);
-                                    }
-                                }
-                            }
+                        if let Some(location) = document().location()
+                            && let Ok(hash) = location.hash()
+                            && hash != "panic"
+                            && location.set_hash("panic").is_ok()
+                        {
+                            _ = location.reload_with_forceget(true);
                         }
                         prev_hook(info);
                     }))
