@@ -28,7 +28,7 @@ strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"], default-features = false, optional = true }
 wasm-bindgen.workspace = true
-web-sys = { workspace = true, optional = true, features = ["HtmlCanvasElement", "CanvasRenderingContext2d", "ScrollIntoViewOptions", "ScrollBehavior", "Element"] }
+web-sys = { workspace = true, optional = true, features = ["HtmlCanvasElement", "CanvasRenderingContext2d", "ScrollIntoViewOptions", "ScrollBehavior", "Element", "Location"] }
 
 [build-dependencies]
 cargo-leptos = "0.3.6"
