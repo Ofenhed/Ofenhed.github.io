@@ -484,7 +484,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
             }
         />
         <h1 id="pageHeader">{B::TITLE}</h1>
-        <section class="article-info">{publish}<span />{last_update}</section>
+        <section class="article-info">{publish} {last_update}</section>
     }
 }
 
