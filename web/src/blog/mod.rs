@@ -596,6 +596,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             <span class="article-info">
                 <time class="publish" datetime=date.clone()>
                     {date.clone()}
+                    {ZWNJ}
                 </time>
                 {update}
             </span>
