@@ -464,7 +464,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
             <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
             <time class="publish" datetime=B::PUBLISH_DATE.date_naive().to_string()>
                 {B::PUBLISH_DATE.date_naive().to_string()}
-                &zwj;
+                "\u{200C}"
             </time>
         }
     };
