@@ -72,7 +72,7 @@ impl LazyRoute for WhatAreLLMs {
             </section>
             <section>
                 "I get that some of you will have an instant reaction of this comparison being ridiculous. I would like to direct you to a study"
-                <Footnote>
+                <Footnote id=Oco::Borrowed("extracting-books-from-llm")>
                     <b>Extracting books from production language models</b>
                     <br />
                     <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
@@ -117,7 +117,9 @@ impl LazyRoute for WhatAreLLMs {
                         {ai}
                         ", which in actuality sneakily promote "
                         {ai}
-                        <Footnote>
+                        <Footnote id=Oco::Borrowed(
+                            "ai-warning-trojan",
+                        )>
                             "AI companies keep telling us about how dangerous AI can be, they even ask for new laws. Anthropic claims that "
                             <a href="https://www.ynetnews.com/tech-and-digital/article/hkftl9ibmg">
                                 "Claude Mythos AI is too dangerous for the public"
