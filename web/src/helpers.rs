@@ -374,7 +374,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
 
 #[component]
 pub(crate) fn Footnote(
-    #[prop(into, optional)] name: Signal<Option<Oco<'static, str>>>,
+    #[prop(into, optional)] id: Signal<Option<Oco<'static, str>>>,
     children: ChildrenFn,
 ) -> impl IntoView {
     let (active, footnotes) = footnotes();
@@ -382,7 +382,7 @@ pub(crate) fn Footnote(
     let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
     let footnote_name = move || {
-        name.get()
+        id.get()
             .unwrap_or_else(|| Oco::Owned(format!("footer-{uid}")))
     };
 
