@@ -121,7 +121,9 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
     let previous_page = move || {
         let CurrentPage(p) = use_context().expect("Current page always defined here");
         if p != 0 {
-            Some(view! { <a href=current_url_with(move || provide_context(CurrentPage(p - 1)))>"<"</a> })
+            Some(
+                view! { <a href=current_url_with(move || provide_context(CurrentPage(p - 1)))>"<"</a> },
+            )
         } else {
             None
         }
@@ -130,7 +132,9 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
         let CurrentPage(p) = use_context().expect("Current page always defined here");
         let num_pages = num_pages();
         if p < num_pages {
-            Some(view! { <a href=current_url_with(move || provide_context(CurrentPage(p + 1)))>">"</a> })
+            Some(
+                view! { <a href=current_url_with(move || provide_context(CurrentPage(p + 1)))>">"</a> },
+            )
         } else {
             None
         }
