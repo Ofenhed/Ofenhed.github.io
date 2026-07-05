@@ -7,8 +7,7 @@ use leptos::{
     tachys::view::iterators::StaticVec,
 };
 use leptos_router::{
-    MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, components::Outlet,
-    hooks::use_location,
+    MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
 };
 
 /// Zero Width Non-Joiner
@@ -122,60 +121,6 @@ pub(crate) fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X
 ) -> impl MatchNestedRoutes + Clone {
     let entries = StaticVec::from(each.into_iter().map(children).collect::<Vec<_>>());
     entries.into_any_nested_route()
-}
-
-pub(crate) fn context_signal<T: Send + Sync + 'static>(val: T) -> (Signal<T>, WriteSignal<T>) {
-    let (read, write) = signal(val);
-    let read = read.into();
-    provide_context(read);
-    provide_context(write);
-    (read, write)
-}
-
-#[derive(thiserror::Error, Debug, PartialEq, Eq)]
-pub(crate) enum ContextSignalError {
-    #[error("Signal writer not provided defined")]
-    NotProvided,
-}
-
-pub(crate) fn with_context_signal<T: Send + Sync + 'static>(
-    value: T,
-) -> Result<(), ContextSignalError> {
-    if let Some(writer) = use_context::<WriteSignal<_>>() {
-        writer.set(value);
-        Ok(())
-    } else {
-        Err(ContextSignalError::NotProvided)
-    }
-}
-
-#[component]
-pub(crate) fn AddContext<T: Send + Sync + 'static>(
-    context: T,
-    #[prop(optional)] children: Option<Children>,
-) -> impl IntoView {
-    #[derive(Clone, Copy)]
-    struct OutletRendered;
-    if let Some(writer) = use_context::<WriteSignal<_>>() {
-        writer.set(context)
-    }
-    let children = children.map(|children| {
-        Owner::current().map(move |x| {
-            x.child().with(move || {
-                provide_context(OutletRendered);
-                children()
-            })
-        })
-    });
-    let outlet = if use_context::<OutletRendered>().is_none() {
-        Some(view! { <Outlet /> }.into_inner())
-    } else {
-        None
-    };
-    view! {
-        {outlet}
-        {children}
-    }
 }
 
 pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
