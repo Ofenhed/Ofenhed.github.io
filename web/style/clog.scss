@@ -62,6 +62,7 @@ ul#blog-entries {
 
 @include nav.with-path-prefix("/clog", $base: body) {
   main .article-info {
+    font-size: 60%;
     time {
       margin-left: 1ex;
     }
