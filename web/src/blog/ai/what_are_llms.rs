@@ -78,7 +78,7 @@ impl LazyRoute for WhatAreLLMs {
                     <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
                     <br />
                     <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
-                </Footnote>" that could get "{llm}
+                </Footnote>" where researchers could get "{llm}
                 " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. This doesn't prove lack of intelligence, but it proves that the data is there."
             </section>
             <section>
