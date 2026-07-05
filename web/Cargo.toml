@@ -40,7 +40,6 @@ client-side = ["dep:web-sys", "dep:base64"]
 ssr = [
   "dep:image",
   "dep:tokio",
-  "leptos_static_files?/ssr",
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",

@@ -132,6 +132,23 @@ pub(crate) fn context_signal<T: Send + Sync + 'static>(val: T) -> (Signal<T>, Wr
     (read, write)
 }
 
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
+pub(crate) enum ContextSignalError {
+    #[error("Signal writer not provided defined")]
+    NotProvided,
+}
+
+pub(crate) fn with_context_signal<T: Send + Sync + 'static>(
+    value: T,
+) -> Result<(), ContextSignalError> {
+    if let Some(writer) = use_context::<WriteSignal<_>>() {
+        writer.set(value);
+        Ok(())
+    } else {
+        Err(ContextSignalError::NotProvided)
+    }
+}
+
 #[component]
 pub(crate) fn AddContext<T: Send + Sync + 'static>(
     context: T,

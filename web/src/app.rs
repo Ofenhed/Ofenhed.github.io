@@ -199,7 +199,7 @@ pub(crate) fn App() -> impl IntoView {
                         <A href="/">"Contact"</A>
                     </li>
                     <li>
-                        <A href="/clog">"Clog"</A>
+                        <A href="/clogs">"Clog"</A>
                     </li>
                 </menu>
             </nav>

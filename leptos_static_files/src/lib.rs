@@ -141,10 +141,8 @@ impl StaticRouteGenerator {
             }
 
             #[cfg(feature = "meta")]
-            let html = meta_output.inject_meta_context(stream).await;
-            #[cfg(not(feature = "meta"))]
-            let html = stream;
-            let html = html.collect::<String>().await;
+            let stream = meta_output.inject_meta_context(stream).await;
+            let html = stream.collect::<String>().await;
             (owner, html)
         }
     }

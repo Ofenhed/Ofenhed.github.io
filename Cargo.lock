@@ -3248,7 +3248,7 @@ dependencies = [
 
 [[package]]
 name = "leptos_static_files"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "any_spawner",
  "futures",
