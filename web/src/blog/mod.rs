@@ -13,7 +13,7 @@ use crate::{
         },
         path::format_path,
     },
-    helpers::{AddContext, ForRoute, ZWNJ, context_signal, into_static_str, with_context_signal},
+    helpers::{ForRoute, ZWNJ, into_static_str},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -40,20 +40,13 @@ fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
     let mut ret = vec![PathSegment::Static(Cow::Borrowed("clogs"))];
     owner.child().with(|| {
         f();
-        if let Some(tag) = use_context::<Signal<Option<TagFilter>>>().and_then(|x| x.get()) {
+        use_context::<SortBy>().unwrap().generate_path(&mut ret);
+        use_context::<SortInvert>().unwrap().generate_path(&mut ret);
+        if let Some(tag) = use_context::<Option<TagFilter>>().unwrap() {
             tag.generate_path(&mut ret);
         }
-        use_context::<Signal<SortBy>>()
+        use_context::<CurrentPage>()
             .unwrap()
-            .get()
-            .generate_path(&mut ret);
-        use_context::<Signal<SortInvert>>()
-            .unwrap()
-            .get()
-            .generate_path(&mut ret);
-        use_context::<Signal<CurrentPage>>()
-            .unwrap()
-            .get()
             .generate_path(&mut ret);
     });
     ret
@@ -114,54 +107,39 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
 
 #[component]
 pub(crate) fn BlogPagingLinks() -> impl IntoView {
-    let current_page =
-        use_context::<Signal<CurrentPage>>().expect("Current page always defined here");
-    let blogs = use_context::<Signal<FilteredEntities>>()
-        .expect("Filtered entities are always defined here");
     let num_pages = |entries| {
         let entry_count = entries;
         let pages_full = entry_count + ENTRIES_PER_PAGE - 1;
         pages_full / ENTRIES_PER_PAGE
     };
-    let num_pages = move || num_pages(blogs.with(|x| x.0.len()));
+    let num_pages = move || {
+        let FilteredEntities(blogs) =
+            use_context().expect("Filtered entities are always defined here");
+        num_pages(blogs.len())
+    };
     let previous_page = move || {
-        current_page.with(move |CurrentPage(p)| {
-            let p = *p;
-            if p != 0 {
-                Some(view! {
-                    <a href=current_url_with(move || provide_context(
-                        Signal::derive(move || CurrentPage(p - 1)),
-                    ))>"<"</a>
-                })
-            } else {
-                None
-            }
-        })
+        let CurrentPage(p) = use_context().expect("Current page always defined here");
+        if p != 0 {
+            Some(view! { <a href=current_url_with(move || provide_context(CurrentPage(p - 1)))>"<"</a> })
+        } else {
+            None
+        }
     };
     let next_page = move || {
-        current_page.with(move |CurrentPage(p)| {
-            let p = *p + 1;
-            let num_pages = num_pages();
-            if p < num_pages {
-                Some(view! {
-                    <a href=current_url_with(move || provide_context(
-                        Signal::derive(move || CurrentPage(p)),
-                    ))>">"</a>
-                })
-            } else {
-                None
-            }
-        })
+        let CurrentPage(p) = use_context().expect("Current page always defined here");
+        let num_pages = num_pages();
+        if p < num_pages {
+            Some(view! { <a href=current_url_with(move || provide_context(CurrentPage(p + 1)))>">"</a> })
+        } else {
+            None
+        }
     };
     let pagination = move || {
         let num_pages = num_pages();
         let is_current = move |p| {
             move || {
-                if current_page.with(|CurrentPage(c)| p == *c) {
-                    Some("page")
-                } else {
-                    None
-                }
+                let CurrentPage(c) = use_context().expect("Current page always defined here");
+                if p == c { Some("page") } else { None }
             }
         };
         if num_pages > 1 {
@@ -170,9 +148,7 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
                     {previous_page} <For each=move || 0..num_pages key=|x| *x let(page)>
                         <a
                             aria-current=is_current(page)
-                            href=current_url_with(|| provide_context(
-                                Signal::derive(move || CurrentPage(page)),
-                            ))
+                            href=current_url_with(|| provide_context(CurrentPage(page)))
                         >
                             {page + 1}
                         </a>
@@ -190,7 +166,7 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
         let leptos_static_files::NoGenerateStatic(ignore) =
             use_context().expect("This should be defined by static_files");
         Signal::derive(move || {
-            let CurrentPage(page) = current_page.get();
+            let CurrentPage(page) = use_context().expect("Current page always defined here");
             let page = page + 1;
             let last_page = num_pages();
             if last_page < page {
@@ -217,10 +193,8 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
                     <Route
                         path=CurrentPage(key)
                         view=move || {
-                            view! {
-                                <AddContext context=CurrentPage(key) />
-                                <Outlet />
-                            }
+                            provide_context(CurrentPage(key));
+                            view! { <BlogListing /> }.into_inner()
                         }
                         ssr=SsrMode::Static(StaticRoute::new())
                     />
@@ -241,22 +215,31 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
                 view! {
                     <ParentRoute
                         path=*key
-                        view=move || view! { <AddContext context=key.to_owned() /> }
+                        view=move || {
+                            provide_context(key.to_owned());
+                            view! { <Outlet /> }
+                        }
                         ssr=SsrMode::OutOfOrder
                     >
                         <ParentRoute
                             path=SortInvert(true)
-                            view=|| view! { <AddContext context=SortInvert(true) /> }
+                            view=|| {
+                                provide_context(SortInvert(true));
+                                view! { <Outlet /> }
+                            }
                             ssr=SsrMode::OutOfOrder
                         >
-                            <BlogPaging />
+                            <BlogTagFilter />
                         </ParentRoute>
                         <ParentRoute
                             path=SortInvert(false)
-                            view=|| view! { <AddContext context=SortInvert(false) /> }
+                            view=|| {
+                                provide_context(SortInvert(false));
+                                view! { <Outlet /> }
+                            }
                             ssr=SsrMode::OutOfOrder
                         >
-                            <BlogPaging />
+                            <BlogTagFilter />
                         </ParentRoute>
                     </ParentRoute>
                 }
@@ -269,7 +252,6 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
 
 #[component(transparent)]
 pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
-    let no_tag_filter: Option<TagFilter> = None;
     view! {
         <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
             <ForRoute
@@ -279,11 +261,12 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
                         <ParentRoute
                             path=key
                             view=move || {
-                                view! { <AddContext context=Some(key) /> }
+                                provide_context(Some(key));
+                                view! { <Outlet /> }
                             }
                             ssr=SsrMode::OutOfOrder
                         >
-                            <BlogSorting />
+                            <BlogPaging />
                         </ParentRoute>
                     }
                         .into_inner()
@@ -291,45 +274,45 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
             />
             <ParentRoute
                 path=path!("")
-                view=move || view! { <AddContext context=no_tag_filter /> }
+                view=move || {
+                    provide_context(None::<TagFilter>);
+                    view! { <Outlet /> }
+                }
                 ssr=SsrMode::OutOfOrder
             >
-                <BlogSorting />
+                <BlogPaging />
             </ParentRoute>
         </ParentRoute>
     }
     .into_inner()
 }
 
-#[component(transparent)]
-pub fn BlogListing(
-    #[prop(into)] blogs: Signal<Vec<BlogEntryMeta>>,
-) -> impl MatchNestedRoutes + Clone {
+#[component]
+pub fn BlogListing() -> impl IntoView {
     let blogs = {
-        let (sort_by, _) = context_signal(SortBy::Default);
-        let (inverted, _) = context_signal(SortInvert(false));
-        let (page, _) = context_signal(CurrentPage(0));
-        let (tags, _) = context_signal(None::<TagFilter>);
-        let filtered_entities = Signal::derive(move || {
-            FilteredEntities(blogs.with(|b| {
-                let filter = tags.get();
-                b.iter()
-                    .filter(|x| {
-                        if let Some(TagFilter(filter)) = filter {
-                            x.tags.contains(&filter)
-                        } else {
-                            true
-                        }
-                    })
-                    .cloned()
-                    .collect::<Vec<_>>()
-            }))
-        });
-        provide_context(filtered_entities);
+        let blogs = with_blogs_simple::<BlogEntryMeta>().collect::<Vec<_>>();
+        let sort_by = use_context::<SortBy>().unwrap();
+        let SortInvert(invert_sort) = use_context().unwrap();
+        let CurrentPage(current_page) = use_context().unwrap();
+        let tags = use_context::<Option<TagFilter>>().unwrap();
+        let filtered_entities = FilteredEntities(
+            blogs
+                .iter()
+                .filter(|x| {
+                    if let Some(TagFilter(filter)) = tags {
+                        x.tags.contains(&filter)
+                    } else {
+                        true
+                    }
+                })
+                .cloned()
+                .collect::<Vec<_>>()
+                .into(),
+        );
+        provide_context(filtered_entities.clone());
         let entries = Signal::derive(move || {
-            let SortInvert(invert_sort) = inverted.get();
-            let sort_by = sort_by.get();
-            let FilteredEntities(mut blogs) = filtered_entities.get();
+            let FilteredEntities(blogs) = use_context().unwrap();
+            let mut blogs = blogs.into_owned();
             blogs.sort_unstable_by(|a, b| {
                 let (a, b) = if invert_sort { (b, a) } else { (a, b) };
                 match sort_by {
@@ -349,53 +332,40 @@ pub fn BlogListing(
                         .unwrap(),
                 }
             });
-            let CurrentPage(current) = page.get();
             let (chunks, tail) = blogs.as_chunks::<ENTRIES_PER_PAGE>();
             match chunks.len() {
-                x if current == x => tail,
-                x if current > x => &blogs[..],
-                _ => &chunks[current],
+                x if current_page == x => tail,
+                x if current_page > x => &blogs[..],
+                _ => &chunks[current_page],
             }
             .to_vec()
         });
-        provide_context(Signal::derive(move || CurrentPageEntries(entries.get())));
+        provide_context(CurrentPageEntries(entries.get()));
         entries
     };
+    Effect::new(|| {
+        let FilteredEntities(blogs) = use_context().unwrap();
+        for b in with_blogs(PreloadUids(blogs.iter().map(|x| x.uid).collect())).flatten() {
+            spawn_local_scoped(b);
+        }
+    });
+
     view! {
-        <ParentRoute
-            path=path!("")
-            view=move || {
-                Effect::new(move |_| {
-                    let blogs = blogs.with(|x| x.iter().map(|x| x.uid).collect());
-                    for b in with_blogs(PreloadUids(blogs)).flatten() {
-                        spawn_local_scoped(b);
-                    }
-                });
-                view! {
-                    <BlogEntryList entries=blogs />
-                    <Outlet />
-                    <BlogPagingLinks />
-                }
-            }
-            ssr=SsrMode::OutOfOrder
-        >
-            <BlogTagFilter />
-        </ParentRoute>
+        <BlogEntryList entries=blogs />
+        <BlogPagingLinks />
     }
-    .into_inner()
 }
 
 #[component(transparent)]
 pub fn Blog() -> impl MatchNestedRoutes + Clone {
     let blogs = with_blogs_simple::<AnyNestedRoute>().collect::<Vec<_>>();
-    let blog_metadata = with_blogs_simple::<BlogEntryMeta>().collect::<Vec<_>>();
     view! {
         <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
             <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
                 <ForRoute each=blogs children=|b| b />
             </ParentRoute>
             <ParentRoute path=path!("/clogs") view=Outlet ssr=SsrMode::OutOfOrder>
-                <BlogListing blogs=blog_metadata />
+                <BlogSorting />
             </ParentRoute>
         </ParentRoute>
     }
@@ -505,7 +475,7 @@ fn to_title<'a>(input: impl Into<Oco<'a, str>>) -> Oco<'a, str> {
 
 #[derive(Clone)]
 #[allow(unused)]
-struct FilteredEntities(Vec<BlogEntryMeta>);
+struct FilteredEntities(Oco<'static, [BlogEntryMeta]>);
 
 #[allow(unused)]
 struct CurrentPageEntries(Vec<BlogEntryMeta>);
@@ -609,9 +579,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                         <A
                             on:click=on_click
                             href={
-                                let mut path = vec![
-                                    PathSegment::Static(Cow::Borrowed("clog")),
-                                ];
+                                let mut path = vec![PathSegment::Static(Cow::Borrowed("clog"))];
                                 entry.generate_path(&mut path);
                                 format!("{}#{}", format_path(path), to_title(entry.title))
                             }
@@ -623,8 +591,8 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
                                 <li>
                                     <A href=current_url_with(|| {
-                                        _ = with_context_signal(Some(TagFilter(*tag)));
-                                        _ = with_context_signal(CurrentPage(0));
+                                        provide_context(Some(TagFilter(*tag)));
+                                        provide_context(CurrentPage(0));
                                     })>{into_static_str(tag)}</A>
                                 </li>
                             </For>
