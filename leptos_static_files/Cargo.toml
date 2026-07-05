@@ -1,6 +1,6 @@
 [package]
 name = "leptos_static_files"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 
 [lib]
@@ -19,8 +19,7 @@ tokio = { workspace = true, features = ["fs", "io-util", "sync"], optional = tru
 wasm-bindgen.workspace = true
 
 [features]
-default = ["tokio", "ssr", "meta"]
+default = ["tokio", "meta"]
 islands = ["leptos/islands"]
-ssr = ["leptos_router/ssr", "leptos/ssr"]
 tokio = ["dep:tokio", "any_spawner/tokio"]
 meta = ["dep:leptos_meta"]

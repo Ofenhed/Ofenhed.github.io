@@ -13,7 +13,7 @@ use crate::{
         },
         path::format_path,
     },
-    helpers::{AddContext, ForRoute, ZWNJ, context_signal, into_static_str},
+    helpers::{AddContext, ForRoute, ZWNJ, context_signal, into_static_str, with_context_signal},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -37,7 +37,7 @@ const ENTRIES_PER_PAGE: usize = 10;
 
 fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
     let owner = Owner::current().unwrap();
-    let mut ret = vec![PathSegment::Static(Cow::Borrowed("clog"))];
+    let mut ret = vec![PathSegment::Static(Cow::Borrowed("clogs"))];
     owner.child().with(|| {
         f();
         if let Some(tag) = use_context::<Signal<Option<TagFilter>>>().and_then(|x| x.get()) {
@@ -390,11 +390,13 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
     let blogs = with_blogs_simple::<AnyNestedRoute>().collect::<Vec<_>>();
     let blog_metadata = with_blogs_simple::<BlogEntryMeta>().collect::<Vec<_>>();
     view! {
-        <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
-            <ParentRoute path=path!("/entry") view=Outlet ssr=SsrMode::Static(StaticRoute::new())>
+        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
+            <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
                 <ForRoute each=blogs children=|b| b />
             </ParentRoute>
-            <BlogListing blogs=blog_metadata />
+            <ParentRoute path=path!("/clogs") view=Outlet ssr=SsrMode::OutOfOrder>
+                <BlogListing blogs=blog_metadata />
+            </ParentRoute>
         </ParentRoute>
     }
     .into_inner()
@@ -609,7 +611,6 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                             href={
                                 let mut path = vec![
                                     PathSegment::Static(Cow::Borrowed("clog")),
-                                    PathSegment::Static(Cow::Borrowed("entry")),
                                 ];
                                 entry.generate_path(&mut path);
                                 format!("{}#{}", format_path(path), to_title(entry.title))
@@ -621,13 +622,10 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                         <ul class="tags">
                             <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
                                 <li>
-                                    <A href=move || {
-                                        let mut path = vec![
-                                            PathSegment::Static(Cow::Borrowed("clog")),
-                                        ];
-                                        TagFilter(*tag).generate_path(&mut path);
-                                        format_path(path).into_owned()
-                                    }>{into_static_str(tag)}</A>
+                                    <A href=current_url_with(|| {
+                                        _ = with_context_signal(Some(TagFilter(*tag)));
+                                        _ = with_context_signal(CurrentPage(0));
+                                    })>{into_static_str(tag)}</A>
                                 </li>
                             </For>
                         </ul>
