@@ -48,6 +48,7 @@ jobs:
         key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock', env.rust_version) }}
         restore-keys: |
           ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
+          ${{ runner.os }}-cargo-lock-
         path: |
           ~/.cargo/registry
           ~/.cargo/git
