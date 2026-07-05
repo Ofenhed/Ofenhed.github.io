@@ -1,6 +1,7 @@
 pub mod ai;
 pub mod metadata;
 pub mod path;
+#[cfg(debug_assertions)]
 pub mod unremarkable;
 pub mod why;
 
