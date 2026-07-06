@@ -48,9 +48,7 @@ impl LazyRoute for WhatAreLLMs {
             <Style media="screen">
                 "ul.lies em {color:#f00;text-shadow:0 0 0.8em light-dark(#000,#555);}"
             </Style>
-            <Style media="print and (color)">
-                "ul.lies em {text-shadow:0 0 0.8em #f00}"
-            </Style>
+            <Style media="print and (color)">"ul.lies em {text-shadow:0 0 0.8em #f00}"</Style>
             <Style media="print and not (color)">
                 "a {color:#fff}ul.lies em {color:#fff;background:#000}"
             </Style>
