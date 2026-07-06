@@ -82,6 +82,20 @@ body {
           cursor: grabbing;
         }
       }
+      &.info {
+        background: #ccffcc;
+        background-blend-mode: multiply;
+        & > summary {
+          &:hover {
+            background: #10ee10;
+          }
+          &::marker {
+            content: "\1F50E ";
+            display: block;
+            margin-right: 2em;
+          }
+        }
+      }
     }
 
     del {
