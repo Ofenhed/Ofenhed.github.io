@@ -58,7 +58,7 @@ impl LazyRoute for WhatAreLLMs {
             </section>
             <section>
                 "To be able to understand what an "{llm}
-                " is, we'll take a detour to compression algorithms. "<details>
+                " is, we'll take a detour to compression algorithms. "<details class="info">
                     <summary>
                         "There are two categories of compression: lossless compression and lossy compression."
                     </summary>
