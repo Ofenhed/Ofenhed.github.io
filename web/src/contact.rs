@@ -11,11 +11,12 @@ mod qr_settings {
     pub const MAX_SHADE_INTERVAL: f64 = 0.1;
     pub const MIN_WORM_LENGTH: usize = 20;
     pub const MAX_WORM_LENGTH: usize = 250;
-    pub const MIN_WORM_INTERVAL: f64 = 3.0;
+    pub const MIN_WORM_INTERVAL: f64 = 2.0;
     pub const MAX_WORM_INTERVAL: f64 = 10.0;
     pub const WORM_SHADE_STEPS: usize = 5;
     pub const WORM_SHADE_INTERVAL: f64 = 0.08;
     pub const WORM_MOVE_INTERVAL: f64 = 0.02;
+    pub const WORM_MOVE_ANGLE: f64 = 0.75;
     const _COMPILE_TIME_ASSERTIONS: () = {
         assert!(MAX_INITIAL_DELAY > MIN_INITIAL_DELAY);
         assert!(MAX_SHADE_INTERVAL > MIN_SHADE_INTERVAL);
@@ -271,7 +272,8 @@ pub(crate) fn Contact() -> impl IntoView {
                         + Math::random()
                             * Math::max(Math::min(1f64, 2f64 * Math::sin(angle)), -1f64),
                 ) as isize;
-                angle = angle + Math::random() / 2f64 - 0.25;
+                const HALF_ANGLE: f64 = WORM_MOVE_ANGLE / 2.0;
+                angle = angle - HALF_ANGLE + Math::random() * WORM_MOVE_ANGLE;
                 if std::cmp::min(x, y) < 0 || std::cmp::max(x, y) >= state.width as isize {
                     break;
                 }
