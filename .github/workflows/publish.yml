@@ -251,6 +251,7 @@ jobs:
     needs: build
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
 
     permissions:
       pages: write
