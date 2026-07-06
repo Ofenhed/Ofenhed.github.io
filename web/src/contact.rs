@@ -279,8 +279,9 @@ pub(crate) fn Contact() -> impl IntoView {
                 ) as isize;
                 const HALF_ANGLE: f64 = WORM_MOVE_ANGLE / 2.0;
                 angle = angle - HALF_ANGLE + Math::random() * WORM_MOVE_ANGLE;
+                worm_part_delay += WORM_MOVE_INTERVAL;
                 if std::cmp::min(x, y) < 0 || std::cmp::max(x, y) >= state.width as isize {
-                    break;
+                    continue;
                 }
 
                 let light = state.qr_code[x as usize][y as usize];
@@ -309,7 +310,6 @@ pub(crate) fn Contact() -> impl IntoView {
                             .into_scoped_timeout()
                     },
                 );
-                worm_part_delay += WORM_MOVE_INTERVAL;
             }
             set_scoped_timeout(
                 std::time::Duration::from_secs_f64(
