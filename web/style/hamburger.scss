@@ -2,6 +2,14 @@
 @use 'nav.scss';
 @use 'hamburger-easter-egg.scss';
 
+@media (prefers-reduced-motion: no-preference) {
+  #navigation {
+    #menu {
+      transition: 150ms all 100ms ease-out;
+    }
+  }
+}
+
 #navigation {
   top: 0;
   left: 0;
@@ -38,7 +46,6 @@
     transform-origin: top left;
     transform: rotateY(-90deg);
     opacity: 0.3;
-    transition: 150ms all 100ms ease-out;
     li {
       list-style: none;
       a {

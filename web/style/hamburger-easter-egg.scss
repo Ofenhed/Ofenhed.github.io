@@ -3,14 +3,14 @@
 @use 'sass:math';
 @use 'nav.scss';
 
-#navigation #hamburger.ultra-realistic {
+#navigation #hamburger {
   $sword_length: 40px;
   $sword_width: 0.75px;
   $handle_length: 8px;
   $handle_width: 2.5px;
   $glow_side: 16px;
   @include nav.with-path-prefix('/clog', $invert-path: true, $selector: &) {
-    .slice {
+    &.ultra-realistic .slice {
       @include nav.closed($selector: &) {
         margin: 0;
         &:nth-child(1) {
@@ -40,149 +40,151 @@
         }
       }
     }
-    @include nav.open($selector: &) {
-      &.inner-conflict {
-        .slice {
-          margin: 0;
-          $colors: (1: #f55, 2: #78f);
-          @each $index, $color in $colors {
-            &:nth-child(#{$index}) {
-              opacity: 1;
-              box-shadow: 0 0 1px 1px $color;
-              height: $sword_width;
-              width: $sword_length;
-              background: color.scale($color, $lightness: +80%);
-              border: none;
-              &::after {
-                content: '';
-                display: block;
-                background: #444;
-                position: absolute;
-                filter: none !important;
-                border-radius: 1px;
-                left: -$handle_length+0.25px;
-                top: ($sword_width - $handle_width) / 2;
-                height: $handle_width;
-                width: $handle_length;
-              }
-            }
-          }
-          & {
-            animation-duration: 1s;
-            animation-fill-mode: forwards;
-          }
-          &:nth-child(1) {
-            @keyframes red-sword-in {
-              10% {
-                transform: translate(40px, 20px) rotate(-120deg);
-                transform-origin: left;
-              }
-              45% {
-                transform: translate(40px, 1px) rotate(-135deg);
-              }
-              59% {
-                filter: none;
-              }
-              60% {
-                transform: translate(40px, -3px) rotate(-120deg);
-                filter: blur(1px);
-              }
-              78% {
-                filter: blur(1px);
-              }
-              80% {
-                transform: translate(80px, -20px) rotate(-10deg);
-                filter: none;
-                transform-orign: left;
-              }
-              81% {
-                filter: blur(1px);
-              }
-              98% {
-                filter: blur(1px);
-              }
-              99% {
-                filter: none;
-              }
-              100% {
-                transform-origin: center;
-                transform: rotate(-135deg);
-              }
-            }
-            z-index: 3;
-            top: calc(50%);
-            animation-timing-function: linear;
-            animation-name: red-sword-in;
-            transform-origin: left;
-          }
-          &:nth-child(2) {
-            @keyframes blue-sword-in {
-              $trans: translateX(0) translateY(10px);
-              10% {
-                transform-origin: left;
-                transform: $trans rotate(-45deg);
-              }
-              65% {
-                transform: $trans rotate(-50deg);
-              }
-              70% {
-                transform: $trans rotate(-40deg);
-                filter: none;
-              }
-              71% {
-                filter: blur(1px);
-              }
-              80% {
-                transform: translateY(35px) translateX(-5px) rotate(-160deg);
-              }
-              90% {
-                transform: translateY(35px) translateX(-5px) rotate(-255deg);
-              }
-              98% {
-                filter: blur(1px);
-              }
-              99% {
-                filter: none;
-              }
-              100% {
-                transform-origin: center;
-                transform: rotate(-400deg);
-              }
-            }
-            z-index: 5;
-            top: calc(50% - $sword_width);
-            left: 0;
-            animation-name: blue-sword-in;
-            animation-timing-function: linear;
-            transform-origin: left;
-          }
-          &:nth-child(3) {
-            @keyframes sword-sparcles {
-              0% {
-                opacity: 0;
-                transform: scale(0.2);
-              }
-              95% {
-                opacity: 0;
-                transform: scale(0.2);
-              }
-              98% {
+    @media (prefers-reduced-motion: no-preference) {
+      @include nav.open($selector: &) {
+        &.inner-conflict {
+          .slice {
+            margin: 0;
+            $colors: (1: #f55, 2: #78f);
+            @each $index, $color in $colors {
+              &:nth-child(#{$index}) {
                 opacity: 1;
-                transform: scale(2);
+                box-shadow: 0 0 1px 1px $color;
+                height: $sword_width;
+                width: $sword_length;
+                background: color.scale($color, $lightness: +80%);
+                border: none;
+                &::after {
+                  content: '';
+                  display: block;
+                  background: #444;
+                  position: absolute;
+                  filter: none !important;
+                  border-radius: 1px;
+                  left: -$handle_length+0.25px;
+                  top: ($sword_width - $handle_width) / 2;
+                  height: $handle_width;
+                  width: $handle_length;
+                }
               }
             }
-            transform: scale(0.8);
-            width: $glow_side;
-            height: $glow_side;
-            opacity: 1;
-            top: calc(50% - 2 * $sword_width - $glow_side / 2);
-            left: math.div(math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px, 2) - $sword_width;
-            z-index: 4;
-            border: none;
-            animation-name: sword-sparcles;
-            background: none;
-            background-image: radial-gradient(#ffff00, #ffffff10, #ffff0000);
-            padding: 0;
+            & {
+              animation-duration: 1s;
+              animation-fill-mode: forwards;
+            }
+            &:nth-child(1) {
+              @keyframes red-sword-in {
+                10% {
+                  transform: translate(40px, 20px) rotate(-120deg);
+                  transform-origin: left;
+                }
+                45% {
+                  transform: translate(40px, 1px) rotate(-135deg);
+                }
+                59% {
+                  filter: none;
+                }
+                60% {
+                  transform: translate(40px, -3px) rotate(-120deg);
+                  filter: blur(1px);
+                }
+                78% {
+                  filter: blur(1px);
+                }
+                80% {
+                  transform: translate(80px, -20px) rotate(-10deg);
+                  filter: none;
+                  transform-orign: left;
+                }
+                81% {
+                  filter: blur(1px);
+                }
+                98% {
+                  filter: blur(1px);
+                }
+                99% {
+                  filter: none;
+                }
+                100% {
+                  transform-origin: center;
+                  transform: rotate(-135deg);
+                }
+              }
+              z-index: 3;
+              top: calc(50%);
+              animation-timing-function: linear;
+              animation-name: red-sword-in;
+              transform-origin: left;
+            }
+            &:nth-child(2) {
+              @keyframes blue-sword-in {
+                $trans: translateX(0) translateY(10px);
+                10% {
+                  transform-origin: left;
+                  transform: $trans rotate(-45deg);
+                }
+                65% {
+                  transform: $trans rotate(-50deg);
+                }
+                70% {
+                  transform: $trans rotate(-40deg);
+                  filter: none;
+                }
+                71% {
+                  filter: blur(1px);
+                }
+                80% {
+                  transform: translateY(35px) translateX(-5px) rotate(-160deg);
+                }
+                90% {
+                  transform: translateY(35px) translateX(-5px) rotate(-255deg);
+                }
+                98% {
+                  filter: blur(1px);
+                }
+                99% {
+                  filter: none;
+                }
+                100% {
+                  transform-origin: center;
+                  transform: rotate(-400deg);
+                }
+              }
+              z-index: 5;
+              top: calc(50% - $sword_width);
+              left: 0;
+              animation-name: blue-sword-in;
+              animation-timing-function: linear;
+              transform-origin: left;
+            }
+            &:nth-child(3) {
+              @keyframes sword-sparcles {
+                0% {
+                  opacity: 0;
+                  transform: scale(0.2);
+                }
+                95% {
+                  opacity: 0;
+                  transform: scale(0.2);
+                }
+                98% {
+                  opacity: 1;
+                  transform: scale(2);
+                }
+              }
+              transform: scale(0.8);
+              width: $glow_side;
+              height: $glow_side;
+              opacity: 1;
+              top: calc(50% - 2 * $sword_width - $glow_side / 2);
+              left: math.div(math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px, 2) - $sword_width;
+              z-index: 4;
+              border: none;
+              animation-name: sword-sparcles;
+              background: none;
+              background-image: radial-gradient(#ffff00, #ffffff10, #ffff0000);
+              padding: 0;
+            }
           }
         }
       }
