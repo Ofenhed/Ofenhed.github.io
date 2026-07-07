@@ -172,10 +172,6 @@ body {
         opacity: 1;
       }
     }
-    &::after {
-      padding: 50vh 0;
-      margin: -50vh 0;
-    }
     &:target, &[aria-current] {
       &::after {
         padding: revert;
