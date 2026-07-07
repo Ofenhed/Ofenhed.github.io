@@ -85,10 +85,10 @@ body {
       &.info {
         background: light-dark(#ccffcc, #003300);
         background-blend-mode: multiply;
-        & > summary {
-          &:hover {
+        &:not([open]) > summary:hover:not(:active) {
             background: #10ee10;
           }
+        & > summary {
           &::marker {
             content: "\1F50E  ";
             display: block;
