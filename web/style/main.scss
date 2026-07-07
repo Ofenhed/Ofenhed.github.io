@@ -84,6 +84,11 @@ body {
       }
       &.info {
         background: light-dark(#ccffcc, #003300);
+        @media print {
+          background: none;
+          border-color: #ccffcc;
+          border-width: 1mm;
+        }
         background-blend-mode: multiply;
         @media (any-hover: hover) {
           &:not([open]) > summary:hover:not(:active) {
