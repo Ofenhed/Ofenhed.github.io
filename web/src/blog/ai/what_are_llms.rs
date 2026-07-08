@@ -191,7 +191,8 @@ impl LazyRoute for WhatAreLLMs {
                         <q>"the singularity"</q>", " {agi} ", or "{asi} ", through the magic of "
                         <q>"recursive self-improvement"</q>
                         ". That makes the water into wine routine look like child's play in comparison, and any description on how "
-                        <q>"recursive self-improvement"</q>" sounds like what's already known as "
+                        <q>"recursive self-improvement"</q>
+                        " would actually work sounds like what's already known as "
                         <a href="https://www.ibm.com/think/topics/model-collapse">
                             "model collapse"
                         </a> " in the industry. The problem here is that even if you know that "
