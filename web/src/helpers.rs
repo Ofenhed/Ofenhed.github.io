@@ -253,6 +253,7 @@ macro_rules! scroll_into_view {
             $element.scroll_into_view_with_scroll_into_view_options(&{
                 let opts = web_sys::ScrollIntoViewOptions::new();
                 opts.set_behavior(web_sys::ScrollBehavior::Smooth);
+                opts.set_block(web_sys::ScrollLogicalPosition::Center);
                 opts
             })
         }
