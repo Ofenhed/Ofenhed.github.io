@@ -690,9 +690,9 @@ dependencies = [
 
 [[package]]
 name = "cargo-leptos"
-version = "0.3.6"
+version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54a7aeb7e806b5be57d96a3074866cf77df38760fa74b7e5a0f0d9bfc016afa2"
+checksum = "e327ec89b787be9b9a041205067498657e06e28df721edbd108c364e7b473ccb"
 dependencies = [
  "anyhow",
  "axum",
@@ -734,6 +734,7 @@ dependencies = [
  "tar",
  "target-lexicon",
  "tokio",
+ "tokio-process-tools",
  "tracing",
  "walkdir",
  "wasm_split_cli_support",
@@ -6898,6 +6899,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-process-tools"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "559a2934c72973f30261dcfa311834fcfff21be5877931cc6752bf2b6ccbb542"
+dependencies = [
+ "bytes",
+ "memchr",
+ "nix 0.31.3",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "typed-builder",
+ "unwrap-infallible",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "tokio-rustls"
 version = "0.26.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7254,6 +7272,12 @@ name = "untrusted"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
+
+[[package]]
+name = "unwrap-infallible"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e497bb1f828cc9fb236722c2eaa100dcf201563f38f4da6252357a59037adf31"
 
 [[package]]
 name = "url"

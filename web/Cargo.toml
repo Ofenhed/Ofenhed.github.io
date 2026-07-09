@@ -31,7 +31,7 @@ wasm-bindgen.workspace = true
 web-sys = { workspace = true, optional = true, features = ["HtmlCanvasElement", "CanvasRenderingContext2d", "ScrollIntoViewOptions", "ScrollBehavior", "Element", "Location"] }
 
 [build-dependencies]
-cargo-leptos = "0.3.6"
+cargo-leptos = "0.3.7"
 
 [features]
 default = []
