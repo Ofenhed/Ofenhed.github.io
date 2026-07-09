@@ -268,6 +268,11 @@ pub(crate) fn footnote_ref(target: &str) -> Oco<'static, str> {
     Oco::Owned(format!("{target}-source"))
 }
 
+pub(crate) fn reset_footnote() {
+    let (active, _) = footnotes();
+    active.set(None);
+}
+
 #[component]
 pub(crate) fn Footnotes() -> impl IntoView {
     let (active, footnotes) = footnotes();

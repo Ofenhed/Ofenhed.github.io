@@ -14,7 +14,7 @@ use crate::{
         },
         path::format_path,
     },
-    helpers::{ForRoute, ZWNJ, into_static_str},
+    helpers::{ForRoute, ZWNJ, into_static_str, reset_footnote},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -91,6 +91,7 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
             <ParentRoute
                 path=metadata
                 view=move || {
+                    reset_footnote();
                     view! {
                         <BlogHeading entry=blog.clone() />
                         <Outlet />
