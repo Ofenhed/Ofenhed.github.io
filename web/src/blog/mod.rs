@@ -1,4 +1,5 @@
 pub mod ai;
+pub mod chat_control;
 pub mod metadata;
 pub mod path;
 #[cfg(debug_assertions)]
@@ -66,8 +67,10 @@ pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Resu
         }
         #[cfg(debug_assertions)]
         {
-            use unremarkable::Unremarkable;
-            [b.with_blog(Unremarkable)]
+            [
+                b.with_blog(unremarkable::Unremarkable),
+                b.with_blog(chat_control::ChatControl),
+            ]
         }
     };
     published.into_iter().chain(unpublished)

@@ -59,6 +59,9 @@ body {
     text-decoration: none;
   }
   & > main {
+    h1:first-of-type {
+      margin-top: 0;
+    }
     grid-area: main-start / main-start / main-end / main-end;
     padding: 1em;
     img {

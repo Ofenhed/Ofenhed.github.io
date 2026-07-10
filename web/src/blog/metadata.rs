@@ -10,6 +10,7 @@ use strum::{EnumString, IntoStaticStr, VariantArray};
 #[strum(serialize_all = "kebab-case")]
 pub enum Tag {
     Ai,
+    Integrity,
     Tech,
     Review,
     Keyboards,
