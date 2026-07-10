@@ -36,6 +36,10 @@ impl LazyRoute for ChatControl {
 
     fn view(_this: Self) -> AnyView {
         let osint = || view! { <Abbr title="Open Source Intelligence">"OSINT"</Abbr> }.into_inner();
+        #[cfg(not(feature = "ssr"))]
+        Effect::new(move |_| {
+            leptos::task::spawn_local_scoped(ChatControlReplyV::preload());
+        });
         view! {
             <fieldset>
                 <legend>Note</legend>
