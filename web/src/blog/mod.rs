@@ -3,7 +3,6 @@ pub mod chat_control;
 pub mod emails;
 pub mod metadata;
 pub mod path;
-#[cfg(debug_assertions)]
 pub mod unremarkable;
 pub mod why;
 
@@ -61,10 +60,11 @@ fn current_url_with(f: impl Fn()) -> String {
 
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
     let published = [
-        b.with_blog(why::WhyBlog),
         b.with_blog(ai::WhatAreLLMs),
         b.with_blog(chat_control::ChatControl),
         b.with_blog(emails::ChatControlReplyV),
+        b.with_blog(unremarkable::Unremarkable),
+        b.with_blog(why::WhyBlog),
     ];
     let unpublished = {
         #[cfg(not(debug_assertions))]
@@ -73,7 +73,7 @@ pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Resu
         }
         #[cfg(debug_assertions)]
         {
-            [b.with_blog(unremarkable::Unremarkable)]
+            []
         }
     };
     published.into_iter().chain(unpublished)
