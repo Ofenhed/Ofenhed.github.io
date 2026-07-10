@@ -208,7 +208,7 @@ pub(crate) fn ImgDef() -> ImgDefAttr {
 #[derive(Clone)]
 struct FootnoteInner {
     uid: usize,
-    name: Signal<Oco<'static, str>>,
+    name: ArcSignal<Oco<'static, str>>,
     children: ChildrenFn,
 }
 type FootnotesInner = (
@@ -230,7 +230,7 @@ fn footnotes() -> FootnotesInner {
     )
 }
 
-type AbbrList = Vec<(usize, Signal<String>)>;
+type AbbrList = Vec<(usize, ArcSignal<Oco<'static, str>>)>;
 
 fn abbrs() -> (ReadSignal<AbbrList>, WriteSignal<AbbrList>) {
     #[cfg_attr(debug_assertions, derive(Debug))]
@@ -239,7 +239,7 @@ fn abbrs() -> (ReadSignal<AbbrList>, WriteSignal<AbbrList>) {
     once_by_type(
         true,
         || {
-            let (reader, writer) = signal::<Vec<(usize, Signal<String>)>>(vec![]);
+            let (reader, writer) = signal::<Vec<(usize, ArcSignal<Oco<str>>)>>(vec![]);
             (AllAbbrs(reader, writer), (reader, writer))
         },
         |AllAbbrs(reader, writer)| (reader, writer),
@@ -277,7 +277,7 @@ pub(crate) fn reset_footnote() {
 pub(crate) fn Footnotes() -> impl IntoView {
     let (active, footnotes) = footnotes();
     let current_hash = use_location().hash;
-    let is_current = move |name: Signal<Oco<'static, str>>| {
+    let is_current = move |name: ArcSignal<Oco<'static, str>>| {
         move || {
             #[cfg(feature = "client-side")]
             {
@@ -323,7 +323,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
                             .with(|x| {
                                 x.iter()
                                     .map(|FootnoteInner { name, children, .. }| (
-                                        *name,
+                                        name.clone(),
                                         (*children)(),
                                     ))
                                     .collect::<Vec<_>>()
@@ -332,7 +332,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
                     key=|(name, _)| name.get()
                     let((name, inner))
                 >
-                    <div id=name aria-current=is_current(name)>
+                    <div id=name.clone() aria-current=is_current(name.clone())>
                         <div>{inner}</div>
                         {return_link(Oco::Owned(format!("{}-source", name.get())))}
                     </div>
@@ -370,7 +370,7 @@ pub(crate) fn Footnote(
 
     let my_footnote = FootnoteInner {
         uid,
-        name: Signal::derive(footnote_name.clone()),
+        name: ArcSignal::derive(footnote_name.clone()),
         children,
     };
 
@@ -444,15 +444,20 @@ pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
 
 #[component]
 pub(crate) fn Abbr<T: IntoView + 'static>(
-    #[prop(into)] title: Signal<String>,
-    #[prop(into, optional)] suffix: Signal<Option<String>>,
+    #[prop(into)] mut title: Oco<'static, str>,
+    #[prop(into, optional)] suffix: Option<Oco<'static, str>>,
     children: TypedChildrenMut<T>,
 ) -> impl IntoView {
     let (read_abbrs, write_abbrs) = abbrs();
     static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
     let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
-    write_abbrs.update(|abbrs| abbrs.push((uid, title)));
+    title.upgrade_inplace();
+
+    write_abbrs.update({
+        let title = title.clone();
+        move |abbrs| abbrs.push((uid, ArcSignal::derive(move || title.clone())))
+    });
 
     Owner::on_cleanup(move || {
         write_abbrs.update(move |abbrs| {
@@ -462,33 +467,35 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
         });
     });
 
-    let first_of_abbr = move || {
-        title.with(|abbr| {
+    let first_of_abbr = {
+        let title = title.clone();
+        move || {
+            let abbr = title.clone();
             read_abbrs.with(move |abbrs| {
                 abbrs
                     .iter()
-                    .find(|(_, name)| name.with(|name| name == abbr))
+                    .find(|(_, name)| name.with(|name| *name == abbr))
                     .map(|x| x.0)
                     == Some(uid)
             })
-        })
+        }
     };
     view! {
         <abbr
-            title=move || {
-                suffix
-                    .with(|s| {
-                        if let Some(s) = s {
-                            title.with(|title| format!("{title}{s}"))
+            title={
+                let (title, suffix) = (title, suffix).clone();
+                move || {
+                        if let Some(s) = &suffix {
+                            Oco::Owned(format!("{title}{s}"))
                         } else {
-                            title.get()
+                            title.clone()
                         }
-                    })
+                }
             }
             class:first-of-abbr=first_of_abbr
         >
             {children.into_inner()}
-            {suffix}
+            {suffix.clone()}
         </abbr>
     }
 }
