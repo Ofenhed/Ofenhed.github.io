@@ -323,7 +323,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
                             .with(|x| {
                                 x.iter()
                                     .map(|FootnoteInner { name, children, .. }| (
-                                        name.clone(),
+                                        *name,
                                         (*children)(),
                                     ))
                                     .collect::<Vec<_>>()
@@ -332,7 +332,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
                     key=|(name, _)| name.get()
                     let((name, inner))
                 >
-                    <div id=name.clone() aria-current=is_current(name)>
+                    <div id=name aria-current=is_current(name)>
                         <div>{inner}</div>
                         {return_link(Oco::Owned(format!("{}-source", name.get())))}
                     </div>
