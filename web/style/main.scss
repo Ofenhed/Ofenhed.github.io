@@ -118,7 +118,7 @@ body {
     }
     a.footnote-link::after {
       counter-increment: footnote-link;
-      content: counter(footnote-link);
+      content: "[" counter(footnote-link) "]";
     }
     section {
       margin-bottom: 1em;

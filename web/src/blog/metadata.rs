@@ -80,11 +80,13 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
     const UID: u32;
     const PUBLISH_DATE: DateTime<Utc>;
     const TITLE: &'static str;
+    const AUTHOR: &'static str = "Marcus Ofenhed";
     const TAGS: &'static [Tag];
 
     const LOCALE: Option<Locale> = None;
 
     const PATH_LOCALE: bool = false;
+    const HIDDEN: bool = false;
 
     const LAST_UPDATED: Option<DateTime<Utc>> = None;
 
