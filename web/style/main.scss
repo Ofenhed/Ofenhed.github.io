@@ -5,6 +5,7 @@
 @use 'contact.scss';
 @use 'third-party.scss';
 @use 'sass:string';
+@use 'quoting.scss';
 
 nav {
   a {
@@ -121,29 +122,6 @@ body {
     }
     section {
       margin-bottom: 1em;
-    }
-  }
-  blockquote {
-    display: block;
-    padding-left: 1em;
-    margin-left: 1em;
-    border-left: 2px solid light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
-    &[cite]:after {
-      display: block;
-      padding-top: 1ex;
-      padding-left: 1ex;
-      content: "- " attr(cite);
-      font-size: 75%;
-      font-style: revert;
-    }
-  }
-  q {
-    &:before {
-      content: "‘";
-    }
-    font-style: italic;
-    &:after {
-      content: "’";
     }
   }
   main a.footnote-link::after, & > footer > div::before {
