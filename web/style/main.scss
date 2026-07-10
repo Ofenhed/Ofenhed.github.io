@@ -117,10 +117,10 @@ body {
       text-decoration: none;
     }
     a.footnote-link {
-      &, &:after {
+      &, &:before {
         break-before: avoid;
       }
-      &:after {
+      &:before {
         counter-increment: footnote-link;
         content: "[" counter(footnote-link) "]";
       }
@@ -129,7 +129,7 @@ body {
       margin-bottom: 1em;
     }
   }
-  main a.footnote-link::after, & > footer > div::before {
+  main a.footnote-link::before, & > footer > div::before {
     vertical-align: super;
     text-decoration: none;
     display: inline-block;
@@ -159,7 +159,7 @@ body {
       }
     }
     &:target, &[aria-current] {
-      &::after {
+      &:before {
         padding: revert;
         margin: revert;
         animation-name: scale-footnote-number;
