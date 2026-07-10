@@ -421,14 +421,16 @@ pub(crate) fn Footnote(
 
     let footnote_source = footnote_ref(&footnote_name());
     view! {
-        <a
-            on:click=on_click
-            id=footnote_source.clone()
-            aria-describedby=footnote_name.clone()
-            aria-current=move || is_current(footnote_source.clone())
-            class="footnote-link"
-            href=move || format!("#{}", footnote_name())
-        />
+        <span>
+            <a
+                on:click=on_click
+                id=footnote_source.clone()
+                aria-describedby=footnote_name.clone()
+                aria-current=move || is_current(footnote_source.clone())
+                class="footnote-link"
+                href=move || format!("#{}", footnote_name())
+            />
+        </span>
     }
     .into_inner()
 }
