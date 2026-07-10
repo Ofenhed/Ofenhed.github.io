@@ -277,12 +277,14 @@ pub(crate) fn reset_footnote() {
 pub(crate) fn Footnotes() -> impl IntoView {
     let (active, footnotes) = footnotes();
     let current_hash = use_location().hash;
-    let is_current = move |name: Oco<'static, str>| {
+    let is_current = move |name: Signal<Oco<'static, str>>| {
         move || {
             #[cfg(feature = "client-side")]
             {
-                active.with(|x| x.as_ref().map(|x| *x == name).unwrap_or(false))
-                    || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
+                name.with(|name| {
+                    active.with(|x| x.as_ref().map(|x| *x == *name).unwrap_or(false))
+                        || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == *name)
+                })
             }
             #[cfg(not(feature = "client-side"))]
             {
@@ -321,18 +323,18 @@ pub(crate) fn Footnotes() -> impl IntoView {
                             .with(|x| {
                                 x.iter()
                                     .map(|FootnoteInner { name, children, .. }| (
-                                        name.get(),
+                                        name.clone(),
                                         (*children)(),
                                     ))
                                     .collect::<Vec<_>>()
                             })
                     }
-                    key=|(name, _)| name.clone()
+                    key=|(name, _)| name.get()
                     let((name, inner))
                 >
-                    <div id=name.clone() aria-current=is_current(name.clone())>
+                    <div id=name.clone() aria-current=is_current(name)>
                         <div>{inner}</div>
-                        {return_link(Oco::Owned(format!("{}-source", name)))}
+                        {return_link(Oco::Owned(format!("{}-source", name.get())))}
                     </div>
                 </For>
             </footer>
@@ -342,33 +344,43 @@ pub(crate) fn Footnotes() -> impl IntoView {
 
 #[component]
 pub(crate) fn Footnote(
-    #[prop(into, optional)] id: Signal<Option<Oco<'static, str>>>,
+    #[prop(into, optional)] id: Option<Oco<'static, str>>,
     children: ChildrenFn,
 ) -> impl IntoView {
     let (active, footnotes) = footnotes();
     static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
     let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
-    let footnote_name = move || {
-        id.get()
-            .unwrap_or_else(|| Oco::Owned(format!("footer-{uid}")))
+    let footnote_name = {
+        let id = id.clone();
+        move || {
+            let my_uid = uid;
+            id.clone().unwrap_or_else(move || {
+                let number = 1 + footnotes.with(|x| {
+                    if let Some(item) = x.iter().find(|FootnoteInner { uid, .. }| *uid == my_uid) {
+                        x.element_offset(item).unwrap()
+                    } else {
+                        x.len()
+                    }
+                });
+                Oco::Counted(format!("footnote-{number}").into())
+            })
+        }
     };
 
     let my_footnote = FootnoteInner {
         uid,
-        name: Signal::derive(footnote_name),
+        name: Signal::derive(footnote_name.clone()),
         children,
     };
 
     let current_hash = use_location().hash;
-    let is_current = move |name: Signal<Oco<'static, str>>| {
+    let is_current = move |name: Oco<'static, str>| {
         move || {
             #[cfg(feature = "client-side")]
             {
-                name.with(|name| {
-                    active.with(move |x| x.as_ref().map(move |x| *x == *name).unwrap_or(false))
-                        || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
-                })
+                active.with(|x| x.as_ref().map(|x| *x == *name).unwrap_or(false))
+                    || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == name)
             }
             #[cfg(not(feature = "client-side"))]
             {
@@ -381,12 +393,11 @@ pub(crate) fn Footnote(
     Owner::on_cleanup({
         move || {
             footnotes.update(move |x| {
-                if let Some((idx, _)) = x
+                if let Some(elem) = x
                     .iter()
-                    .enumerate()
-                    .find(move |(_, FootnoteInner { uid: elem_uid, .. })| uid == *elem_uid)
+                    .find(move |FootnoteInner { uid: elem_uid, .. }| uid == *elem_uid)
                 {
-                    x.remove(idx);
+                    x.remove(x.element_offset(elem).unwrap());
                 }
             });
         }
@@ -396,22 +407,25 @@ pub(crate) fn Footnote(
         x.push(my_footnote);
     });
 
-    let on_click = move |e: ev::MouseEvent| {
-        let name = footnote_name();
-        if let Some(footnote) = document().get_element_by_id(&name) {
-            active.set(Some(name));
-            scroll_into_view!(footnote);
-            e.prevent_default();
+    let on_click = {
+        let name = footnote_name.clone();
+        move |e: ev::MouseEvent| {
+            let name = name();
+            if let Some(footnote) = document().get_element_by_id(&name) {
+                active.set(Some(name));
+                scroll_into_view!(footnote);
+                e.prevent_default();
+            }
         }
     };
 
-    let footnote_source = Signal::derive(move || footnote_ref(&footnote_name()));
+    let footnote_source = footnote_ref(&footnote_name());
     view! {
         <a
             on:click=on_click
-            id=footnote_source
-            aria-describedby=footnote_name
-            aria-current=move || is_current(footnote_source)
+            id=footnote_source.clone()
+            aria-describedby=footnote_name.clone()
+            aria-current=move || is_current(footnote_source.clone())
             class="footnote-link"
             href=move || format!("#{}", footnote_name())
         />
