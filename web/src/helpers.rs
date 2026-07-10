@@ -14,7 +14,6 @@ use leptos_router::{
 ///
 /// Can be used to block phone number detection for browsers that ignore the meta tag
 pub(crate) const ZWNJ: char = '\u{200C}';
-pub(crate) const ZWJ: char = '\u{200D}';
 
 #[cfg_attr(feature = "ssr", allow(unused))]
 pub(crate) trait ScopedTimeout {
@@ -422,7 +421,6 @@ pub(crate) fn Footnote(
 
     let footnote_source = footnote_ref(&footnote_name());
     view! {
-        {ZWJ}
         <a
             on:click=on_click
             id=footnote_source.clone()
@@ -432,6 +430,7 @@ pub(crate) fn Footnote(
             href=move || format!("#{}", footnote_name())
         />
     }
+    .into_inner()
 }
 
 #[component]
