@@ -116,9 +116,14 @@ body {
       background: rgba(0, 255, 0, 0.2);
       text-decoration: none;
     }
-    a.footnote-link::after {
-      counter-increment: footnote-link;
-      content: "[" counter(footnote-link) "]";
+    a.footnote-link {
+      &, &:after {
+        break-before: avoid;
+      }
+      &:after {
+        counter-increment: footnote-link;
+        content: "[" counter(footnote-link) "]";
+      }
     }
     section {
       margin-bottom: 1em;
