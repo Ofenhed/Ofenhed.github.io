@@ -1,5 +1,6 @@
 pub mod ai;
 pub mod chat_control;
+pub mod emails;
 pub mod metadata;
 pub mod path;
 #[cfg(debug_assertions)]
@@ -59,7 +60,12 @@ fn current_url_with(f: impl Fn()) -> String {
 }
 
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
-    let published = [b.with_blog(why::WhyBlog), b.with_blog(ai::WhatAreLLMs)];
+    let published = [
+        b.with_blog(why::WhyBlog),
+        b.with_blog(ai::WhatAreLLMs),
+        b.with_blog(chat_control::ChatControl),
+        b.with_blog(emails::ChatControlReplyV),
+    ];
     let unpublished = {
         #[cfg(not(debug_assertions))]
         {
@@ -67,10 +73,7 @@ pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Resu
         }
         #[cfg(debug_assertions)]
         {
-            [
-                b.with_blog(unremarkable::Unremarkable),
-                b.with_blog(chat_control::ChatControl),
-            ]
+            [b.with_blog(unremarkable::Unremarkable)]
         }
     };
     published.into_iter().chain(unpublished)
@@ -307,6 +310,7 @@ pub fn BlogListing() -> impl IntoView {
         let filtered_entities = FilteredEntities(
             blogs
                 .iter()
+                .filter(|x| !x.hidden)
                 .filter(|x| {
                     if let Some(TagFilter(filter)) = tags {
                         x.tags.contains(&filter)
@@ -390,6 +394,7 @@ pub struct BlogEntryMeta {
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
     path_locale: bool,
+    hidden: bool,
     title: &'static str,
     tags: &'static [Tag],
     pin: Option<usize>,
@@ -411,6 +416,7 @@ impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
             last_updated: T::LAST_UPDATED,
             locale: T::LOCALE,
             path_locale: T::PATH_LOCALE,
+            hidden: T::HIDDEN,
             title: T::TITLE,
             tags: T::TAGS,
             pin: T::PIN,
@@ -451,7 +457,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
         {locale}
         <Meta property="og:title" content=B::TITLE />
-        <Meta property="og:article:author" content="Marcus Ofenhed" />
+        <Meta property="og:article:author" content=B::AUTHOR />
         <For
             each=move || B::TAGS.iter()
             key=|x| x.to_owned()

@@ -1,7 +1,10 @@
 use std::borrow::Cow;
 
 use crate::{
-    blog::metadata::{BlogEntry, Locale, Tag, date},
+    blog::{
+        emails::ChatControlReplyV,
+        metadata::{BlogEntry, Locale, Tag, date},
+    },
     helpers::{Abbr, Footnote, Url},
 };
 use chrono::{DateTime, Utc};
@@ -18,7 +21,7 @@ impl BlogEntry for ChatControl {
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
-    const TITLE: &'static str = "Opposition of ChatControl (Open letter)";
+    const TITLE: &'static str = "In opposition of ChatControl (Open letter)";
 
     const TAGS: &'static [Tag] = &[Tag::Ai, Tag::Tech, Tag::Integrity];
 
@@ -34,6 +37,14 @@ impl LazyRoute for ChatControl {
     fn view(_this: Self) -> AnyView {
         let osint = || view! { <Abbr title="Open Source Intelligence">"OSINT"</Abbr> }.into_inner();
         view! {
+            <fieldset>
+                <legend>Note</legend>
+                "This is a letter I sent to my representatives on "
+                <time datetime="2025-08-27">"the 27th of August, 2025"</time>
+                ". To date, the only reply I've received has been from "
+                <a href=format!("/clog/{}", ChatControlReplyV::UID)>"Vänsterpartiet"</a>
+                ", who also opposes Chat Control."
+            </fieldset>
             <p>"Hello,"</p>
             <section>
                 <p>
@@ -53,17 +64,24 @@ impl LazyRoute for ChatControl {
                 </p>
             </section>
             <p>
-                "In December of 2024, the American FBI urged users to "
-                <a href="https://www.forbes.com/sites/zakdoffman/2024/12/06/fbi-warns-iphone-and-android-users-stop-sending-texts/">
-                    "stop sending SMS"
-                </a>
-                ", because they had reason to believe that Chinese adversaries had gained access to the US phone infrastructure. In 2019, The Guardian reported that Poland had "
-                <a href="https://www.theguardian.com/technology/2019/jan/11/huawei-employee-arrested-in-poland-over-chinese-spy-allegations">
-                    "arrested Huawei employees on espionage charges"
-                </a>". In Sweden we've "
-                <a href="https://www.domstol.se/nyheter/2022/06/forbud-mot-produkter-fran-huawei-star-fast/">
-                    "blocked Huawei from participating in the Swedish 5G network"
-                </a>", because of (very legitimate) security concerns. "
+                "In December of 2024, the American FBI urged users to stop sending SMS"
+                <Footnote id="stop-sending-sms">
+                    <Url>
+                        "https://www.forbes.com/sites/zakdoffman/2024/12/06/fbi-warns-iphone-and-android-users-stop-sending-texts/"
+                    </Url>
+                </Footnote>
+                ", because they had reason to believe that Chinese adversaries had gained access to the US phone infrastructure. In 2019, The Guardian reported that Poland had arrested Huawei employees on espionage charges"
+                <Footnote id="huawei-spy-in-poland">
+                    <Url>
+                        "https://www.theguardian.com/technology/2019/jan/11/huawei-employee-arrested-in-poland-over-chinese-spy-allegations"
+                    </Url>
+                </Footnote>
+                ". In Sweden we've blocked Huawei from participating in the Swedish 5G network"
+                <Footnote id="huawei-5g">
+                    <Url>
+                        "https://www.domstol.se/nyheter/2022/06/forbud-mot-produkter-fran-huawei-star-fast/"
+                    </Url>
+                </Footnote> ", because of (very legitimate) security concerns. "
                 <b>
                     "We have very real adversaries with massive resources trying to gain access to our communications"
                 </b>
@@ -85,7 +103,7 @@ impl LazyRoute for ChatControl {
                 <p>"There are two main techniques that can be used:"</p>
                 <ol>
                     <li>
-                        "The black list, where images sent are compared to known thumbprints of prohibited images, which are not sensitive to recompression artefacts. This is technique that Apple, one of the most advanced and financially capable companies in the world, has attempted and failed to implement for the last couple of years."
+                        "The black list, where images sent are compared to known thumbprints of prohibited images, which are not sensitive to recompression artefacts. This is technology that Apple, one of the most advanced and financially capable companies in the world, has attempted and failed to implement for the last couple of years."
                     </li>
                     <li>
                         "Heuristic analysis, where AI is an example. This introduces a ridiculous amount of complexity and trust. The reason for this is that AI models are huge sets of opaque variables. These models can be (very shallowly) tested, but "
@@ -97,7 +115,7 @@ impl LazyRoute for ChatControl {
                 </ol>
             </section>
             <p>
-                "Whoever is tasked with developing this technique is granted the ability to run code that will scan pretty much every single message sent inside of the European Union. "
+                "Whoever is tasked with developing this technology is granted the ability to run code that will scan pretty much every single message sent inside of the European Union. "
                 <b>"If developers get corrupted, they can covertly"</b>
                 " convert the analysis tool into a tool that "
                 <b>
@@ -129,24 +147,32 @@ impl LazyRoute for ChatControl {
             <p>
                 "The proponents want to make you feel as if you either support Chat Control or you enable child sexual abuse. This is "
                 <b>"manipulation, known as the false dilemma or false dichotomy"</b>
-                ". I'm not saying it won't catch child abusers, I really can't predict that, but I'm saying that you're given the apparent option of catching or not catching child abusers. Another way of catching child abusers would be to arrest and investigate "
-                <a href="https://www.kyrkanstidning.se/nyhet/ung-ledare-domd-sexuellt-ofredande-pa-lager">
-                    every
-                </a>" "
-                <a href="https://www.expressen.se/nyheter/ledare-ofredade-14-aring-pa-konfirmationslager/">
-                    "single"
-                </a>" "<a href="https://yle.fi/a/7-10061536">"grown"</a>" "
-                <a href="https://www.smt.se/2025-05-27/ledare-anklagades-for-sexofredande-pa-konfalager/">
-                    "up"
-                </a>" "
-                <a href="https://www.svt.se/nyheter/lokalt/varmland/sexovergrepp-pa-konfirmationslager">
-                    "working"
-                </a>" "
-                <a href="https://www.dagensjuridik.se/nyheter/barnvaldtaktsdomd-konfirmationsledare-frias-i-hovratten-inte-fraga-om-uppenbart-overgrepp/">
-                    "with"
-                </a>" "<a href="https://www.svenskakyrkan.se/motsexuellaovergrepp">
-                    <b>"konfirmationsläger"</b>
-                </a>
+                ". I'm not saying it won't catch child abusers, I really can't predict that, but I'm saying that you're given the apparent option of catching or not catching child abusers. Another way of catching child abusers would be to arrest and investigate every single grown up working with "
+                <b>"konfirmationsläger"</b> <Footnote id="other-illegitimate-targets">
+                    <Url>
+                        "https://www.kyrkanstidning.se/nyhet/ung-ledare-domd-sexuellt-ofredande-pa-lager"
+                    </Url>
+                    <br />
+                    <Url>
+                        "https://www.expressen.se/nyheter/ledare-ofredade-14-aring-pa-konfirmationslager/"
+                    </Url>
+                    <br />
+                    <Url>"https://yle.fi/a/7-10061536"</Url>
+                    <br />
+                    <Url>
+                        "https://www.smt.se/2025-05-27/ledare-anklagades-for-sexofredande-pa-konfalager/"
+                    </Url>
+                    <br />
+                    <Url>
+                        "https://www.svt.se/nyheter/lokalt/varmland/sexovergrepp-pa-konfirmationslager"
+                    </Url>
+                    <br />
+                    <Url>
+                        "https://www.dagensjuridik.se/nyheter/barnvaldtaktsdomd-konfirmationsledare-frias-i-hovratten-inte-fraga-om-uppenbart-overgrepp/"
+                    </Url>
+                    <br />
+                    <Url>"https://www.svenskakyrkan.se/motsexuellaovergrepp"</Url>
+                </Footnote>
                 ". Very few of them would actually get charged, but you would catch child abusers that directly hurt children. If you don't do this, does that mean that you are opposed to catching child abusers, or simply that you have respect for individual legal rights? I've seen the statistics, I know that the "
                 <b>"numbers are really bad for the EU"</b>
                 ", so I recognize that you're desperate for a solution. Chat Control is not that answer. It's a Hail Mary grounded in a very low technical understanding of cryptography and that very same desperation."
