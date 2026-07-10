@@ -1,0 +1,73 @@
+footer {
+  blockquote {
+    margin: 0 0 1mm 0;
+  }
+}
+blockquote {
+  display: block;
+  border-left: 2px solid light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
+  padding-left: 1em;
+  margin-left: 1em;
+  &[cite]:not(:has(cite)) {
+    &[cite^="http://"], &[cite^="https://"] {
+      &:after {
+        content: none;
+      }
+    }
+    &:after {
+      display: block;
+      padding-top: 1ex;
+      padding-left: 1ex;
+      content: "- " attr(cite);
+      font-size: 75%;
+      font-style: revert;
+    }
+  }
+  & > cite {
+    display: block;
+    &:before {
+      content: "- ";
+    }
+  }
+}
+q {
+  &:before {
+    content: "‘";
+  }
+  font-style: oblique 3deg;
+  &:after {
+    content: "’";
+  }
+  q &, blockquote & {
+    &:before {
+      content: "“";
+    }
+    &:after {
+      content: "”";
+    }
+    &.para {
+      &:before {
+        content: "“[";
+      }
+      &:after {
+        content: "]”";
+      }
+    }
+  }
+  .para {
+    &:before {
+      content: "[";
+    }
+    &:after {
+      content: "]";
+    }
+  }
+  &.para {
+    &:before {
+      content: "‘[";
+    }
+    &:after {
+      content: "]’";
+    }
+  }
+}
