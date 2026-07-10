@@ -485,11 +485,11 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
             title={
                 let (title, suffix) = (title, suffix).clone();
                 move || {
-                        if let Some(s) = &suffix {
-                            Oco::Owned(format!("{title}{s}"))
-                        } else {
-                            title.clone()
-                        }
+                    if let Some(s) = &suffix {
+                        Oco::Owned(format!("{title}{s}"))
+                    } else {
+                        title.clone()
+                    }
                 }
             }
             class:first-of-abbr=first_of_abbr
