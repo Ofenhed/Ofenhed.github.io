@@ -116,10 +116,18 @@ body {
       background: rgba(0, 255, 0, 0.2);
       text-decoration: none;
     }
-    a.footnote-link {
-      &, &:before {
+    span:has(> a.footnote-link:only-child) {
+      & {
+        break-before: avoid;
+        break-inside: avoid;
         white-space: nowrap;
       }
+      &:before {
+        content: "\200D"
+      }
+      display: inline;
+    }
+    a.footnote-link {
       &:before {
         display: inline-block;
         counter-increment: footnote-link;
