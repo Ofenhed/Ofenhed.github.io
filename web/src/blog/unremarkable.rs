@@ -4,7 +4,6 @@ use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
 
 #[derive(Clone, Copy)]
-#[cfg_attr(not(debug_assertions), expect(unused))]
 pub(crate) struct Unremarkable;
 
 impl BlogEntry for Unremarkable {
