@@ -182,7 +182,7 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
             let page = page + 1;
             let last_page = num_pages();
             if last_page < page {
-                ignore.set(true);
+                *ignore.write_untracked() = true;
             }
         })
     };
