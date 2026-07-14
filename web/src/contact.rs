@@ -376,6 +376,9 @@ pub(crate) fn Contact() -> impl IntoView {
             <p>Senior IT Security Consultant</p>
             <Email />
         </div>
+        <style media="print" nonce=use_nonce()>
+            "div#canvasHolder>canvas:last-of-type{display:none}"
+        </style>
     }
 }
 
