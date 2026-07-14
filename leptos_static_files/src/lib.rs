@@ -162,11 +162,15 @@ impl StaticRouteGenerator {
                 let options = options.clone();
                 let app_fn = app_fn.clone();
                 let additional_context = additional_context.clone();
-                let additional_context = move || {
-                    let (read_ignored, write_ignored) = signal(false);
-                    provide_context(NoGenerateStatic(write_ignored));
-                    provide_context(NoGenerateStaticReader(read_ignored));
-                    additional_context();
+                let additional_context = {
+                    let options = options.clone();
+                    move || {
+                        let (read_ignored, write_ignored) = signal(false);
+                        provide_context(NoGenerateStatic(write_ignored));
+                        provide_context(NoGenerateStaticReader(read_ignored));
+                        provide_context(options.clone());
+                        additional_context();
+                    }
                 };
 
                 owner.with(|| {

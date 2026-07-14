@@ -1,6 +1,6 @@
 use leptos::{html, prelude::*};
 
-use crate::helpers::{ImgDef, NoWasm};
+use crate::helpers::{ImgDef, NoScript, NoWasm};
 
 #[cfg(not(feature = "ssr"))]
 mod qr_settings {
@@ -349,6 +349,7 @@ pub(crate) fn Contact() -> impl IntoView {
         let content = STANDARD.encode(VCARD.as_bytes());
         set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
     });
+
     view! {
         <div class="contact">
             <div
@@ -360,9 +361,9 @@ pub(crate) fn Contact() -> impl IntoView {
                 style:margin="0 auto 1em auto"
             >
                 <a download="Marcus Ofenhed.vcf" href=vcard_href>
-                    <noscript>
+                    <NoScript>
                         <img {..ImgDef()} src="qrcode.png" />
-                    </noscript>
+                    </NoScript>
                     <NoWasm>
                         <img {..ImgDef()} src="qrcode.png" />
                     </NoWasm>
