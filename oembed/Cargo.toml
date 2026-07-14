@@ -1,0 +1,18 @@
+[package]
+name = "oembed"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+
+[dependencies]
+oembed-macro = { path = "../oembed-macro", optional = true }
+oembed-type.path = "../oembed-type"
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[features]
+macro = ["dep:oembed-macro"]
+test = ["oembed-type/test"]
+

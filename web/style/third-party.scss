@@ -1,31 +1,126 @@
-a[href^="https://linkedin.com"], a[href="https://www.linkedin.com"] {
-  font-weight: bold;
-  text-decoration: none;
-  color: light-dark(#000000, #ffffff);
-  &:before {
-    content: "in";
-    display: inline-block;
-    background: #1565c0;
-    color: #fff;
-    padding: 0px 3px;
-    border-radius: 3px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-    margin-right: 0.5ex;
+@use 'sass:list';
+
+@mixin youtube-logo {
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20"><g><path d="M14.4848 20C14.4848 20 23.5695 20 25.8229 19.4C27.0917 19.06 28.0459 18.08 28.3808 16.87C29 14.65 29 9.98 29 9.98C29 9.98 29 5.34 28.3808 3.14C28.0459 1.9 27.0917 0.94 25.8229 0.61C23.5695 0 14.4848 0 14.4848 0C14.4848 0 5.42037 0 3.17711 0.61C1.9286 0.94 0.954148 1.9 0.59888 3.14C0 5.34 0 9.98 0 9.98C0 9.98 0 14.65 0.59888 16.87C0.954148 18.08 1.9286 19.06 3.17711 19.4C5.42037 20 14.4848 20 14.4848 20Z" fill="%23FF0033"></path><path d="M19 10L11.5 5.75V14.25L19 10Z" fill="white"></path></g></svg>');
+  aspect-ratio: 30/20;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+a:not(.no-shinies) {
+  &[href^="https://linkedin.com"], &[href="https://www.linkedin.com"] {
+    font-weight: bold;
+    text-decoration: none;
+    color: light-dark(#000000, #ffffff);
+    &:before {
+      content: "in";
+      display: inline-block;
+      background: #1565c0;
+      color: #fff;
+      padding: 0px 3px;
+      border-radius: 3px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+      margin-right: 0.5ex;
+    }
+  }
+
+  &[href^="https://youtube.com/"], &[href="https://www.youtube.com/"], &[href="https://youtu.be/"] {
+    font-weight: bold;
+    text-decoration: none;
+    color: light-dark(#000000, #ffffff);
+    &:before {
+      @include youtube-logo;
+      content: "";
+      width: 2em;
+      display: inline-block;
+      background-size: 100% 100%;
+      padding: 0px 1.2ex;
+      border-radius: 5px;
+      margin-right: 0.5ex;
+    }
   }
 }
 
-a[href^="https://youtube.com/"], a[href="https://www.youtube.com/"], a[href="https://youtu.be/"] {
-  font-weight: bold;
-  text-decoration: none;
-  color: light-dark(#000000, #ffffff);
-  &:before {
-    content: "▸";
-    display: inline-block;
-    background: #ff0033;
-    color: #fff;
-    padding: 0px 1.2ex;
-    border-radius: 5px;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-    margin-right: 0.5ex;
+div.simple-embed {
+  display: block;
+  print-color-adjust: exact !important;
+  position: relative;
+  @media print {
+    max-width: 25%;
+    max-height: 25%;
+  }
+  a {
+    text-decoration: none;
+    color: #ffffff;
+  }
+  & > img.thumbnail {
+    position: relative;
+    display: block;
+    object-fit: cover;
+    width: 100%;
+    z-index: 1;
+    height: 100%;
+    aspect-ratio: inherited;
+    overflow: hidden;
+  }
+  & > .meta {
+    & > .title {
+      font-size: 100%;
+      display: block;
+    }
+    & > .author {
+      display: block;
+      margin-top: 0.5em;
+      font-size: 50%;
+      @media print {
+        &:after {
+          content: none !important;
+        }
+      }
+    }
+    z-index: 5;
+    max-width: calc(100% - 2em);
+    position: absolute;
+    padding: 1em;
+    $title_shadow: [];
+    $shadow_size: 1;
+    @for $x from -$shadow_size through $shadow_size {
+      @for $y from -$shadow_size through $shadow_size {
+        @if $x != 0 or $y != 0 {
+          $title_shadow_this: ($x * 1px) ($y * 1px) 0 #000;
+          $title_shadow: list.append($title_shadow, $title_shadow_this);
+        }
+      }
+    }
+    text-shadow: list.join($title_shadow, [], $separator: comma, $bracketed: false), 0 0 5px #ffffff;
+  }
+  &.youtube-embed {
+    @at-root iframe.youtube-embed, & {
+      max-width: min(480px, 100vw);
+      max-height: min(480px, 100vh);
+    }
+    & > .meta > .author::before {
+      content: "@";
+    }
+    & > .logo {
+      z-index: 3;
+      position: absolute;
+      @include youtube-logo;
+      top: 50%;
+      left: 50%;
+      background-blend-mode: lighten;
+      transform: translate(-50%, -50%);
+      width: clamp(10%, 4em, 80%);
+      @media print {
+        &:after {
+          content: "";
+        }
+      }
+    }
+  }
+  & > img.thumbnail, & > .meta {
+    top: 0;
+    left: 0;
   }
 }

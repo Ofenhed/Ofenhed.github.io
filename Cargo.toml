@@ -1,5 +1,5 @@
 [workspace]
-members = ["web", "qr", "qr-macro", "js-macro", "leptos_static_files"]
+members = ["web", "qr", "qr-macro", "js-macro", "leptos_static_files", "oembed", "oembed-macro", "oembed-type"]
 resolver = "3"
 
 [workspace.dependencies]
@@ -18,16 +18,24 @@ leptos_axum = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonc
 leptos_integration_utils = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce" }
 leptos_meta = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce", default-features = false }
 leptos_router = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonce", default-features = false }
+libc = "0.2"
 log = "0.4.22"
+proc-macro2 = "1.0.106"
 qrcode = { version = "0.14.1", default-features = false }
 quote = "1.0.45"
 reactive_graph = "0.2"
+reqwest = "0.13"
+serde = "1.0"
+serde_json = "1.0"
+sha2 = "0.10"
 strum = "0.28"
 swc = { version = "55", default-features = false }
 swc_common = { version = "18", default-features = false }
 syn = { version = "2.0.117", default-features = false }
 thiserror = "2.0.12"
 tokio = { version = "1.39", default-features = false }
+tokio-util = { version = "0.7", default-features = false }
+url = { version = "2.5", default-features = false }
 wasm-bindgen = "0.2.93"
 web-sys = { version = "0.3.98", default-features = false }
 

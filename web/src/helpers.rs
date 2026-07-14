@@ -2,7 +2,7 @@ use std::{cell::LazyCell, sync::atomic::AtomicUsize};
 
 use leptos::{
     attr::{Attr, Loading, custom::custom_attribute},
-    ev, logging,
+    ev, html, logging,
     prelude::*,
     tachys::view::iterators::StaticVec,
 };
@@ -151,12 +151,32 @@ pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
     }
 }
 
+/// Same as `<noscript>`, except that this element is automatically removed after hydration. This
+/// is done to circumvent a bug where <noscript><style></style></noscript> changes the style of the
+/// document when scripts are available.
 #[component]
-pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoView {
+pub(crate) fn NoScript<T: IntoView + 'static>(children: TypedChildrenMut<T>) -> impl IntoView {
+    let noscript_ref = NodeRef::<html::Noscript>::new();
+    Effect::new(move || {
+        let Some(node) = noscript_ref.get() else {
+            return;
+        };
+        let Some(parent) = node.parent_node() else {
+            return;
+        };
+        _ = parent.remove_child(&node);
+    });
+    view! { <noscript node_ref=noscript_ref>{children.into_inner()}</noscript> }.into_inner()
+}
+
+/// This element will be replaced in runtime by the children of this type. Note that these children
+/// obviously cannot use Leptos interative features.
+#[component]
+pub(crate) fn NoWasm<T: IntoView + 'static>(children: TypedChildrenMut<T>) -> impl IntoView {
     #[derive(Clone, Copy)]
     struct NoWasmScriptLoaded;
     let init_script = once_by_type(
-        false,
+        true,
         || {
             #[cfg(not(feature = "ssr"))]
             let script = "";
@@ -190,11 +210,26 @@ pub(crate) fn NoWasm(#[prop(optional)] children: Option<Children>) -> impl IntoV
         |_| None,
     );
 
+    let template_elem = Suspend::new(async move {
+        let inner_html = if cfg!(feature = "ssr") {
+            let children = children.into_inner().resolve().await;
+            Oco::Owned(children.to_html())
+        } else {
+            Oco::Borrowed("")
+        };
+        view! {
+            <template
+                class:wasm-fallback=true
+                {..custom_attribute("shadowrootclone", ())}
+                inner_html=inner_html
+            />
+        }
+        .into_inner()
+    });
+
     view! {
+        <Suspense>{template_elem}</Suspense>
         {init_script}
-        <template class:wasm-fallback=true {..custom_attribute("shadowrootclonable", ())}>
-            {children.map(|x| x())}
-        </template>
     }
 }
 

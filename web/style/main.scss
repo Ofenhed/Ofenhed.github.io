@@ -1,4 +1,5 @@
 @use 'root.scss';
+@use 'carousel.scss';
 @use 'hamburger.scss';
 @use 'clog.scss';
 @use 'nav.scss';
@@ -52,6 +53,11 @@ body {
 
   @include nav.open($selector: &) {
     grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start footer-start] 100% [footer-end main-end] 0px;
+  }
+  @include nav.closed($selector: &) {
+    & > nav > #menu {
+      pointer-events: none;
+    }
   }
 
   height: 100vh;
@@ -278,7 +284,6 @@ body {
         &:after {
           content: " (" attr(href) ")";
           text-decoration-line: none;
-          color: #000;
           font-weight: normal;
         }
       }
