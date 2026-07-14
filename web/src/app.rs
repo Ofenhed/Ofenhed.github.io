@@ -1,7 +1,7 @@
-use leptos::{attr::custom::custom_attribute, html, prelude::*};
+use leptos::{attr::custom::custom_attribute, html, prelude::*, task};
 use leptos_meta::{Meta, MetaTags, Title, provide_meta_context};
 use leptos_router::{
-    SsrMode,
+    Lazy, LazyRoute as _, SsrMode,
     components::{A, Route, Router, Routes},
     hooks::use_location,
     path,
@@ -11,11 +11,16 @@ use leptos_router::{
 use crate::{
     blog::Blog,
     contact::{Contact, PersistentQrLogo},
+    cookie_consent::{
+        CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
+    },
     helpers::{Footnotes, ImgDef},
+    local_storage::provide_local_storage_context,
 };
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     let css_path = options.css_path();
+    provide_context(options.clone());
     view! {
         <!DOCTYPE html>
         <html lang="sv">
@@ -163,6 +168,9 @@ pub(crate) fn App() -> impl IntoView {
     provide_context(get_logo_status);
     provide_context(save_logo_status);
     let aria_hidden = Signal::derive(move || if aria_expanded.get() { "false" } else { "true" });
+    provide_local_storage_context();
+    provide_cookie_consent_context();
+    let cookie_consent = Lazy::<CookieConsent>::new();
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
@@ -201,6 +209,16 @@ pub(crate) fn App() -> impl IntoView {
                     <li>
                         <A href="/clogs">"Clog"</A>
                     </li>
+                    <Show when=should_show_cookie_consent_link>
+                        <li>
+                            <A
+                                on:mouseenter=|_| task::spawn(CookieConsent::preload())
+                                href="/cookies"
+                            >
+                                "Cookies"
+                            </A>
+                        </li>
+                    </Show>
                 </menu>
             </nav>
             <main {..custom_attribute("data-path", use_location().pathname)}>
@@ -209,6 +227,11 @@ pub(crate) fn App() -> impl IntoView {
                     <Route
                         path=path!("/build")
                         view=BuildInfo
+                        ssr=SsrMode::Static(StaticRoute::new())
+                    />
+                    <Route
+                        path=path!("/cookies")
+                        view=cookie_consent
                         ssr=SsrMode::Static(StaticRoute::new())
                     />
                     <Blog />

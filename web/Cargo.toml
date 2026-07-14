@@ -22,17 +22,22 @@ leptos_meta.workspace = true
 leptos_router.workspace = true
 leptos_static_files = { path = "../leptos_static_files", optional = true }
 log.workspace = true
+oembed = { path = "../oembed", features = ["macro"] }
 qr = { path = "../qr" }
 qr-macro = { path = "../qr-macro" }
+reqwest = { workspace = true, optional = true, features = ["stream"] }
 strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
-tokio = { workspace = true, features = ["rt-multi-thread", "macros"], default-features = false, optional = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "fs"], optional = true }
+tokio-util = { workspace = true, features = ["codec"], optional = true }
 wasm-bindgen.workspace = true
 web-sys = { workspace = true, optional = true, features = [
     "CanvasRenderingContext2d",
     "Element",
     "HtmlCanvasElement",
     "Location",
+    "Storage",
+    "Window",
     "ScrollBehavior",
     "ScrollIntoViewOptions",
     "ScrollLogicalPosition",
@@ -47,7 +52,9 @@ hydrate = ["leptos/hydrate", "client-side"]
 client-side = ["dep:web-sys", "dep:base64"]
 ssr = [
   "dep:image",
+  "dep:reqwest",
   "dep:tokio",
+  "dep:tokio-util",
   "leptos/ssr",
   "leptos_meta/ssr",
   "leptos_router/ssr",

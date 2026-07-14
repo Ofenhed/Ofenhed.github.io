@@ -3,7 +3,9 @@
 pub(crate) mod app;
 pub(crate) mod blog;
 pub(crate) mod contact;
+pub(crate) mod cookie_consent;
 pub(crate) mod helpers;
+pub(crate) mod local_storage;
 pub(crate) mod third_party;
 
 #[cfg(feature = "ssr")]

@@ -1,0 +1,20 @@
+[package]
+name = "oembed-macro"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+image.workspace = true
+libc.workspace = true
+oembed-type = { path = "../oembed-type", features = ["serde"] }
+proc-macro2.workspace = true
+quote.workspace = true
+sha2.workspace = true
+serde_json.workspace = true
+syn = { workspace = true, features = ["parsing", "proc-macro"] }
+thiserror.workspace = true
+reqwest = { workspace = true, features = ["blocking"] }
+url.workspace = true

@@ -3,8 +3,7 @@ use crate::{
     helpers::{Abbr, Footnote, Url},
 };
 use chrono::{DateTime, Utc};
-use leptos::prelude::*;
-use leptos_meta::Style;
+use leptos::{attr::custom::custom_attribute, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
 #[derive(Clone, Copy)]
@@ -45,13 +44,19 @@ impl LazyRoute for WhatAreLLMs {
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
-            <Style media="screen">
+            <style {..custom_attribute("scoped", true)} nonce=use_nonce media="screen">
                 "ul.lies em {color:#f00;text-shadow:0 0 0.8em light-dark(#000,#555);}"
-            </Style>
-            <Style media="print and (color)">"ul.lies em {text-shadow:0 0 0.8em #f00}"</Style>
-            <Style media="print and not (color)">
+            </style>
+            <style {..custom_attribute("scoped", true)} nonce=use_nonce media="print and (color)">
+                "ul.lies em {text-shadow:0 0 0.8em #f00}"
+            </style>
+            <style
+                {..custom_attribute("scoped", true)}
+                nonce=use_nonce
+                media="print and not (color)"
+            >
                 "a {color:#fff}ul.lies em {color:#fff;background:#000}"
-            </Style>
+            </style>
             <section>
                 "When we talk about "{ai}" today, we pretty much talk about "{llms}
                 ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
