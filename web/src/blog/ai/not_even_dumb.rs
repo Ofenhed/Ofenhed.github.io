@@ -13,6 +13,7 @@ impl BlogEntry for NotEvenDumb {
     const UID: u32 = 7;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 7, 13);
+    const HIDDEN: bool = true;
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
