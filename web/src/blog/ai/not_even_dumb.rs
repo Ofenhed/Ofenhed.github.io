@@ -3,7 +3,7 @@ use crate::{
     third_party::{YouTube, youtube},
 };
 use chrono::{DateTime, Utc};
-use leptos::{attr::custom::custom_attribute, prelude::*};
+use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
 
 #[derive(Clone, Copy)]
@@ -30,9 +30,6 @@ impl LazyRoute for NotEvenDumb {
 
     fn view(_this: Self) -> AnyView {
         view! {
-            <style {..custom_attribute("scoped", true)} nonce=use_nonce>
-                "div.videos .youtube-embed{width:auto;height:auto}"
-            </style>
             <div class:videos=true class:carousel-or-grid=true>
                 <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
                 <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
