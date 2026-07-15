@@ -45,7 +45,7 @@ a:not(.no-shinies) {
 div.simple-embed {
   display: block grid;
   grid-template-rows: [thumb-start meta-start] auto [meta-end logo-start] minmax(10%, 3em) [logo-end] minmax(0, calc(50% - 1.5em)) [thumb-end];
-  grid-template-columns: [thumb-start meta-start] 1fr [logo-start] max-content [logo-end] 1fr [meta-end thumb-end];
+  grid-template-columns: [thumb-start meta-start] 1fr [logo-start] minmax(5%, 3em / 20 * 29) [logo-end] 1fr [meta-end thumb-end];
   print-color-adjust: exact !important;
   @media print {
     max-width: 25%;
