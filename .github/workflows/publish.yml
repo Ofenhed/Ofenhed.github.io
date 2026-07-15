@@ -119,6 +119,9 @@ jobs:
         name: wasm-file
         path: target/front/wasm32-unknown-unknown/wasm-release/conditionraise.wasm
 
+    - name: Log compiled sizes
+      run: find target/site/ -exec du -sh {} \;
+
   check:
     name: Check source code rules
     if: ${{ !cancelled() }}
