@@ -1,4 +1,4 @@
-use leptos::{html, prelude::*};
+use leptos::{attr::custom::custom_attribute, html, prelude::*};
 
 use crate::helpers::{ImgDef, NoScript, NoWasm};
 
@@ -382,7 +382,7 @@ pub(crate) fn Contact() -> impl IntoView {
             <p>Senior IT Security Consultant</p>
             <Email />
         </div>
-        <style media="print" nonce=use_nonce()>
+        <style {..custom_attribute("scoped", true)} media="print" nonce=use_nonce()>
             "div#canvasHolder>canvas:last-of-type{display:none}"
         </style>
     }
