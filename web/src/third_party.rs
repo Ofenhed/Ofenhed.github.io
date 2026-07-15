@@ -160,16 +160,10 @@ pub fn YouTube(
                 <div
                     class:simple-embed=true
                     class:youtube-embed=true
-                    style:display="block"
                     style:aspect-ratio=ratio.clone()
                     style:max-width=max_width
                     style:max-height=max_height
                 >
-                    <img
-                        class:thumbnail=true
-                        src=format!("/youtube/{}.jpg", video.id)
-                        {..ImgDef()}
-                    />
                     <span class:meta=true>
                         <a href=href.clone() class:no-shinies=true class:title=true>
                             {video.title.clone()}
@@ -177,6 +171,11 @@ pub fn YouTube(
                         {author}
                     </span>
                     <a class:logo=true class:no-shinies=true href=href title="YouTube"></a>
+                    <img
+                        class:thumbnail=true
+                        src=format!("/youtube/{}.jpg", video.id)
+                        {..ImgDef()}
+                    />
                 </div>
             }
         };
