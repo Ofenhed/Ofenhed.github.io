@@ -107,8 +107,8 @@ div.simple-embed {
     }
     @media (pointer:fine) {
       @at-root iframe.youtube-embed, & {
-        max-width: min(480px, 100vw);
-        max-height: min(480px, 100vh);
+        max-width: min(480px, 90vw);
+        max-height: min(480px, 80vh);
       }
     }
 
