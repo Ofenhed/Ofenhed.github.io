@@ -33,10 +33,10 @@ impl LazyRoute for NotEvenDumb {
             <div class:videos=true class:carousel-or-grid=true>
                 <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
                 <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
-                <YouTube video=youtube!("AkadGXzDqBw" (16:9)) />
                 <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
                 <YouTube video=youtube!("7lRbNbwuczQ" (9:16)) />
                 <YouTube video=youtube!("oltt1pIYtyY" (9:16)) />
+                <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
             </div>
         }
         .into_any()
