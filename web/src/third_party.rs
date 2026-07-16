@@ -171,7 +171,7 @@ pub fn YouTube(
                         {author}
                     </span>
                     <a class:logo class:no-shinies href=href title="YouTube"></a>
-                    <img class:thumbnail src=format!("/youtube/{}.jpg", video.id) {..ImgDef()} />
+                    <img alt class:thumbnail src=format!("/youtube/{}.jpg", video.id) {..ImgDef()} />
                 </div>
             }
         };
