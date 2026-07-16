@@ -93,7 +93,7 @@ jobs:
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
 
     - name: Generate initial files
-      if: ${{ !cancelled() && step.compile.outcome == 'success' }}
+      if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
       run: target/release/conditionraise
 
     - name: Recompile targets
