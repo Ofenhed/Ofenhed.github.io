@@ -371,7 +371,7 @@ impl LazyRoute for Contact {
             set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
         });
         let original_qr_src = cfg_select! {
-            feature = "ssr" => {{
+            feature = "static-qr" => {{
                 use base64::{Engine as _, engine::general_purpose::STANDARD};
                 let config = use_context::<LeptosOptions>().unwrap();
                 assert_eq!("target/site", config.site_root.as_ref());
@@ -379,6 +379,9 @@ impl LazyRoute for Contact {
                 let content = STANDARD.encode(image);
                 Some(format!("data:image/png;base64,{content}"))
             }}
+            feature = "ssr" => {
+                Some("qrcode.png")
+            }
             _ => {
                 None::<&'static str>
             }
