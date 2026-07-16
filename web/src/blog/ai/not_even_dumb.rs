@@ -30,7 +30,7 @@ impl LazyRoute for NotEvenDumb {
 
     fn view(_this: Self) -> AnyView {
         view! {
-            <div class:videos=true class:carousel-or-grid=true>
+            <div class:videos class:carousel-or-grid>
                 <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
                 <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
                 <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
