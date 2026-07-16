@@ -87,7 +87,14 @@ jobs:
 
     - name: Compile targets
       id: compile
-      run: cargo leptos build --split --release --bin-features ssr,statics
+      run: cargo leptos build --split --server-only --release --bin-features ssr,statics
+
+    - name: Generate static files
+      run: target/release/conditionraise
+
+    - name: Recompile targets
+      id: recompile
+      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
 
     - name: Save build cache
       uses: actions/cache/save@v6
@@ -99,13 +106,6 @@ jobs:
           ~/.cargo/git
           target/release
           target/front
-
-    - name: Generate static files
-      run: target/release/conditionraise
-
-    - name: Recompile targets
-      id: recompile
-      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
 
     - name: Regenerate static files
       run: target/release/conditionraise
