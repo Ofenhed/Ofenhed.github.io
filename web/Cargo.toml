@@ -67,7 +67,7 @@ dev = ["ssr", "dep:axum", "dep:leptos_axum"]
 
 [package.metadata.cargo-all-features]
 denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "leptos_axum"]
-skip_feature_sets = [["ssr", "hydrate", "dev"], []]
+skip_feature_sets = [["ssr", "hydrate", "dev", "static-qr"], []]
 
 [package.metadata.leptos]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
