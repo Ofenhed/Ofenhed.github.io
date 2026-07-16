@@ -219,7 +219,7 @@ pub(crate) fn NoWasm<T: IntoView + 'static>(children: TypedChildrenMut<T>) -> im
         };
         view! {
             <template
-                class:wasm-fallback=true
+                class:wasm-fallback
                 {..custom_attribute("shadowrootclone", ())}
                 inner_html=inner_html
             />
