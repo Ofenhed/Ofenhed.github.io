@@ -55,8 +55,10 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target/release
           target/front
+          target/oembed
+          target/qr
+          target/release
 
     - name: Restore cargo-leptos
       id: cargo-leptos-restore
@@ -85,11 +87,13 @@ jobs:
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
 
-    - name: Compile targets
+    - name: Compile file generator
       id: compile
+      if: ${{ !cancelled() && hashFiles("target/qr/qrcode.png") == '' }}
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
 
-    - name: Generate static files
+    - name: Generate initial files
+      if: ${{ !cancelled() && step.compile.outcome == 'success' }}
       run: target/release/conditionraise
 
     - name: Recompile targets
@@ -98,14 +102,16 @@ jobs:
 
     - name: Save build cache
       uses: actions/cache/save@v6
-      if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' }}
+      if: ${{ steps.recompile.outcome == 'success' || steps.recompile.outcome == 'failure' }}
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target/release
           target/front
+          target/oembed
+          target/qr
+          target/release
 
     - name: Regenerate static files
       run: target/release/conditionraise
@@ -164,8 +170,10 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          target/release
           target/front
+          target/oembed
+          target/qr
+          target/release
 
     - name: Check if leptosfmt was cached
       id: leptosfmt-cached
