@@ -89,7 +89,7 @@ jobs:
 
     - name: Compile file generator
       id: compile
-      if: ${{ !cancelled() && hashFiles("target/qr/qrcode.png") == '' }}
+      if: ${{ !cancelled() && hashFiles('target/qr/qrcode.png') == '' }}
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
 
     - name: Generate initial files
