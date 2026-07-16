@@ -103,7 +103,18 @@ jobs:
           target/release
           target/front
 
+    - name: Compile targets
+      id: compile
+      run: cargo leptos build --split --release --bin-features ssr,statics
+
     - name: Generate static files
+      run: target/release/conditionraise
+
+    - name: Recompile targets
+      id: recompile
+      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
+
+    - name: Regenerate static files
       run: target/release/conditionraise
 
     - name: Upload site root
