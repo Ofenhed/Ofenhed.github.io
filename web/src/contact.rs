@@ -371,9 +371,7 @@ impl LazyRoute for Contact {
         let original_qr_src = cfg_select! {
             feature = "static-qr" => {{
                 use base64::{Engine as _, engine::general_purpose::STANDARD};
-                const _STATIC_TEST: () = {
-                    assert!("target/qr" == QR_ROOT_PATH);
-                };
+                assert_eq!("target/qr", QR_ROOT_PATH);
                 let image = include_bytes!("../../target/qr/qrcode.png");
                 let content = STANDARD.encode(image);
                 Some(format!("data:image/png;base64,{content}"))
