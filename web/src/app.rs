@@ -1,10 +1,10 @@
 use leptos::{attr::custom::custom_attribute, html, prelude::*, task};
 use leptos_meta::{Meta, MetaTags, Title, provide_meta_context};
 use leptos_router::{
-    Lazy, LazyRoute as _, SsrMode,
+    Lazy, LazyRoute, SsrMode,
     components::{A, Route, Router, Routes},
     hooks::use_location,
-    path,
+    lazy_route, path,
     static_routes::StaticRoute,
 };
 
@@ -45,47 +45,56 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     }
 }
 
-#[component]
-pub(crate) fn BuildInfo() -> impl IntoView {
-    use std::option_env;
-    let data: [(Oco<'static, str>, Option<Oco<'static, str>>); _] = [
-        (
-            Oco::Borrowed("Commit"),
-            option_env!("GITHUB_SHA").map(Oco::Borrowed),
-        ),
-        (
-            Oco::Borrowed("Run number"),
-            option_env!("GITHUB_RUN_NUMBER").map(Oco::Borrowed),
-        ),
-        (
-            Oco::Borrowed("Build OS"),
-            option_env!("RUNNER_OS").map(Oco::Borrowed),
-        ),
-    ];
-    let server_url = if let (Some(url), Some(repo), Some(run_id)) = (
-        option_env!("GITHUB_SERVER_URL"),
-        option_env!("GITHUB_REPOSITORY"),
-        option_env!("GITHUB_RUN_ID"),
-    ) {
-        Some(view! {
-            <a href=format!("{url}/{repo}/actions/runs/{run_id}")>
-                <img
-                    {..ImgDef()}
-                    src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
-                />
-            </a>
-        })
-    } else {
-        None
-    };
-    view! {
-        <For each=move || data.clone() key=|x| x.clone() let:(d)>
-            <fieldset>
-                <legend>{d.0}</legend>
-                {d.1}
-            </fieldset>
-        </For>
-        {server_url}
+struct BuildInfo;
+
+#[lazy_route]
+impl LazyRoute for BuildInfo {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(_this: Self) -> AnyView {
+        use std::option_env;
+        let data: [(Oco<'static, str>, Option<Oco<'static, str>>); _] = [
+            (
+                Oco::Borrowed("Commit"),
+                option_env!("GITHUB_SHA").map(Oco::Borrowed),
+            ),
+            (
+                Oco::Borrowed("Run number"),
+                option_env!("GITHUB_RUN_NUMBER").map(Oco::Borrowed),
+            ),
+            (
+                Oco::Borrowed("Build OS"),
+                option_env!("RUNNER_OS").map(Oco::Borrowed),
+            ),
+        ];
+        let server_url = if let (Some(url), Some(repo), Some(run_id)) = (
+            option_env!("GITHUB_SERVER_URL"),
+            option_env!("GITHUB_REPOSITORY"),
+            option_env!("GITHUB_RUN_ID"),
+        ) {
+            Some(view! {
+                <a href=format!("{url}/{repo}/actions/runs/{run_id}")>
+                    <img
+                        {..ImgDef()}
+                        src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
+                    />
+                </a>
+            })
+        } else {
+            None
+        };
+        view! {
+            <For each=move || data.clone() key=|x| x.clone() let:(d)>
+                <fieldset>
+                    <legend>{d.0}</legend>
+                    {d.1}
+                </fieldset>
+            </For>
+            {server_url}
+        }
+        .into_any()
     }
 }
 
@@ -170,7 +179,9 @@ pub(crate) fn App() -> impl IntoView {
     let aria_hidden = Signal::derive(move || if aria_expanded.get() { "false" } else { "true" });
     provide_local_storage_context();
     provide_cookie_consent_context();
+    let contact = Lazy::<Contact>::new();
     let cookie_consent = Lazy::<CookieConsent>::new();
+    let build_info = Lazy::<BuildInfo>::new();
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
@@ -223,10 +234,10 @@ pub(crate) fn App() -> impl IntoView {
             </nav>
             <main {..custom_attribute("data-path", use_location().pathname)}>
                 <Routes fallback>
-                    <Route path=path!("/") view=Contact ssr=SsrMode::Static(StaticRoute::new()) />
+                    <Route path=path!("/") view=contact ssr=SsrMode::Static(StaticRoute::new()) />
                     <Route
                         path=path!("/build")
-                        view=BuildInfo
+                        view=build_info
                         ssr=SsrMode::Static(StaticRoute::new())
                     />
                     <Route
