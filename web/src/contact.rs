@@ -429,7 +429,7 @@ impl LazyRoute for Contact {
 #[cfg(feature = "ssr")]
 pub(crate) mod qr_generator {
     use super::*;
-    use std::{fs::create_dir_all, path::Path};
+    use std::{fs, path::Path};
     #[derive(Debug, thiserror::Error)]
     pub enum QrGeneratorError {
         #[error("Qr image error: {0}")]
@@ -469,10 +469,21 @@ pub(crate) mod qr_generator {
             }
         }
         let root = Path::new(QR_ROOT_PATH);
-        create_dir_all(root)?;
+        fs::create_dir_all(root)?;
         let original_file = root.join("qrcode.png");
         eprintln!("Saving {}", original_file.display());
-        original_image.save(original_file)?;
+        original_image.save(&original_file)?;
+        #[cfg(not(feature = "static-qr"))]
+        {
+            let target_file =
+                Path::new(options.site_root.as_ref()).join(original_file.file_name().unwrap());
+            println!(
+                "Copying {} to {}",
+                original_file.display(),
+                target_file.display()
+            );
+            fs::copy(&original_file, target_file)?;
+        }
 
         let logo_file = Path::new(options.site_root.as_ref()).join("qrlogo.png");
         eprintln!("Saving {}", logo_file.display());
