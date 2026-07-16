@@ -85,9 +85,6 @@ jobs:
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
 
-    - name: Remove previous site
-      run: rm -rf ./target/site
-
     - name: Compile targets
       id: compile
       run: cargo leptos build --split --release --bin-features ssr,statics
