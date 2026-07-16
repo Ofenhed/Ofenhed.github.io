@@ -389,6 +389,7 @@ impl LazyRoute for Contact {
             }
         };
 
+        let qr_alt = "Contact Card QR";
         view! {
             <div class="contact">
                 <div
@@ -400,12 +401,12 @@ impl LazyRoute for Contact {
                     style:margin="0 auto 1em auto"
                 >
                     <a download="Marcus Ofenhed.vcf" href=vcard_href>
-                        <img node_ref=static_qr src=original_qr_src />
+                        <img alt=qr_alt node_ref=static_qr src=original_qr_src />
                         <NoScript>
-                            <img class:fallback {..ImgDef()} src="qrlogo.png" />
+                            <img alt class:fallback {..ImgDef()} src="qrlogo.png" />
                         </NoScript>
                         <NoWasm>
-                            <img class:fallback {..ImgDef()} src="qrlogo.png" />
+                            <img alt class:fallback {..ImgDef()} src="qrlogo.png" />
                         </NoWasm>
                         <div id="canvasHolder" style:display=show_canvas>
                             <canvas node_ref=canvas_ref width=width height=height />

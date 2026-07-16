@@ -70,17 +70,21 @@ div.simple-embed {
     width: 100%;
     background-position: center;
   }
-  & > .meta {
+  > .meta {
     grid-area: meta-start / meta-start / meta-end / meta-end;
-    & > .title {
+
+    > .title {
       font-size: 100%;
+      padding: 1em;
+      margin-bottom: -1em;
       display: block;
     }
-    & > .author {
+    > .author {
       display: block;
-      padding-top: 1em;
-      padding-bottom: 1em;
-      font-size: 50%;
+      padding: calc(1em / 0.66);
+      margin-bottom: calc(1em / -0.66);
+      width: fit-content;
+      font-size: 66%;
       @media print {
         &:after {
           content: none !important;
@@ -88,7 +92,6 @@ div.simple-embed {
       }
     }
     z-index: 5;
-    padding: 1em;
     $title_shadow: [];
     $shadow_size: 1;
     @for $x from -$shadow_size through $shadow_size {
