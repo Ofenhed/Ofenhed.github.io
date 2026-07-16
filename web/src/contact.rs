@@ -65,6 +65,9 @@ END:VCARD",
     ]
 );
 
+#[cfg(feature = "ssr")]
+const QR_ROOT_PATH: &str = "target/qr";
+
 #[component]
 pub(crate) fn Email() -> impl IntoView {
     fn hostname() -> Option<String> {
@@ -374,8 +377,10 @@ impl LazyRoute for Contact {
             feature = "static-qr" => {{
                 use base64::{Engine as _, engine::general_purpose::STANDARD};
                 let config = use_context::<LeptosOptions>().unwrap();
-                assert_eq!("target/site", config.site_root.as_ref());
-                let image = include_bytes!("../../target/site/qrcode.png");
+                const _STATIC_TEST: () = {
+                    assert_eq!("target/qr", QR_ROOT_PATH);
+                };
+                let image = include_bytes!("../../target/qr/qrcode.png");
                 let content = STANDARD.encode(image);
                 Some(format!("data:image/png;base64,{content}"))
             }}
@@ -426,11 +431,13 @@ impl LazyRoute for Contact {
 #[cfg(feature = "ssr")]
 pub(crate) mod qr_generator {
     use super::*;
-    use std::path::Path;
+    use std::{fs::create_dir_all, path::Path};
     #[derive(Debug, thiserror::Error)]
     pub enum QrGeneratorError {
         #[error("Qr image error: {0}")]
         ImageError(#[from] image::error::ImageError),
+        #[error(transparent)]
+        Io(#[from] std::io::Error),
     }
 
     use image::*;
@@ -463,8 +470,15 @@ pub(crate) mod qr_generator {
                 );
             }
         }
-        original_image.save(Path::new(&*options.site_root).join("qrcode.png"))?;
-        logo_image.save(Path::new(&*options.site_root).join("qrlogo.png"))?;
+        let root = Path::new(QR_ROOT_PATH);
+        create_dir_all(root)?;
+        let original_file = root.join("qrcode.png");
+        eprintln!("Saving {}", original_file.display());
+        original_image.save(original_file)?;
+
+        let logo_file = Path::new(options.site_root.as_ref()).join("qrlogo.png");
+        eprintln!("Saving {}", logo_file.display());
+        logo_image.save(logo_file)?;
         Ok(())
     }
 }
