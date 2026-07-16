@@ -66,12 +66,7 @@ pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
                 .expect("This should always work if we get this far")
                 .and_then(|x|
                     <T::Data as FromStr>::from_str(x.as_str())
-                        .map_err(|e|
-                {
-                    leptos::logging::error!("Could not parse {x}");
-                    e
-                }
-                            )
+                        .inspect_err(|_| leptos::logging::error!("Could not parse {x}"))
                         .ok()
                 )
             {
