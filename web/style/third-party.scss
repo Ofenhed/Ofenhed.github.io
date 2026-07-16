@@ -99,7 +99,7 @@ div.simple-embed {
         }
       }
     }
-    text-shadow: list.join($title_shadow, [], $separator: comma, $bracketed: false), 0 0 5px #ffffff;
+    text-shadow: list.join($title_shadow, [], $separator: comma, $bracketed: false);
   }
   &.youtube-embed {
     @at-root iframe.youtube-embed, & {
