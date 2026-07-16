@@ -215,7 +215,9 @@ pub(crate) fn App() -> impl IntoView {
                 </label>
                 <menu id="menu" aria-hidden=aria_hidden>
                     <li>
-                        <A href="/">"Contact"</A>
+                        <A on:mouseenter=|_| task::spawn(Contact::preload()) href="/">
+                            "Contact"
+                        </A>
                     </li>
                     <li>
                         <A href="/clogs">"Clog"</A>
