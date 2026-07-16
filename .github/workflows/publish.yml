@@ -202,7 +202,7 @@ jobs:
 
     - name: Setup completed
       id: setup-completed
-      run: 'true'
+      run: mkdir -p target/qr && touch target/qr/qrcode.png
 
     - name: Clippy analysis
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
