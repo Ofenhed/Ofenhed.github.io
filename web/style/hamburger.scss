@@ -23,8 +23,10 @@
     background: #badbad;
   }
   @include nav.closed($selector: &) {
+    pointer-events: none;
     transform-origin: top left;
     #hamburger {
+      pointer-events: auto;
       position: relative;
       left: 0;
     }
@@ -44,7 +46,7 @@
     margin: 0;
 
     transform-origin: top left;
-    transform: rotateY(-90deg);
+    transform: translateX(-100%);
     opacity: 0.3;
     li {
       list-style: none;
@@ -71,7 +73,7 @@
     &:checked {
       & ~ #menu {
         visibility: visible;
-        transform: rotateX(0deg);
+        transform: none;
         opacity: 1;
       }
       & ~ #hamburger .slice {
