@@ -64,7 +64,7 @@ impl LazyRoute for NotEvenDumb {
             "These are somewhat dismissable as the model using tokens instead of words."
             <div class:videos class:carousel-or-grid>
                 <YouTube video=youtube!("7lRbNbwuczQ" (9:16)) />
-                <YouTube video=youtube!("oltt1pIYtyY" (9:16)) />
+                <YouTube video=youtube!("C5Gy6D-hC1g" (9:16)) />
                 <YouTube video=youtube!("m_shkDLGWEQ" (9:16)) />
             </div>
             <h2>"Vision issues"</h2>
