@@ -92,7 +92,7 @@ impl LazyRoute for CookieConsent {
             <NoWasm>{no_script}</NoWasm>
             <form class:cookie-consent>
                 <style {..scoped_style()} nonce=use_nonce>
-                "fieldset{border-radius:5mm;margin-bottom:1em}"
+                    "fieldset{border-radius:5mm;margin-bottom:1em}"
                 </style>
                 <p>
                     "This is the third party tracking and cookies used by this web page. All cookies and tracking are opt in, meaning that no choice means no tracking (possibly excluding tracking functionality out of my control by the hosting provider). Speaking of consent, what's the opposite of legitimate interest?"
@@ -116,16 +116,18 @@ impl LazyRoute for CookieConsent {
                                     }
                                 }
                             />
-                            "A regular link to youtube."
+                            "A regular link to youtube"
                         </label>
                         <div class:box=true class:info=true>
-                            "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube."
+                            "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
                         </div>
                     </fieldset>
                     <fieldset>
                         <legend>"Data is shared with YouTube"</legend>
                         <div class:box=true class:info=true>
-                            "These options will send data to YouTube each time you visit a page "<i>"with an embedded video"</i>", "
+                            "These options will send data to YouTube each time you visit a page "
+                            <i>"with an embedded video"</i>
+                            ", "
                             <b>"even without you even playing any videos"</b>
                             ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies. It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
                         </div>
