@@ -57,11 +57,7 @@ impl LazyRoute for WhatAreLLMs {
             <style {..scoped_style()} nonce=use_nonce media="print and (color)">
                 "ul.lies em {text-shadow:0 0 0.8em #f00}"
             </style>
-            <style
-                {..scoped_style()}
-                nonce=use_nonce
-                media="print and not (color)"
-            >
+            <style {..scoped_style()} nonce=use_nonce media="print and not (color)">
                 "a {color:#fff}ul.lies em {color:#fff;background:#000}"
             </style>
             <section>
@@ -70,7 +66,8 @@ impl LazyRoute for WhatAreLLMs {
             </section>
             <section>
                 "To be able to understand what an "{llm}
-                " is, we'll take a detour to compression algorithms. "<details class:extra-info=true>
+                " is, we'll take a detour to compression algorithms. "
+                <details class:extra-info=true>
                     <summary>
                         "There are two categories of compression: lossless compression and lossy compression."
                     </summary>
