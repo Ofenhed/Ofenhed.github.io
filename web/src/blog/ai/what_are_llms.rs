@@ -38,6 +38,14 @@ impl LazyRoute for WhatAreLLMs {
             }
             .into_inner()
         };
+        let jpeg = || {
+            view! {
+                <Abbr no_expand=true title="Joint Photographic Experts Group">
+                    JPEG
+                </Abbr>
+            }
+            .into_inner()
+        };
         let llm = || view! { <Abbr title="Large Language Model">"LLM"</Abbr> }.into_inner();
         let llms = || {
             view! {
@@ -75,7 +83,9 @@ impl LazyRoute for WhatAreLLMs {
                     " means that you will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."
                     <br />
                     <b>"Lossy compression"</b>
-                    " means that you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for JPEG images sometimes being blocky."
+                    " means that you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
+                    {jpeg}
+                    " images sometimes being blocky."
                 </details>
                 "Historically, text has almost exclusively been used with lossless compression. "
                 {llms}" are a revolutionary change to that. "{llms}
@@ -133,9 +143,10 @@ impl LazyRoute for WhatAreLLMs {
                         <Footnote id=Oco::Borrowed(
                             "ai-warning-trojan",
                         )>
-                            "AI companies keep telling us about how dangerous AI can be, they even ask for new laws. Anthropic claims that "
+                            {ai}" companies keep telling us about how dangerous "{ai}
+                            " can be, they even ask for new laws. Anthropic claims that "
                             <a href="https://www.ynetnews.com/tech-and-digital/article/hkftl9ibmg">
-                                "Claude Mythos AI is too dangerous for the public"
+                                "Claude Mythos "{ai}" is too dangerous for the public"
                             </a>
                             ". They warn that the models might at any time start improving themselves without human help, become super intelligent, and take over the world. "
                             <em>
