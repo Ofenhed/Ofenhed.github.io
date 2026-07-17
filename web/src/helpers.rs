@@ -1,7 +1,10 @@
 use std::{cell::LazyCell, sync::atomic::AtomicUsize};
 
 use leptos::{
-    attr::{Attr, Loading, custom::custom_attribute},
+    attr::{
+        Attr, Loading,
+        custom::{CustomAttr, custom_attribute},
+    },
     ev, html, logging,
     prelude::*,
     tachys::view::iterators::StaticVec,
@@ -41,6 +44,11 @@ impl ScopedTimeout for Owner {
             }
         });
     }
+}
+
+#[inline(always)]
+pub(crate) fn scoped_style() -> CustomAttr<&'static str, bool> {
+    custom_attribute("scoped", true)
 }
 
 #[cfg_attr(feature = "ssr", allow(unused))]
@@ -234,10 +242,8 @@ pub(crate) fn NoWasm(children: ChildrenFn) -> impl IntoView {
     }
 }
 
-type ImgDefAttr = (Attr<Loading, &'static str>,);
-
-#[component(transparent)]
-pub(crate) fn ImgDef() -> ImgDefAttr {
+#[inline(always)]
+pub(crate) fn img_def() -> (Attr<Loading, &'static str>,) {
     (Attr(Loading, "lazy"),)
 }
 
