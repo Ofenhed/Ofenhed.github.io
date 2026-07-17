@@ -190,6 +190,11 @@ body {
       &[aria-current], &:target {
         background: rgba(255, 255, 0, 0.25);
       }
+      @media not print {
+        > div {
+          overflow: hidden;
+        }
+      }
       display: grid;
       grid-auto-columns: max-content auto max-content;
       grid-auto-flow: column;
