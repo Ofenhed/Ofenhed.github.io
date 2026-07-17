@@ -1,7 +1,7 @@
-use leptos::{attr::custom::custom_attribute, html, prelude::*};
+use leptos::{html, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{ImgDef, NoScript, NoWasm};
+use crate::helpers::{NoScript, NoWasm, img_def, scoped_style};
 
 #[cfg(not(feature = "ssr"))]
 mod qr_settings {
@@ -398,10 +398,10 @@ impl LazyRoute for Contact {
                     <a download="Marcus Ofenhed.vcf" href=vcard_href>
                         <img alt=qr_alt node_ref=static_qr src=original_qr_src />
                         <NoScript>
-                            <img alt class:fallback {..ImgDef()} src="qrlogo.png" />
+                            <img alt class:fallback {..img_def()} src="qrlogo.png" />
                         </NoScript>
                         <NoWasm>
-                            <img alt class:fallback {..ImgDef()} src="qrlogo.png" />
+                            <img alt class:fallback {..img_def()} src="qrlogo.png" />
                         </NoWasm>
                         <div id="canvasHolder" style:display=show_canvas>
                             <canvas node_ref=canvas_ref width=width height=height />
@@ -413,7 +413,7 @@ impl LazyRoute for Contact {
                 <p>Senior IT Security Consultant</p>
                 <Email />
             </div>
-            <style {..custom_attribute("scoped", true)} media="print" nonce=use_nonce()>
+            <style {..scoped_style()} media="print" nonce=use_nonce()>
                 "div#canvasHolder>canvas:last-of-type{display:none}"
             </style>
         }

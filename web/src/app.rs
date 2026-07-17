@@ -14,7 +14,7 @@ use crate::{
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
-    helpers::{Footnotes, ImgDef},
+    helpers::{Footnotes, img_def},
     local_storage::provide_local_storage_context,
 };
 
@@ -77,7 +77,7 @@ impl LazyRoute for BuildInfo {
             Some(view! {
                 <a href=format!("{url}/{repo}/actions/runs/{run_id}")>
                     <img
-                        {..ImgDef()}
+                        {..img_def()}
                         src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
                     />
                 </a>

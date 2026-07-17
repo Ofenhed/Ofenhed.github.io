@@ -1,9 +1,9 @@
 use crate::{
     blog::metadata::{BlogEntry, Locale, Tag, date},
-    helpers::{Abbr, Footnote, Url},
+    helpers::{Abbr, Footnote, Url, scoped_style},
 };
 use chrono::{DateTime, Utc};
-use leptos::{attr::custom::custom_attribute, prelude::*};
+use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
 
 #[derive(Clone, Copy)]
@@ -51,14 +51,14 @@ impl LazyRoute for WhatAreLLMs {
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
-            <style {..custom_attribute("scoped", true)} nonce=use_nonce media="screen">
+            <style {..scoped_style()} nonce=use_nonce media="screen">
                 "ul.lies em {color:#f00;text-shadow:0 0 0.8em light-dark(#000,#555);}"
             </style>
-            <style {..custom_attribute("scoped", true)} nonce=use_nonce media="print and (color)">
+            <style {..scoped_style()} nonce=use_nonce media="print and (color)">
                 "ul.lies em {text-shadow:0 0 0.8em #f00}"
             </style>
             <style
-                {..custom_attribute("scoped", true)}
+                {..scoped_style()}
                 nonce=use_nonce
                 media="print and not (color)"
             >

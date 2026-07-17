@@ -5,7 +5,7 @@ use strum::{AsRefStr, EnumString, IntoStaticStr, VariantArray};
 use leptos::{attr::custom::custom_attribute, either::Either, prelude::*};
 
 use crate::{
-    cookie_consent::request_third_party_cookies, helpers::ImgDef,
+    cookie_consent::request_third_party_cookies, helpers::img_def,
     local_storage::get_local_storage_value,
 };
 
@@ -175,7 +175,7 @@ pub fn YouTube(
                         alt
                         class:thumbnail
                         src=format!("/youtube/{}.jpg", video.id)
-                        {..ImgDef()}
+                        {..img_def()}
                     />
                 </div>
             }
