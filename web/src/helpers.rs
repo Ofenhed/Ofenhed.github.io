@@ -485,6 +485,7 @@ pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
 pub(crate) fn Abbr<T: IntoView + 'static>(
     #[prop(into)] mut title: Oco<'static, str>,
     #[prop(into, optional)] suffix: Option<Oco<'static, str>>,
+    #[prop(optional, default = false)] no_expand: bool,
     children: TypedChildrenMut<T>,
 ) -> impl IntoView {
     let (read_abbrs, write_abbrs) = abbrs();
@@ -509,14 +510,18 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
     let first_of_abbr = {
         let title = title.clone();
         move || {
-            let abbr = title.clone();
-            read_abbrs.with(move |abbrs| {
-                abbrs
-                    .iter()
-                    .find(|(_, name)| name.with(|name| *name == abbr))
-                    .map(|x| x.0)
-                    == Some(uid)
-            })
+            if no_expand {
+                false
+            } else {
+                let abbr = title.clone();
+                read_abbrs.with(move |abbrs| {
+                    abbrs
+                        .iter()
+                        .find(|(_, name)| name.with(|name| *name == abbr))
+                        .map(|x| x.0)
+                        == Some(uid)
+                })
+            }
         }
     };
     view! {
