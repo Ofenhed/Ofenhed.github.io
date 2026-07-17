@@ -30,7 +30,14 @@ impl LazyRoute for WhatAreLLMs {
     }
 
     fn view(_this: Self) -> AnyView {
-        let ai = || view! { <Abbr title="Artificial Intelligence">"AI"</Abbr> }.into_inner();
+        let ai = || {
+            view! {
+                <Abbr no_expand=true title="Artificial Intelligence">
+                    "AI"
+                </Abbr>
+            }
+            .into_inner()
+        };
         let llm = || view! { <Abbr title="Large Language Model">"LLM"</Abbr> }.into_inner();
         let llms = || {
             view! {
