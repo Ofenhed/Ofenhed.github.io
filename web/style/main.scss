@@ -69,9 +69,9 @@ body {
     img {
       max-width: 100%;
     }
-    details {
+    details, div.box {
       border: 1px solid #aaaaaa;
-      border-radius: 4px;
+      border-radius: 5mm;
       padding: 0.5em 0.5em 0;
       @media not print {
         box-shadow: 0.5ex 0.5ex 0.6ex #000000af;
@@ -91,7 +91,31 @@ body {
           cursor: grabbing;
         }
       }
-      &.info {
+      &:has(> summary):not([open]) {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-bottom-style: ridge;
+        border-bottom-width: 1mm;
+      }
+      &:not(:has(> summary)){
+        padding-left: 3em;
+        &:before {
+          margin-left: -1.5em;
+          font-size: 150%;
+          display: block;
+          float: left;
+          height: 100%;
+          margin-right: 0.5ex;
+        }
+      }
+      & > summary {
+        &::marker {
+          display: block;
+          font-size: 150%;
+          padding-right: 2em;
+        }
+      }
+      &.info, &.extra-info {
         background: light-dark(#ccffcc, #003300);
         @media print {
           background: none;
@@ -100,16 +124,19 @@ body {
         }
         background-blend-mode: multiply;
         @media (any-hover: hover) {
-          &:not([open]) > summary:hover:not(:active) {
+          &:not([open]):has(summary:hover:not(:active)) {
               background: #10ee10;
           }
         }
-        & > summary {
-          &::marker {
-            content: "\1F50E  ";
-            display: block;
-            padding-right: 2em;
-          }
+      }
+      &.extra-info {
+        &:not(:has(> summary)):before, & > summary::marker {
+          content: "\1F50E  ";
+        }
+      }
+      &.info {
+        &:not(:has(> summary)):before, & > summary::marker {
+          content: "\1F4CB  ";
         }
       }
     }

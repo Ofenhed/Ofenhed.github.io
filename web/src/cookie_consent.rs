@@ -1,7 +1,7 @@
 use leptos::{logging::error, prelude::*, task};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{NoScript, NoWasm};
+use crate::helpers::{NoScript, NoWasm, scoped_style};
 use crate::local_storage::{
     LocalStorageAccessor, LocalStorageKey, get_local_storage_value, set_local_storage_value,
 };
@@ -90,12 +90,15 @@ impl LazyRoute for CookieConsent {
             <h1>Cookies and tracking consent</h1>
             <NoScript>{no_script}</NoScript>
             <NoWasm>{no_script}</NoWasm>
-            <form class="cookie-consent">
+            <form class:cookie-consent>
+                <style {..scoped_style()} nonce=use_nonce>
+                "fieldset{border-radius:5mm;margin-bottom:1em}"
+                </style>
                 <p>
-                    "This is the third party tracking and cookies used by this web page. All cookies and tracking is opt in, meaning that no choice means no tracking (possibly excluding tracking functionality out of my control by the hosting provider). Speaking of consent, what's the opposite of legitimate interest?"
+                    "This is the third party tracking and cookies used by this web page. All cookies and tracking are opt in, meaning that no choice means no tracking (possibly excluding tracking functionality out of my control by the hosting provider). Speaking of consent, what's the opposite of legitimate interest?"
                 </p>
                 <fieldset>
-                    <legend>Embedded YouTube</legend>
+                    <legend class:with-youtube-logo=true>YouTube</legend>
                     <fieldset>
                         <legend>No tracking or cookies</legend>
                         <label>
@@ -115,17 +118,17 @@ impl LazyRoute for CookieConsent {
                             />
                             "A regular link to youtube."
                         </label>
-                        <p>
-                            "It does have a thumbnail, but you will not download it from YouTube. This also blocks tracking from the referrer header."
-                        </p>
+                        <div class:box=true class:info=true>
+                            "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube."
+                        </div>
                     </fieldset>
                     <fieldset>
                         <legend>"Data is shared with YouTube"</legend>
-                        <p>
-                            "These options will send data to YouTube when you visit a page with an embedded video, "
+                        <div class:box=true class:info=true>
+                            "These options will send data to YouTube each time you visit a page "<i>"with an embedded video"</i>", "
                             <b>"even without you even playing any videos"</b>
-                            ". It will allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies. It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
-                        </p>
+                            ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies. It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
+                        </div>
                         <label>
                             <input
                                 type="radio"
