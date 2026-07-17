@@ -95,7 +95,7 @@ impl LazyRoute for CookieConsent {
                     "fieldset{border-radius:5mm;margin-bottom:1em}"
                 </style>
                 <p>
-                    "This is the third party tracking and cookies used by this web page. All cookies and tracking are opt in, meaning that no choice means no tracking (possibly excluding tracking functionality out of my control by the hosting provider). Speaking of consent, what's the opposite of legitimate interest?"
+                    "This is the third party tracking and cookies used by this web page. All cookies and tracking are opt in, meaning that no choice means no tracking (possibly excluding tracking functionality out of my control by the hosting provider)."
                 </p>
                 <fieldset>
                     <legend class:with-youtube-logo=true>YouTube</legend>
@@ -124,13 +124,6 @@ impl LazyRoute for CookieConsent {
                     </fieldset>
                     <fieldset>
                         <legend>"Data is shared with YouTube"</legend>
-                        <div class:box=true class:info=true>
-                            "These options will send data to YouTube each time you visit a page "
-                            <i>"with an embedded video"</i>
-                            ", "
-                            <b>"even without you even playing any videos"</b>
-                            ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies. It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
-                        </div>
                         <label>
                             <input
                                 type="radio"
@@ -170,8 +163,18 @@ impl LazyRoute for CookieConsent {
                             />
                             "Embedded without any cookie or tracking reduction"
                         </label>
+                        <div class:box=true class:info=true>
+                            "These options will send data to YouTube each time you visit a page "
+                            <i>"with an embedded video"</i>
+                            ", "
+                            <b>"even without you even playing any videos"</b>
+                            ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies. It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
+                        </div>
                     </fieldset>
                 </fieldset>
+                <div class:box=true class:thought=true>
+                    "Speaking of consent, what's the opposite of legitimate interest?"
+                </div>
             </form>
         }
         .into_any()

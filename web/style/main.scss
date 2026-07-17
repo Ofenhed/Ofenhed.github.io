@@ -99,6 +99,8 @@ body {
       }
       &:not(:has(> summary)){
         padding-left: 3em;
+        min-height: 2em;
+        width: fit-content;
         &:before {
           margin-left: -1.5em;
           font-size: 150%;
@@ -115,17 +117,29 @@ body {
           padding-right: 2em;
         }
       }
+      @media print {
+        background: none !important;
+        border-width: 1mm !important;
+      }
       &.info, &.extra-info {
         background: light-dark(#ccffcc, #003300);
         @media print {
-          background: none;
           border-color: #ccffcc;
-          border-width: 1mm;
         }
-        background-blend-mode: multiply;
         @media (any-hover: hover) {
           &:not([open]):has(summary:hover:not(:active)) {
-              background: #10ee10;
+              filter: brightness(90%);
+          }
+        }
+      }
+      &.thought {
+        background: light-dark(#ffffcc, #333300);
+        @media print {
+          border-color: #ccffcc;
+        }
+        @media (any-hover: hover) {
+          &:not([open]):has(summary:hover:not(:active)) {
+              filter: brightness(90%);
           }
         }
       }
@@ -137,6 +151,11 @@ body {
       &.info {
         &:not(:has(> summary)):before, & > summary::marker {
           content: "\1F4CB  ";
+        }
+      }
+      &.thought {
+        &:not(:has(> summary)):before, & > summary::marker {
+          content: "\1F4AD  ";
         }
       }
     }
