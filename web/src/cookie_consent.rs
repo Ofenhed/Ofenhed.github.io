@@ -173,7 +173,9 @@ impl LazyRoute for CookieConsent {
                     </fieldset>
                 </fieldset>
                 <div class:box=true class:thought=true>
-                    "Speaking of consent, what's the opposite of legitimate interest?"
+                    "Speaking of consent, what's the opposite of "
+                    <q>"legitimate interest"</q>
+                    "?"
                 </div>
             </form>
         }
