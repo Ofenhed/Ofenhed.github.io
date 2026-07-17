@@ -42,5 +42,8 @@ div.carousel-or-grid {
     overflow: unset;
     flex-flow: row wrap;
     height: unset;
+    @supports (flex-wrap: balance) {
+      flex-wrap: balance
+    }
   }
 }
