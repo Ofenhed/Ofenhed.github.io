@@ -78,7 +78,9 @@ div.simple-embed {
       padding: 1em;
       margin-bottom: -1em;
       display: block;
+      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
     }
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
     > .author {
       display: block;
       padding: calc(1em / 0.66);
