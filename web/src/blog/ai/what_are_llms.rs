@@ -14,7 +14,7 @@ impl BlogEntry for WhatAreLLMs {
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 6);
 
-    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 7, 7));
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 7, 17));
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
@@ -133,6 +133,10 @@ impl LazyRoute for WhatAreLLMs {
                         <i>
                             "(This is obviously written from my Tesla Roadster while autonomously riding along the open roads on Mars)"
                         </i>
+                    </li>
+                    <li>
+                        <b>"Complexity"</b>
+                        ": It's difficult (probably not possible) to imagine the amount of data that has been used to optimize these models, or the amount of parameters that a model uses. It's a lot easier to just assume that there is some kind of intelligence."
                     </li>
                     <li>
                         <b>"Trojan horses"</b>
