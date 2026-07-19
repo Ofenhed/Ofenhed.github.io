@@ -70,6 +70,7 @@ impl LazyRoute for NotEvenDumb {
             <h2>"Vision issues"</h2>
             <div class:videos class:carousel-or-grid>
                 <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
+                <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
             </div>
         }
         .into_any()
