@@ -15,7 +15,7 @@ use crate::{
         },
         path::format_path,
     },
-    helpers::{ForRoute, ZWNJ, into_static_str, reset_footnote},
+    helpers::{ForRoute, ZWNJ, idle_preload, into_static_str, reset_footnote},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -25,9 +25,10 @@ use leptos_meta::{Meta, use_head};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
 use leptos_router::{
-    Lazy, PathSegment, PossibleRouteMatch, SsrMode,
+    Lazy, LazyRoute, PathSegment, PossibleRouteMatch, SsrMode,
     any_nested_route::{AnyNestedRoute, IntoAnyNestedRoute},
     components::{A, ParentRoute, Route},
+    lazy_route,
     nested_router::Outlet,
     path,
     static_routes::StaticRoute,
@@ -209,14 +210,20 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
             each=0..max_pages
             children=move |key| {
                 view! {
-                    <Route
+                    <ParentRoute
                         path=CurrentPage(key)
                         view=move || {
                             provide_context(CurrentPage(key));
-                            view! { <BlogListing /> }.into_inner()
+                            view! { <Outlet /> }
                         }
-                        ssr=SsrMode::Static(StaticRoute::new())
-                    />
+                        ssr=SsrMode::OutOfOrder
+                    >
+                        <Route
+                            path=()
+                            view=Lazy::<BlogListing>::new()
+                            ssr=SsrMode::Static(StaticRoute::new())
+                        />
+                    </ParentRoute>
                 }
                     .into_inner()
             }
@@ -306,79 +313,92 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
     .into_inner()
 }
 
-#[component]
-pub fn BlogListing() -> impl IntoView {
-    let blogs = {
-        let blogs = with_blogs_simple::<BlogEntryMeta>().collect::<Vec<_>>();
-        let sort_by = use_context::<SortBy>().unwrap();
-        let SortInvert(invert_sort) = use_context().unwrap();
-        let CurrentPage(current_page) = use_context().unwrap();
-        let tags = use_context::<Option<TagFilter>>().unwrap();
-        let filtered_entities = FilteredEntities(
-            blogs
-                .iter()
-                .filter(|x| !x.hidden)
-                .filter(|x| {
-                    if let Some(TagFilter(filter)) = tags {
-                        x.tags.contains(&filter)
-                    } else {
-                        true
-                    }
-                })
-                .cloned()
-                .collect::<Vec<_>>()
-                .into(),
-        );
-        provide_context(filtered_entities.clone());
-        let entries = Signal::derive(move || {
-            let FilteredEntities(blogs) = use_context().unwrap();
-            let mut blogs = blogs.into_owned();
-            blogs.sort_unstable_by(|a, b| {
-                let (a, b) = if invert_sort { (b, a) } else { (a, b) };
-                match sort_by {
-                    SortBy::Default => match (&a.pin, &b.pin) {
-                        (x, y) if x == y => b.publish_date.partial_cmp(&a.publish_date).unwrap(),
-                        (None, None) => unreachable!("None == None"),
-                        (Some(_), None) => std::cmp::Ordering::Less,
-                        (None, Some(_)) => std::cmp::Ordering::Greater,
-                        (Some(x), Some(y)) => x.cmp(y),
-                    },
-                    SortBy::Title => a.title.partial_cmp(b.title).unwrap(),
-                    SortBy::PublishDate => b.publish_date.partial_cmp(&a.publish_date).unwrap(),
-                    SortBy::ModifyDate => b
-                        .last_updated
-                        .unwrap_or(b.publish_date)
-                        .partial_cmp(&a.last_updated.unwrap_or(a.publish_date))
-                        .unwrap(),
-                }
-            });
-            let (chunks, tail) = blogs.as_chunks::<ENTRIES_PER_PAGE>();
-            match chunks.len() {
-                x if current_page == x => tail,
-                x if current_page > x => &blogs[..],
-                _ => &chunks[current_page],
-            }
-            .to_vec()
-        });
-        provide_context(CurrentPageEntries(entries.get()));
-        entries
-    };
-    Effect::new(|| {
-        let FilteredEntities(blogs) = use_context().unwrap();
-        for b in with_blogs(PreloadUids(blogs.iter().map(|x| x.uid).collect())).flatten() {
-            spawn_local_scoped(b);
-        }
-    });
+#[derive(Clone)]
+pub(crate) struct BlogListing;
 
-    view! {
-        <BlogEntryList entries=blogs />
-        <BlogPagingLinks />
+#[lazy_route]
+impl LazyRoute for BlogListing {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(_this: Self) -> AnyView {
+        let blogs = {
+            let blogs = with_blogs_simple::<BlogEntryMeta>().collect::<Vec<_>>();
+            let sort_by = use_context::<SortBy>().unwrap();
+            let SortInvert(invert_sort) = use_context().unwrap();
+            let CurrentPage(current_page) = use_context().unwrap();
+            let tags = use_context::<Option<TagFilter>>().unwrap();
+            let filtered_entities = FilteredEntities(
+                blogs
+                    .iter()
+                    .filter(|x| !x.hidden)
+                    .filter(|x| {
+                        if let Some(TagFilter(filter)) = tags {
+                            x.tags.contains(&filter)
+                        } else {
+                            true
+                        }
+                    })
+                    .cloned()
+                    .collect::<Vec<_>>()
+                    .into(),
+            );
+            provide_context(filtered_entities.clone());
+            let entries = Signal::derive(move || {
+                let FilteredEntities(blogs) = use_context().unwrap();
+                let mut blogs = blogs.into_owned();
+                blogs.sort_unstable_by(|a, b| {
+                    let (a, b) = if invert_sort { (b, a) } else { (a, b) };
+                    match sort_by {
+                        SortBy::Default => match (&a.pin, &b.pin) {
+                            (x, y) if x == y => {
+                                b.publish_date.partial_cmp(&a.publish_date).unwrap()
+                            }
+                            (None, None) => unreachable!("None == None"),
+                            (Some(_), None) => std::cmp::Ordering::Less,
+                            (None, Some(_)) => std::cmp::Ordering::Greater,
+                            (Some(x), Some(y)) => x.cmp(y),
+                        },
+                        SortBy::Title => a.title.partial_cmp(b.title).unwrap(),
+                        SortBy::PublishDate => b.publish_date.partial_cmp(&a.publish_date).unwrap(),
+                        SortBy::ModifyDate => b
+                            .last_updated
+                            .unwrap_or(b.publish_date)
+                            .partial_cmp(&a.last_updated.unwrap_or(a.publish_date))
+                            .unwrap(),
+                    }
+                });
+                let (chunks, tail) = blogs.as_chunks::<ENTRIES_PER_PAGE>();
+                match chunks.len() {
+                    x if current_page == x => tail,
+                    x if current_page > x => &blogs[..],
+                    _ => &chunks[current_page],
+                }
+                .to_vec()
+            });
+            provide_context(CurrentPageEntries(entries.get()));
+            entries
+        };
+        Effect::new(|| {
+            let FilteredEntities(blogs) = use_context().unwrap();
+            for b in with_blogs(PreloadUids(blogs.iter().map(|x| x.uid).collect())).flatten() {
+                spawn_local_scoped(b);
+            }
+        });
+
+        view! {
+            <BlogEntryList entries=blogs />
+            <BlogPagingLinks />
+        }
+        .into_any()
     }
 }
 
 #[component(transparent)]
 pub fn Blog() -> impl MatchNestedRoutes + Clone {
     let blogs = with_blogs_simple::<AnyNestedRoute>().collect::<Vec<_>>();
+    idle_preload::<BlogListing>();
     view! {
         <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
             <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
