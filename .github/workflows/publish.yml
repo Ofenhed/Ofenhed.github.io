@@ -91,6 +91,8 @@ jobs:
       id: compile
       if: ${{ !cancelled() && hashFiles('target/qr/qrcode.png') == '' }}
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
+      env:
+        contact_card: ${{ secrets.CONTACT_CARD }}
 
     - name: Generate initial files
       if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
