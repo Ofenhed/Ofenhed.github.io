@@ -106,7 +106,7 @@ jobs:
 
     - name: Save build cache
       uses: actions/cache/save@v6
-      if: ${{ steps.recompile.outcome == 'success' || steps.recompile.outcome == 'failure' }}
+      if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' }}
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
         path: |
