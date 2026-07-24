@@ -113,76 +113,79 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
         }
     };
     view! {
-                <fieldset class:youtube=true>
-                    <legend>No tracking or cookies</legend>
-                    <label tabindex="0">
-                        <input
-                            type="radio"
-                            name="youtube-tracking"
-                            checked=current_content(YoutubeConsentType::PlainLink)
-                            on:change=|e| {
-                                if event_target_checked(&e)
-                                    && let Err(e) = set_local_storage_value::<
-                                        YoutubeConsentType,
-                                    >(YoutubeConsentType::PlainLink)
-                                {
-                                    error!("Could not save consent data: {e}");
-                                }
-                            }
-                        />
-                        "A regular link to youtube"
-                    </label>
-                    <div class:box=true class:info=true>
-                        "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>"Data is shared with YouTube"</legend>
-                    <label tabindex="0">
-                        <input
-                            type="radio"
-                            name="youtube-tracking"
-                            checked=current_content(YoutubeConsentType::NoCookieDomain)
-                            on:change=|e| {
-                                if event_target_checked(&e)
-                                    && let Err(e) = set_local_storage_value::<
-                                        YoutubeConsentType,
-                                    >(YoutubeConsentType::NoCookieDomain)
-                                {
-                                    error!("Could not save consent data: {e}");
-                                }
-                            }
-                        />
-                        "Embedded with reduced cookies (using "<q class:nobrplz=true>
-                            "youtube-nocookies.com"
-                        </q>
-                        ")."
-                    </label>
-                    <label tabindex="0">
-                        <input
-                            type="radio"
-                            name="youtube-tracking"
-                            checked=current_content(YoutubeConsentType::RegularYoutube)
-                            on:change=|e| {
-                                if event_target_checked(&e)
-                                    && let Err(e) = set_local_storage_value::<
-                                        YoutubeConsentType,
-                                    >(YoutubeConsentType::RegularYoutube)
-                                {
-                                    error!("Could not save consent data: {e}");
-                                }
-                            }
-                        />
-                        "Embedded without any cookie or tracking reduction"
-                    </label>
-                    <div class:box=true class:info=true>
-                        "These options will send data to YouTube each time you visit a page "
-                        <i>"with an embedded video"</i>
-                        ", "
-                        <b>"even without you even playing any videos"</b>
-                        ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "<a href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode">"Google Support for "<q class:nobrplz=true>"youtube-nocookies.com"</q></a>". It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
-                    </div>
+        <fieldset class:youtube=true>
+            <legend>No tracking or cookies</legend>
+            <label tabindex="0">
+                <input
+                    type="radio"
+                    name="youtube-tracking"
+                    checked=current_content(YoutubeConsentType::PlainLink)
+                    on:change=|e| {
+                        if event_target_checked(&e)
+                            && let Err(e) = set_local_storage_value::<
+                                YoutubeConsentType,
+                            >(YoutubeConsentType::PlainLink)
+                        {
+                            error!("Could not save consent data: {e}");
+                        }
+                    }
+                />
+                "A regular link to youtube"
+            </label>
+            <div class:box=true class:info=true>
+                "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>"Data is shared with YouTube"</legend>
+            <label tabindex="0">
+                <input
+                    type="radio"
+                    name="youtube-tracking"
+                    checked=current_content(YoutubeConsentType::NoCookieDomain)
+                    on:change=|e| {
+                        if event_target_checked(&e)
+                            && let Err(e) = set_local_storage_value::<
+                                YoutubeConsentType,
+                            >(YoutubeConsentType::NoCookieDomain)
+                        {
+                            error!("Could not save consent data: {e}");
+                        }
+                    }
+                />
+                "Embedded with reduced cookies (using "
+                <q class:nobrplz=true>"youtube-nocookies.com"</q>
+                ")."
+            </label>
+            <label tabindex="0">
+                <input
+                    type="radio"
+                    name="youtube-tracking"
+                    checked=current_content(YoutubeConsentType::RegularYoutube)
+                    on:change=|e| {
+                        if event_target_checked(&e)
+                            && let Err(e) = set_local_storage_value::<
+                                YoutubeConsentType,
+                            >(YoutubeConsentType::RegularYoutube)
+                        {
+                            error!("Could not save consent data: {e}");
+                        }
+                    }
+                />
+                "Embedded without any cookie or tracking reduction"
+            </label>
+            <div class:box=true class:info=true>
+                "These options will send data to YouTube each time you visit a page "
+                <i>"with an embedded video"</i>
+                ", "
+                <b>"even without you even playing any videos"</b>
+                ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
+                <a href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode">
+                    "Google Support for "<q class:nobrplz=true>"youtube-nocookies.com"</q>
+                </a>
+                ". It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
+            </div>
 
-                </fieldset>
+        </fieldset>
     }
 }

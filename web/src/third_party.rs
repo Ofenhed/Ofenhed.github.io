@@ -153,7 +153,7 @@ pub(crate) fn YouTube(
             };
             let author = video.author_name.clone().map(|author_name| {
                 view! {
-                    <a class:author href=author_url >
+                    <a class:author href=author_url>
                         {author_name}
                     </a>
                 }
@@ -169,12 +169,23 @@ pub(crate) fn YouTube(
                     style:max-height=max_height
                 >
                     <span class:meta>
-                        <a href=href.clone() class:no-shinies class:title=true on:click=show_consent.clone() >
+                        <a
+                            href=href.clone()
+                            class:no-shinies
+                            class:title=true
+                            on:click=show_consent.clone()
+                        >
                             {video.title.clone()}
                         </a>
                         {author}
                     </span>
-                    <a class:logo class:no-shinies href=href title="YouTube" on:click=show_consent></a>
+                    <a
+                        class:logo
+                        class:no-shinies
+                        href=href
+                        title="YouTube"
+                        on:click=show_consent
+                    ></a>
                     <img
                         alt
                         class:thumbnail

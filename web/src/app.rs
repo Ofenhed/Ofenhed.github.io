@@ -224,7 +224,7 @@ pub(crate) fn App() -> impl IntoView {
                     <li>
                         <A href="/clogs">"Clog"</A>
                     </li>
-                    <Show when=move || should_show_cookie_consent_link.get() >
+                    <Show when=move || should_show_cookie_consent_link.get()>
                         <li>
                             <A
                                 on:mouseenter=|_| task::spawn(CookieConsent::preload())
