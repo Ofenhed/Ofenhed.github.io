@@ -205,6 +205,7 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
         pages_full / ENTRIES_PER_PAGE
     };
     let max_pages = num_pages(with_blogs(()).count());
+    let blog_listing = || Lazy::<BlogListing>::new();
     view! {
         <ForRoute
             each=0..max_pages
@@ -220,7 +221,7 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
                     >
                         <Route
                             path=()
-                            view=Lazy::<BlogListing>::new()
+                            view=blog_listing()
                             ssr=SsrMode::Static(StaticRoute::new())
                         />
                     </ParentRoute>
