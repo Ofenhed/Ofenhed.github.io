@@ -5,7 +5,7 @@ use crate::{
         emails::ChatControlReplyV,
         metadata::{BlogEntry, Locale, Tag, date},
     },
-    helpers::{Abbr, Footnote, Url},
+    helpers::{Abbr, Footnote, Url, idle_preload},
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
@@ -36,13 +36,7 @@ impl LazyRoute for ChatControl {
 
     fn view(_this: Self) -> AnyView {
         let osint = || view! { <Abbr title="Open Source Intelligence">"OSINT"</Abbr> }.into_inner();
-        #[cfg(feature = "client-side")]
-        if let Some(owner) = Owner::current() {
-            use crate::helpers::ScopedTimeout as _;
-            owner.request_idle_callback(std::time::Duration::from_secs(2), None, || {
-                leptos::task::spawn_local_scoped(ChatControlReplyV::preload())
-            });
-        }
+        idle_preload::<ChatControlReplyV>();
         view! {
             <fieldset>
                 <legend>Note</legend>

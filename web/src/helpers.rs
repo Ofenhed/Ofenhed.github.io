@@ -10,7 +10,7 @@ use leptos::{
     tachys::view::iterators::StaticVec,
 };
 use leptos_router::{
-    MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
+    LazyRoute, MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
 };
 
 /// Zero Width Non-Joiner
@@ -96,6 +96,16 @@ impl ScopedTimeout for Owner {
                 }
             })
         }
+    }
+}
+
+pub(crate) fn idle_preload<T: LazyRoute>() {
+    #[cfg(feature = "client-side")]
+    if let Some(owner) = Owner::current() {
+        use crate::helpers::ScopedTimeout as _;
+        owner.request_idle_callback(std::time::Duration::from_secs(2), None, || {
+            leptos::task::spawn_local_scoped(T::preload())
+        });
     }
 }
 

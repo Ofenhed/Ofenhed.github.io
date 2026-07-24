@@ -37,6 +37,12 @@ use strum::{EnumString, IntoStaticStr, VariantArray};
 
 const ENTRIES_PER_PAGE: usize = 10;
 
+pub(crate) fn blog_entry_href(entry: &BlogEntryMeta) -> Oco<'static, str> {
+    let mut path = vec![PathSegment::Static(Cow::Borrowed("clog"))];
+    entry.generate_path(&mut path);
+    Oco::Owned(format!("{}#{}", format_path(path), to_title(entry.title)))
+}
+
 fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
     let owner = Owner::current().unwrap();
     let mut ret = vec![PathSegment::Static(Cow::Borrowed("clogs"))];
@@ -592,14 +598,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li {..article_pinned(&entry)}>
                     <article {..lang(&entry)}>
-                        <A
-                            on:click=on_click
-                            href={
-                                let mut path = vec![PathSegment::Static(Cow::Borrowed("clog"))];
-                                entry.generate_path(&mut path);
-                                format!("{}#{}", format_path(path), to_title(entry.title))
-                            }
-                        >
+                        <A on:click=on_click href=blog_entry_href(&entry)>
                             {entry.title.to_owned()}
                         </A>
                         {info(&entry)}
