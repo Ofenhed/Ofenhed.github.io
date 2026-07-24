@@ -28,14 +28,24 @@ mod qr_settings {
 
 macro_rules! make_vcard {
     ( $vcard:literal, [$($logo_line:literal),*] ) => {
-        #[allow(unused)]
-        const VCARD: &str = $vcard;
         cfg_select! {
-            debug_assertions => qr_macro::make_qr! {
-                const QR_CODE = env!($vcard) || "NO VCARD" + [ $($logo_line),* ];
+            debug_assertions => {
+                #[allow(unused)]
+                const VCARD: &str = if let Some(env) = option_env!($vcard) {
+                    env
+                } else {
+                    "NO VCARD"
+                };
+                qr_macro::make_qr! {
+                    const QR_CODE = env!($vcard) || "NO VCARD" + [ $($logo_line),* ];
+                }
             },
-            _ => qr_macro::make_qr! {
-                const QR_CODE = env!($vcard) + [ $($logo_line),* ];
+            _ => {
+                #[allow(unused)]
+                const VCARD: &str = env!($vcard);
+                qr_macro::make_qr! {
+                    const QR_CODE = env!($vcard) + [ $($logo_line),* ];
+                }
             }
         }
     };
