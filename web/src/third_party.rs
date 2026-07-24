@@ -262,7 +262,7 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
     });
     view! {
         <Show when=wants_youtube>
-            <dialog node_ref=node>
+            <dialog node_ref=node closedby="any">
                 <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
                 <YoutubeConsent />
             </dialog>
