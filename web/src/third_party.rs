@@ -33,38 +33,42 @@ pub struct YoutubeVideo {
 }
 
 macro_rules! youtube {
-    ($id:literal) => {{
-        let oembed::OembedData {
-            title,
-            author_url,
-            author_name,
-            #[cfg(feature = "ssr")]
-            thumbnail_url,
-            content,
-            ..
-        } = oembed::oembed! {
-                "https://www.youtube.com/oembed",
-                "https://www.youtube.com/watch?v=" + $id
-        };
-        let (width, height) = match content {
-            oembed::OembedType::Video { width, height, .. } => (width, height),
-        };
-        $crate::third_party::YoutubeVideo {
-            id: $id,
-            title,
-            author_url,
-            author_name,
-            #[cfg(feature = "ssr")]
-            thumbnail_url,
-            width,
-            height,
+    ($id:literal) => {
+        const {
+            let oembed::OembedData {
+                title,
+                author_url,
+                author_name,
+                #[cfg(feature = "ssr")]
+                thumbnail_url,
+                content,
+                ..
+            } = oembed::oembed! {
+                    "https://www.youtube.com/oembed",
+                    "https://www.youtube.com/watch?v=" + $id
+            };
+            let (width, height) = match content {
+                oembed::OembedType::Video { width, height, .. } => (width, height),
+            };
+            $crate::third_party::YoutubeVideo {
+                id: $id,
+                title,
+                author_url,
+                author_name,
+                #[cfg(feature = "ssr")]
+                thumbnail_url,
+                width,
+                height,
+            }
         }
-    }};
-    ($id:literal ($width:literal : $height:literal)) => {{
-        let mut yv = youtube!($id);
-        (yv.width, yv.height) = ($width, $height);
-        yv
-    }};
+    };
+    ($id:literal ($width:literal : $height:literal)) => {
+        const {
+            let mut yv = youtube!($id);
+            (yv.width, yv.height) = ($width, $height);
+            yv
+        }
+    };
 }
 pub(crate) use youtube;
 

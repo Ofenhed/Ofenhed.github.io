@@ -214,7 +214,7 @@ impl OembedArgs {
             }
         };
         Ok(quote! {
-            {
+            const {
                 use oembed::*;
                 OembedData {
                     version: OembedVersion::Ver1_0,
