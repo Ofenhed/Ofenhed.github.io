@@ -263,11 +263,6 @@ impl LazyRoute for Contact {
                 }
             }
             set_show_canvas.set(None);
-            if let Some(static_qr) = static_qr.get()
-                && let Some(qr_parent) = static_qr.parent_node()
-            {
-                _ = qr_parent.remove_child(&static_qr);
-            }
             if let Some(setter) = use_context::<WriteSignal<PersistentQrLogo>>() {
                 set_scoped_timeout(
                     std::time::Duration::from_secs_f64(
@@ -276,6 +271,12 @@ impl LazyRoute for Contact {
                     ),
                     move || {
                         setter.update_untracked(|x| x.logo_animated = true);
+                        if let Some(canvas) = canvas_ref.get_untracked()
+                            && let Some(static_qr) = static_qr.get_untracked()
+                            && let Ok(canvas_data) = canvas.to_data_url()
+                        {
+                            _ = static_qr.set_src(&canvas_data);
+                        }
                     },
                 );
             }
@@ -392,7 +393,6 @@ impl LazyRoute for Contact {
             }
         };
 
-        let qr_alt = "Contact Card QR";
         view! {
             <div class="contact">
                 <div
@@ -404,7 +404,7 @@ impl LazyRoute for Contact {
                     style:margin="0 auto 1em auto"
                 >
                     <a download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
-                        <img alt=qr_alt node_ref=static_qr src=original_qr_src />
+                        <img alt="Contact Card QR" node_ref=static_qr src=original_qr_src />
                         <NoScript>
                             <img alt class:fallback {..img_def()} src="qrlogo.png" />
                         </NoScript>
