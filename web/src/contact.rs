@@ -3,7 +3,7 @@ use leptos_router::{LazyRoute, lazy_route};
 
 use crate::helpers::{NoScript, NoWasm, img_def, scoped_style};
 
-#[cfg(not(feature = "ssr"))]
+#[cfg(feature = "client-side")]
 mod qr_settings {
     pub const MIN_INITIAL_DELAY: f64 = 0.250;
     pub const MAX_INITIAL_DELAY: f64 = 1.0;
@@ -125,7 +125,7 @@ impl LazyRoute for Contact {
         let _static_assertion: () = {
             assert!(width == height);
         };
-        #[cfg(not(feature = "ssr"))]
+        #[cfg(feature = "client-side")]
         Effect::new(move |_| {
             use crate::helpers::*;
             use leptos::logging::{log, warn};
@@ -137,7 +137,7 @@ impl LazyRoute for Contact {
             let worm_delay = 2.5f64;
             let animate_logo = {
                 if let Some(c) = use_context::<ReadSignal<PersistentQrLogo>>() {
-                    c.get_untracked().logo_animated == false
+                    !c.get_untracked().logo_animated
                 } else {
                     true
                 }
@@ -211,8 +211,8 @@ impl LazyRoute for Contact {
             );
             context.set_fill_style_str("#ffffff");
             for (pos, (pix, inv)) in QR_CODE.iter_merged().enumerate() {
-                let x = (pos % width) as usize;
-                let y = (pos / width) as usize;
+                let x = pos % width;
+                let y = pos / width;
                 let orig = if animate_logo { pix } else { pix ^ inv };
                 if orig {
                     context.fill_rect(x as f64, y as f64, 1.0, 1.0);
@@ -227,14 +227,13 @@ impl LazyRoute for Contact {
                         MIN_SHADE_INTERVAL
                             + Math::random() * (MAX_SHADE_INTERVAL - MIN_SHADE_INTERVAL),
                     );
-                    let canvas = canvas_ref.clone();
                     let r = if pix {
                         shade_to_dark.clone()
                     } else {
                         shade_to_light.clone()
                     };
                     set_scoped_timeout(delay, move || {
-                        let Some(canvas) = canvas.get_untracked() else {
+                        let Some(canvas) = canvas_ref.get_untracked() else {
                             log!("Lost canvas");
                             return;
                         };
@@ -249,7 +248,7 @@ impl LazyRoute for Contact {
                                 context.set_fill_style_str(&p);
                                 context.fill_rect(x as f64, y as f64, 1.0, 1.0);
                             })
-                            .into_scoped_timeout();
+                            .into_scoped_animation_timeout();
                     });
                 }
             }
@@ -321,7 +320,7 @@ impl LazyRoute for Contact {
                                         context.fill_rect(x as f64, y as f64, 1.0, 1.0);
                                     },
                                 )
-                                .into_scoped_timeout()
+                                .into_scoped_animation_timeout()
                         },
                     );
                 }
@@ -345,7 +344,7 @@ impl LazyRoute for Contact {
                         std::time::Duration::from_secs_f64(Math::random() * 5.0),
                         || {
                             if let Some(true) = use_context::<WriteSignal<PersistentQrLogo>>()
-                                .map(|x| {
+                                .and_then(|x| {
                                     x.try_maybe_update(|qr| {
                                         if qr.log_written {
                                             (false, false)
@@ -355,7 +354,6 @@ impl LazyRoute for Contact {
                                         }
                                     })
                                 })
-                                .flatten()
                             {
                                 warn!("Worm detected in browser");
                             }
