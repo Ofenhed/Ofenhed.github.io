@@ -7,7 +7,7 @@ async fn main() {
     use leptos::{logging::log, prelude::*};
     use tokio::{pin, select};
 
-    let conf = get_configuration(None).unwrap();
+    let conf = get_configuration(Some("web/Cargo.toml")).unwrap();
     #[cfg(feature = "dev")]
     let addr = conf.leptos_options.site_addr;
     let leptos_options = conf.leptos_options;
