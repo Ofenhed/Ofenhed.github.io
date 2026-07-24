@@ -8,6 +8,7 @@ any_spawner = { git = "https://github.com/Ofenhed/leptos", branch = "always-nonc
 axum = { version = "0.8.1", default-features = false }
 base64 = "0.22.1"
 chrono = { version = "0.4.44", default-features = false, features = ["std", "wasmbind", "alloc"] }
+cargo-leptos = "0.3.7"
 console_error_panic_hook = "0.1.7"
 console_log = "1.0"
 futures = { version = "0.3", default-features = false }

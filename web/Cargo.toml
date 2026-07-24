@@ -46,7 +46,7 @@ web-sys = { workspace = true, optional = true, features = [
 ] }
 
 [build-dependencies]
-cargo-leptos = "0.3.7"
+cargo-leptos.workspace = true
 
 [features]
 default = []
