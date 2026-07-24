@@ -210,7 +210,7 @@ impl LazyRoute for ChatControl {
                 <b>"please oppose this proposal or enlighten me if you think I'm wrong"</b>
                 " in my conclusion."
             </p>
-            <p lang="sv">"Med vänliga hälsningar,"<br /> "Marcus Ofenhed"</p>
+            <p lang="sv">"Med vänliga hälsningar,"<br />{ChatControl::AUTHOR}</p>
         }.into_any()
     }
 }

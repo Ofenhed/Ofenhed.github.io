@@ -80,7 +80,7 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
     const UID: u32;
     const PUBLISH_DATE: DateTime<Utc>;
     const TITLE: &'static str;
-    const AUTHOR: &'static str = "Marcus Ofenhed";
+    const AUTHOR: &'static str = crate::AUTHOR;
     const TAGS: &'static [Tag];
 
     const LOCALE: Option<Locale> = None;

@@ -8,6 +8,8 @@ pub(crate) mod helpers;
 pub(crate) mod local_storage;
 pub(crate) mod third_party;
 
+pub(crate) const AUTHOR: &str = env!("CARGO_PKG_AUTHORS");
+
 #[cfg(feature = "ssr")]
 pub use contact::qr_generator::save_qrcode;
 

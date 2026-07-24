@@ -403,7 +403,7 @@ impl LazyRoute for Contact {
                     style:width="calc(min(308px,100%))"
                     style:margin="0 auto 1em auto"
                 >
-                    <a download="Marcus Ofenhed.vcf" href=vcard_href>
+                    <a download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
                         <img alt=qr_alt node_ref=static_qr src=original_qr_src />
                         <NoScript>
                             <img alt class:fallback {..img_def()} src="qrlogo.png" />
@@ -417,7 +417,7 @@ impl LazyRoute for Contact {
                         </div>
                     </a>
                 </div>
-                <a href="https://linkedin.com/in/conditionraisemarcus">Marcus Ofenhed</a>
+                <a href="https://linkedin.com/in/conditionraisemarcus">{crate::AUTHOR}</a>
                 <p>Senior IT Security Consultant</p>
                 <Email />
             </div>
