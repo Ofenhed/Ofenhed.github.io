@@ -31,7 +31,7 @@ sha2 = "0.10"
 strum = "0.28"
 swc = { version = "55", default-features = false }
 swc_common = { version = "18", default-features = false }
-syn = { version = "2.0.117", default-features = false }
+syn = { version = "3", default-features = false }
 thiserror = "2.0.12"
 tokio = { version = "1.39", default-features = false }
 tokio-util = { version = "0.7", default-features = false }
