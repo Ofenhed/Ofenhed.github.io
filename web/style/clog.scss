@@ -95,11 +95,8 @@ ul#blog-entries {
     main {
       background: var(--space-main-background);
       border-radius: var(--top-left-rounding) var(--top-left-rounding) 0 0;
-      position: relative;
       padding: 1em;
       z-index: 5;
-      top: 0;
-      left: 0;
     }
     @include nav.open($selector: &) {
       grid-template-columns: [menu-start] max-content [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;

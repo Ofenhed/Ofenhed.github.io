@@ -61,7 +61,8 @@ body {
     grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start footer-start] 100% [footer-end main-end] 0px;
   }
 
-  height: 100vh;
+  min-height: 100vh;
+  box-sizing: content-box;
   counter-reset: footnote-link footnote-text;
   abbr:not(.first-of-abbr) {
     text-decoration: none;

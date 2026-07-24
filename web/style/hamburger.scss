@@ -11,28 +11,19 @@
 }
 
 #navigation {
-  top: 0;
-  left: 0;
   z-index: 1000;
   padding: 0;
   margin: 0;
-  height: 100%;
   width: fit-content;
-  grid-area: menu-start / menu-start / menu-end / menu-end;
   @include nav.open(&) {
+    grid-area: menu-start / menu-start / menu-end / menu-end;
     background: #badbad;
   }
   @include nav.closed($selector: &) {
     pointer-events: none;
-    transform-origin: top left;
+    min-height: 100vh;
     #hamburger {
       pointer-events: auto;
-      position: relative;
-      left: 0;
-    }
-    --menu-padding: calc(var(--hamburger-size) + 2 * var(--hamburger-padding));
-    #menu {
-      opacity: 0.3;
     }
   }
   #menu {
@@ -41,7 +32,7 @@
     top: 0;
     left: 0;
     padding-left: 0;
-    height: calc(100% - var(--menu-padding));
+    height: fit-content;
     z-index: 100;
     margin: 0;
 
@@ -110,7 +101,6 @@
     width: var(--hamburger-size);
     height: var(--hamburger-size);
     margin-bottom: calc(-var(--hamburger-size) - var(--hamburger-padding));
-    box-sizing: content-box;
     .slice {
       display: block;
       position: relative;
