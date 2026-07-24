@@ -29,6 +29,7 @@ pub fn hydrate() {
         pub use leptos::prelude::*;
         use std::{panic, sync::Once, time::Duration};
         struct LastPanic;
+        const RELOAD_KEYWORD: &str = "reloaded";
         impl LocalStorageAccessor for LastPanic {
             const KEY: LocalStorageKey = LocalStorageKey::LastPanic;
             type Data = String;
@@ -41,8 +42,8 @@ pub fn hydrate() {
                     std::panic::set_hook(Box::new(move |info| {
                         if let Some(location) = document().location()
                             && let Ok(hash) = location.hash()
-                            && hash != "panic"
-                            && location.set_hash("panic").is_ok()
+                            && hash != RELOAD_KEYWORD
+                            && location.set_hash(RELOAD_KEYWORD).is_ok()
                         {
                             let mut panic_msg = String::new();
                             if let Some(location) = info.location() {
