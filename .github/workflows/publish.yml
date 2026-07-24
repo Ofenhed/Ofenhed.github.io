@@ -99,6 +99,8 @@ jobs:
     - name: Recompile targets
       id: recompile
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
+      env:
+        contact_card: ${{ secrets.CONTACT_CARD }}
 
     - name: Save build cache
       uses: actions/cache/save@v6
