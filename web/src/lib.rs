@@ -23,8 +23,16 @@ pub fn hydrate() {
 
     #[cfg(not(debug_assertions))]
     {
+        use crate::local_storage::{
+            LocalStorageAccessor, LocalStorageKey, set_local_storage_value,
+        };
         pub use leptos::prelude::*;
         use std::{panic, sync::Once, time::Duration};
+        struct LastPanic;
+        impl LocalStorageAccessor for LastPanic {
+            const KEY: LocalStorageKey = LocalStorageKey::LastPanic;
+            type Data = String;
+        }
         static SET_HOOK: Once = Once::new();
         set_timeout(
             || {
@@ -36,6 +44,19 @@ pub fn hydrate() {
                             && hash != "panic"
                             && location.set_hash("panic").is_ok()
                         {
+                            let mut panic_msg = String::new();
+                            if let Some(location) = info.location() {
+                                panic_msg.push_str(&format!(
+                                    "{}@{}:{}\n",
+                                    location.file(),
+                                    location.line(),
+                                    location.column()
+                                ));
+                            }
+                            if let Some(panic_info) = info.payload_as_str() {
+                                panic_msg.push_str(panic_info);
+                                _ = set_local_storage_value::<LastPanic>(panic_msg);
+                            }
                             _ = location.reload_with_forceget(true);
                         }
                         prev_hook(info);

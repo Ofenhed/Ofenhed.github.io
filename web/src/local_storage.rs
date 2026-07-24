@@ -22,6 +22,7 @@ pub(crate) enum LocalStorageError {
 pub(crate) enum LocalStorageKey {
     WantsCookies,
     YoutubeCookieConsent,
+    LastPanic,
 }
 
 pub(crate) trait LocalStorageData: 'static + Send + Sync + FromStr + ToString {}
