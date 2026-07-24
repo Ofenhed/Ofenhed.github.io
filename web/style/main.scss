@@ -259,7 +259,10 @@ body {
       break-inside: avoid;
     }
     a:not(.just-url) {
-      &[href^="https://"], &[href^="http://"] {
+      &[href^="https://"], &[href^="http://"], &[href^="/"] {
+        &[href^="/"]:after {
+          content: " (https://conditionraise.se" attr(href) ")";
+        }
         &:after {
           content: " (" attr(href) ")";
           text-decoration-line: none;
