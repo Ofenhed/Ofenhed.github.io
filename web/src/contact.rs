@@ -275,7 +275,7 @@ impl LazyRoute for Contact {
                             && let Some(static_qr) = static_qr.get_untracked()
                             && let Ok(canvas_data) = canvas.to_data_url()
                         {
-                            _ = static_qr.set_src(&canvas_data);
+                            static_qr.set_src(&canvas_data);
                         }
                     },
                 );
