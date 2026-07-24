@@ -86,8 +86,11 @@ body {
     background-color: light-dark(#00000028, #ffffff28);
     cursor: pointer;
     width: fit-content;
-    &:hover, &:focus {
+    &:hover {
       background-color: light-dark(#00000010, #ffffff10);
+    }
+    &:focus {
+      border-style: dotted;
     }
     input[type="radio"] {
       display: none;

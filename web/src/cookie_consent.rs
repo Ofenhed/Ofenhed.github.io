@@ -180,8 +180,12 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 ", "
                 <b>"even without you even playing any videos"</b>
                 ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
-                <a href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode">
-                    "Google Support for "<q class:nobrplz=true>"youtube-nocookies.com"</q>
+                <a
+                    href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode"
+                    tabindex="-1"
+                >
+                    "Google Support for "
+                    <q class:nobrplz=true>"youtube-nocookies.com"</q>
                 </a>
                 ". It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
             </div>
