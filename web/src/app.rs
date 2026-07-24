@@ -16,6 +16,7 @@ use crate::{
     },
     helpers::{Footnotes, img_def},
     local_storage::provide_local_storage_context,
+    third_party::ThirdPartyConsentDialogs,
 };
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
@@ -182,6 +183,7 @@ pub(crate) fn App() -> impl IntoView {
     let contact = Lazy::<Contact>::new();
     let cookie_consent = Lazy::<CookieConsent>::new();
     let build_info = Lazy::<BuildInfo>::new();
+    let should_show_cookie_consent_link = should_show_cookie_consent_link();
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
@@ -222,7 +224,7 @@ pub(crate) fn App() -> impl IntoView {
                     <li>
                         <A href="/clogs">"Clog"</A>
                     </li>
-                    <Show when=should_show_cookie_consent_link>
+                    <Show when=move || should_show_cookie_consent_link.get() >
                         <li>
                             <A
                                 on:mouseenter=|_| task::spawn(CookieConsent::preload())
@@ -251,6 +253,7 @@ pub(crate) fn App() -> impl IntoView {
                 </Routes>
             </main>
             <Footnotes />
+            <ThirdPartyConsentDialogs />
         </Router>
     }
 }

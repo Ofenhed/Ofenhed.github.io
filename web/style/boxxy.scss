@@ -1,0 +1,91 @@
+details, div.box {
+  border: 1px solid #aaaaaa;
+  border-radius: 5mm;
+  padding: 0.5em 0.5em 0;
+  @media not print {
+    box-shadow: 0.5ex 0.5ex 0.6ex #000000af;
+    margin-bottom: 1ex;
+  }
+  summary {
+    font-weight: bold;
+    margin: -0.5em -0.5em 0;
+    padding: 0.5em;
+    cursor: grab;
+  }
+  &[open] {
+    padding: 0.5em;
+    summary {
+      border-bottom: 1px solid #aaaaaa;
+      margin-bottom: 0.5em;
+      cursor: grabbing;
+    }
+  }
+  &:has(> summary):not([open]) {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-style: ridge;
+    border-bottom-width: 1mm;
+  }
+  &:not(:has(> summary)){
+    padding-left: 3em;
+    min-height: 2em;
+    width: fit-content;
+    &:before {
+      margin-left: -1.5em;
+      font-size: 150%;
+      display: block;
+      float: left;
+      height: 100%;
+      margin-right: 0.5ex;
+    }
+  }
+  & > summary {
+    &::marker {
+      display: block;
+      font-size: 150%;
+      padding-right: 2em;
+    }
+  }
+  @media print {
+    background: none !important;
+    border-width: 1mm !important;
+  }
+  &.info, &.extra-info {
+    background: light-dark(#ccffcc, #003300);
+    @media print {
+      border-color: #ccffcc;
+    }
+    @media (any-hover: hover) {
+      &:not([open]):has(summary:hover:not(:active)) {
+          filter: brightness(90%);
+      }
+    }
+  }
+  &.thought {
+    background: light-dark(#ffffcc, #333300);
+    @media print {
+      border-color: #ccffcc;
+    }
+    @media (any-hover: hover) {
+      &:not([open]):has(summary:hover:not(:active)) {
+          filter: brightness(90%);
+      }
+    }
+  }
+  &.extra-info {
+    &:not(:has(> summary)):before, & > summary::marker {
+      content: "\1F50E  ";
+    }
+  }
+  &.info {
+    &:not(:has(> summary)):before, & > summary::marker {
+      content: "\1F4CB  ";
+    }
+  }
+  &.thought {
+    &:not(:has(> summary)):before, & > summary::marker {
+      content: "\1F4AD  ";
+    }
+  }
+}
+

@@ -7,6 +7,8 @@
 @use 'third-party.scss';
 @use 'sass:string';
 @use 'quoting.scss';
+@use 'dialog.scss';
+@use 'boxxy.scss';
 
 nav {
   a {
@@ -50,6 +52,10 @@ body {
     padding: 1ex;
   }
   overflow-x: hidden;
+  .nobrplz {
+    break-inside: avoid;
+    word-break: keep-all;
+  }
 
   @include nav.open($selector: &) {
     grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start footer-start] 100% [footer-end main-end] 0px;
@@ -60,113 +66,52 @@ body {
   abbr:not(.first-of-abbr) {
     text-decoration: none;
   }
+  fieldset {
+    border-radius:5mm;
+    margin-bottom:1em;
+    label:has(input[type="radio"]) {
+      input[type="radio"] {
+        margin-right: 1em;
+      }
+      font-weight: bold;
+      padding: 0.5em;
+      margin: 0.5em;
+      display: block;
+    }
+  }
+  dialog fieldset label:not(:has(input[type="radio"][checked])) {
+    border-width: 2px;
+    border-style: ridge;
+    border-radius: 1em;
+    background-color: light-dark(#00000028, #ffffff28);
+    cursor: pointer;
+    width: fit-content;
+    &:hover, &:focus {
+      background-color: light-dark(#00000010, #ffffff10);
+    }
+    input[type="radio"] {
+      display: none;
+    }
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  del {
+    background: rgba(255, 0, 0, 0.2);
+  }
+  ins {
+    background: rgba(0, 255, 0, 0.2);
+    text-decoration: none;
+  }
+
   & > main {
     h1:first-of-type {
       margin-top: 0;
     }
     grid-area: main-start / main-start / main-end / main-end;
     padding: 1em;
-    img {
-      max-width: 100%;
-    }
-    details, div.box {
-      border: 1px solid #aaaaaa;
-      border-radius: 5mm;
-      padding: 0.5em 0.5em 0;
-      @media not print {
-        box-shadow: 0.5ex 0.5ex 0.6ex #000000af;
-        margin-bottom: 1ex;
-      }
-      summary {
-        font-weight: bold;
-        margin: -0.5em -0.5em 0;
-        padding: 0.5em;
-        cursor: grab;
-      }
-      &[open] {
-        padding: 0.5em;
-        summary {
-          border-bottom: 1px solid #aaaaaa;
-          margin-bottom: 0.5em;
-          cursor: grabbing;
-        }
-      }
-      &:has(> summary):not([open]) {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        border-bottom-style: ridge;
-        border-bottom-width: 1mm;
-      }
-      &:not(:has(> summary)){
-        padding-left: 3em;
-        min-height: 2em;
-        width: fit-content;
-        &:before {
-          margin-left: -1.5em;
-          font-size: 150%;
-          display: block;
-          float: left;
-          height: 100%;
-          margin-right: 0.5ex;
-        }
-      }
-      & > summary {
-        &::marker {
-          display: block;
-          font-size: 150%;
-          padding-right: 2em;
-        }
-      }
-      @media print {
-        background: none !important;
-        border-width: 1mm !important;
-      }
-      &.info, &.extra-info {
-        background: light-dark(#ccffcc, #003300);
-        @media print {
-          border-color: #ccffcc;
-        }
-        @media (any-hover: hover) {
-          &:not([open]):has(summary:hover:not(:active)) {
-              filter: brightness(90%);
-          }
-        }
-      }
-      &.thought {
-        background: light-dark(#ffffcc, #333300);
-        @media print {
-          border-color: #ccffcc;
-        }
-        @media (any-hover: hover) {
-          &:not([open]):has(summary:hover:not(:active)) {
-              filter: brightness(90%);
-          }
-        }
-      }
-      &.extra-info {
-        &:not(:has(> summary)):before, & > summary::marker {
-          content: "\1F50E  ";
-        }
-      }
-      &.info {
-        &:not(:has(> summary)):before, & > summary::marker {
-          content: "\1F4CB  ";
-        }
-      }
-      &.thought {
-        &:not(:has(> summary)):before, & > summary::marker {
-          content: "\1F4AD  ";
-        }
-      }
-    }
-
-    del {
-      background: rgba(255, 0, 0, 0.2);
-    }
-    ins {
-      background: rgba(0, 255, 0, 0.2);
-      text-decoration: none;
-    }
     span:has(> a.footnote-link:only-child) {
       & {
         break-before: avoid;
@@ -265,26 +210,6 @@ body {
   }
   &, main {
     background: light-dark(#ffffff, #222222);
-  }
-  div.note {
-    border-radius: 0.25em;
-    padding: 0.5em;
-    padding-left: 2.5em;
-    background: light-dark(#a4cefe,#044c9f);
-    color: --font-color;
-    &:before {
-      content: "\2139";
-      font: var(--symbol-font-text);
-      font-family: u1f400;
-      text-rendering: optimizeLegibility;
-      display: block;
-      position: relative;
-      height: fit-content;
-      width: 0;
-      height: 0;
-      overflow: visible;
-      left: -1.5em;
-    }
   }
   kbd {
     background-color: #eeeeee;
