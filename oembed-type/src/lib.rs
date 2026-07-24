@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-#[derive(Clone)]
+#[cfg_attr(feature = "clonable", derive(Clone))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "test", derive(PartialEq, Eq))]
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -14,7 +14,7 @@ pub enum OembedType<'a> {
     },
 }
 
-#[derive(Clone)]
+#[cfg_attr(feature = "clonable", derive(Clone))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "test", derive(PartialEq, Eq))]
 #[cfg_attr(debug_assertions, derive(Debug))]
@@ -24,7 +24,7 @@ pub enum OembedVersion {
     Ver1_0,
 }
 
-#[derive(Clone)]
+#[cfg_attr(feature = "clonable", derive(Clone))]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "test", derive(PartialEq, Eq))]
 #[cfg_attr(debug_assertions, derive(Debug))]
