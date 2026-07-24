@@ -1,4 +1,4 @@
-use std::{cell::LazyCell, sync::atomic::AtomicUsize};
+use std::{cell::LazyCell, marker::PhantomData, sync::atomic::AtomicUsize};
 
 use leptos::{
     attr::{
@@ -22,6 +22,12 @@ pub(crate) const ZWNJ: char = '\u{200C}';
 pub(crate) trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce());
+    fn request_idle_callback(
+        &self,
+        fallback: std::time::Duration,
+        max_wait: Option<std::time::Duration>,
+        action: impl 'static + FnOnce(),
+    );
 }
 
 impl ScopedTimeout for Owner {
@@ -36,6 +42,7 @@ impl ScopedTimeout for Owner {
             timeout,
         );
     }
+
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce()) {
         let owner = self.downgrade();
         request_animation_frame(move || {
@@ -43,6 +50,52 @@ impl ScopedTimeout for Owner {
                 owner.with(action);
             }
         });
+    }
+
+    fn request_idle_callback(
+        &self,
+        fallback: std::time::Duration,
+        max_wait: Option<std::time::Duration>,
+        action: impl 'static + FnOnce(),
+    ) {
+        let action = ArcRwSignal::new(Some(action));
+        let owner = self.downgrade();
+        let idle_timeout = request_idle_callback_with_handle({
+            let action = action.clone();
+            let owner = owner.clone();
+            move || {
+                let owner = owner.clone();
+                let mut action = action.write();
+                if let Some(inner) = action.take()
+                    && let Some(owner) = owner.upgrade()
+                {
+                    owner.with(inner);
+                }
+            }
+        });
+
+        if let Ok(idle_timeout) = idle_timeout {
+            if let Some(max_wait) = max_wait {
+                self.set_scoped_timeout(max_wait, move || {
+                    let mut action = action.write();
+                    idle_timeout.cancel();
+                    if let Some(inner) = action.take() {
+                        inner()
+                    } else {
+                        action.untrack()
+                    }
+                });
+            }
+        } else {
+            self.set_scoped_timeout(fallback, move || {
+                let mut action = action.write();
+                if let Some(inner) = action.take() {
+                    inner();
+                } else {
+                    action.untrack();
+                }
+            })
+        }
     }
 }
 
@@ -89,6 +142,22 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
             self.into_scoped_timeout();
         });
     }
+    pub(crate) fn into_scoped_animation_timeout(mut self) {
+        let Some(i) = self.it.next() else { return };
+        let Some(owner) = self.owner.upgrade() else {
+            logging::warn!("Lost iterator owner");
+            return;
+        };
+        let interval = self.interval;
+        owner.set_scoped_timeout(interval, move || {
+            if let Some(owner) = self.owner.upgrade() {
+                owner.request_scoped_animation_frame(move || {
+                    (self.action)(i);
+                    self.into_scoped_animation_timeout();
+                });
+            }
+        });
+    }
 }
 
 #[inline(always)]
@@ -99,7 +168,7 @@ where
     source.into()
 }
 
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 pub(crate) trait IntoIntervalIterator<F>
 where
     Self: Iterator + Sized,
@@ -111,14 +180,11 @@ where
 #[cfg_attr(feature = "ssr", allow(unused))]
 impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterator<F> for I {
     fn on_interval(self, interval: std::time::Duration, action: F) -> IntervalIterator<Self, F> {
-        let Some(owner) = Owner::current() else {
-            panic!("on_interval called without an owner");
-        };
         IntervalIterator {
             it: self,
             interval,
             action,
-            owner: owner.downgrade(),
+            owner: Owner::current().unwrap().downgrade(),
         }
     }
 }
@@ -134,7 +200,7 @@ pub(crate) fn ForRoute<X, R: Clone + Send + 'static + MatchNestedRoutes, F: Fn(X
 
 pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
     in_root: bool,
-    x: impl Fn() -> (T, R),
+    x: impl Fn() -> (T, Option<R>),
     f: impl Fn(T) -> R,
 ) -> R {
     let root_context = LazyCell::new(|| {
@@ -149,14 +215,64 @@ pub(crate) fn once_by_type<T: Clone + Send + Sync + 'static, R>(
     } else {
         let make_context = move || {
             let (context, r) = x();
-            provide_context(context);
-            r
+            if let Some(r) = r {
+                provide_context(context);
+                r
+            } else {
+                provide_context(context.clone());
+                f(context)
+            }
         };
         if in_root {
             root_context.with(make_context)
         } else {
             make_context()
         }
+    }
+}
+
+#[derive(Clone)]
+struct InterestedOwners<T>(RwSignal<Vec<WeakOwner>>, PhantomData<T>);
+impl<T: Clone + Sync + Send + 'static> InterestedOwners<T> {
+    fn singleton() -> RwSignal<Vec<WeakOwner>> {
+        once_by_type(
+            true,
+            || (Self(RwSignal::new(vec![]), PhantomData), None),
+            |InterestedOwners(owners, _)| owners,
+        )
+    }
+}
+pub(crate) fn has_interested_owners<T: Clone + Sync + Send + 'static>() -> Memo<bool> {
+    let owners = InterestedOwners::<T>::singleton();
+    Memo::new(move |_| {
+        owners.track();
+        let mut owners = owners.write();
+        let was_empty = owners.is_empty();
+        let living_owners = owners
+            .iter()
+            .filter_map(|o| o.upgrade())
+            .map(|x| x.downgrade());
+        *owners = living_owners.collect();
+        if owners.is_empty() == was_empty {
+            owners.untrack();
+        }
+        !owners.is_empty()
+    })
+}
+
+pub(crate) fn register_interested_owner<T: Clone + Sync + Send + 'static>() {
+    let owner = Owner::current().unwrap();
+    let interested = InterestedOwners::<T>::singleton();
+    let mut owners = interested.write();
+    if owners
+        .iter()
+        .find(|x| x.upgrade().as_ref() == Some(&owner))
+        .is_none()
+    {
+        if let Some(parent) = owner.parent() {
+            parent.with(|| Owner::on_cleanup(move || interested.notify()))
+        }
+        owners.push(owner.downgrade());
     }
 }
 
@@ -213,7 +329,7 @@ pub(crate) fn NoWasm(children: ChildrenFn) -> impl IntoView {
             };
             (
                 NoWasmScriptLoaded,
-                Some(view! { <script nonce=use_nonce()>{script}</script> }),
+                Some(Some(view! { <script nonce=use_nonce()>{script}</script> })),
             )
         },
         |_| None,
@@ -266,7 +382,7 @@ fn footnotes() -> FootnotesInner {
         true,
         || {
             let (active, visible) = (RwSignal::new(None), RwSignal::new(vec![]));
-            (FootnotesHolder((active, visible)), (active, visible))
+            (FootnotesHolder((active, visible)), Some((active, visible)))
         },
         |FootnotesHolder((active, visible))| (active, visible),
     )
@@ -282,7 +398,7 @@ fn abbrs() -> (ReadSignal<AbbrList>, WriteSignal<AbbrList>) {
         true,
         || {
             let (reader, writer) = signal::<Vec<(usize, ArcSignal<Oco<str>>)>>(vec![]);
-            (AllAbbrs(reader, writer), (reader, writer))
+            (AllAbbrs(reader, writer), Some((reader, writer)))
         },
         |AllAbbrs(reader, writer)| (reader, writer),
     )

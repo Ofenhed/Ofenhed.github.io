@@ -2,10 +2,11 @@ use std::borrow::Cow;
 
 use strum::{AsRefStr, EnumString, IntoStaticStr, VariantArray};
 
-use leptos::{attr::custom::custom_attribute, either::Either, prelude::*};
+use leptos::{attr::custom::custom_attribute, either::Either, ev, html, prelude::*};
 
 use crate::{
-    cookie_consent::request_third_party_cookies, helpers::img_def,
+    cookie_consent::{YoutubeConsent, request_third_party_cookies},
+    helpers::{has_interested_owners, img_def, once_by_type, register_interested_owner},
     local_storage::get_local_storage_value,
 };
 
@@ -115,7 +116,7 @@ mod downloader {
 }
 
 #[component]
-pub fn YouTube(
+pub(crate) fn YouTube(
     #[prop(into)] video: YoutubeVideo,
     #[prop(optional)] max_width: Option<&'static str>,
     #[prop(optional)] max_height: Option<&'static str>,
@@ -134,22 +135,25 @@ pub fn YouTube(
     }
 
     request_third_party_cookies();
-    let consent_mode = match get_local_storage_value::<YoutubeConsentType>() {
-        Ok(value) => value,
-        Err(_) => Signal::derive(|| None),
-    };
-    let consent_mode = move || consent_mode.get().unwrap_or_default();
+    let consent_mode =
+        get_local_storage_value::<YoutubeConsentType>().unwrap_or_else(|_| Signal::from(None));
     let ratio = Oco::<str>::Counted(format!("{}/{}", video.width, video.height).into());
     move || {
-        let regular_link = {
+        let do_show = show_youtube_consent_dialog();
+        let regular_link = || {
             let ratio = ratio.clone();
             let author_url = video
                 .author_url
                 .clone()
                 .filter(|x| x.starts_with("http://") || x.starts_with("https://"));
+            let show_consent = move |e: ev::MouseEvent| {
+                if consent_mode.get().is_none() {
+                    do_show(e)
+                }
+            };
             let author = video.author_name.clone().map(|author_name| {
                 view! {
-                    <a class:author href=author_url>
+                    <a class:author href=author_url >
                         {author_name}
                     </a>
                 }
@@ -165,12 +169,12 @@ pub fn YouTube(
                     style:max-height=max_height
                 >
                     <span class:meta>
-                        <a href=href.clone() class:no-shinies class:title>
+                        <a href=href.clone() class:no-shinies class:title=true on:click=show_consent.clone() >
                             {video.title.clone()}
                         </a>
                         {author}
                     </span>
-                    <a class:logo class:no-shinies href=href title="YouTube"></a>
+                    <a class:logo class:no-shinies href=href title="YouTube" on:click=show_consent></a>
                     <img
                         alt
                         class:thumbnail
@@ -180,10 +184,10 @@ pub fn YouTube(
                 </div>
             }
         };
-        let embed_src = match consent_mode() {
-            YoutubeConsentType::PlainLink => Either::Right(regular_link),
-            YoutubeConsentType::NoCookieDomain => Either::Left("-nocookie"),
-            YoutubeConsentType::RegularYoutube => Either::Left(""),
+        let embed_src = match consent_mode.get() {
+            Some(YoutubeConsentType::PlainLink) | None => Either::Right(regular_link()),
+            Some(YoutubeConsentType::NoCookieDomain) => Either::Left("-nocookie"),
+            Some(YoutubeConsentType::RegularYoutube) => Either::Left(""),
         };
         let ratio = ratio.clone();
         embed_src.map_left(move |url_suffix| {
@@ -201,5 +205,56 @@ pub fn YouTube(
             }
             .into_inner()
         })
+    }
+}
+
+#[derive(Clone)]
+struct YoutubeDialog(NodeRef<html::Dialog>);
+
+impl YoutubeDialog {
+    fn singleton() -> NodeRef<html::Dialog> {
+        once_by_type(true, || (Self(NodeRef::new()), None), |Self(node)| node)
+    }
+}
+
+fn show_youtube_consent_dialog() -> impl Clone + Fn(ev::MouseEvent) {
+    let node = YoutubeDialog::singleton();
+    register_interested_owner::<YoutubeConsentType>();
+    let saved_value = get_local_storage_value::<YoutubeConsentType>().unwrap_or(Signal::from(None));
+    move |event| {
+        if let Some(node) = node.get_untracked()
+            && node.show_modal().is_ok()
+            && saved_value.get_untracked().is_none()
+        {
+            event.prevent_default();
+            event.stop_propagation();
+        }
+    }
+}
+
+#[component]
+pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
+    let node = YoutubeDialog::singleton();
+    let wants_youtube = {
+        let has = has_interested_owners::<YoutubeConsentType>();
+        move || has.get()
+    };
+    let saved_value = get_local_storage_value::<YoutubeConsentType>().unwrap_or(Signal::from(None));
+    Effect::new(move |prev| {
+        let show = saved_value.get().is_none();
+        if prev != Some(show)
+            && let Some(node) = node.get()
+        {
+            node.close();
+        }
+        show
+    });
+    view! {
+        <Show when=wants_youtube>
+            <dialog node_ref=node>
+                <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
+                <YoutubeConsent />
+            </dialog>
+        </Show>
     }
 }

@@ -1,0 +1,29 @@
+body > dialog {
+  box-sizing: content-box;
+  border-radius: 2em;
+  width: clamp(80ex, min(120ex, 80vw), 100vw);
+  &[open] {
+    @keyframes show-dialog {
+      0% {
+        pointer-events: none;
+        filter: blur(1px);
+      }
+      99% {
+        pointer-events: none;
+        filter: blur(0px);
+      }
+      100% {
+        pointer-events: unset;
+        filter: none;
+      }
+    }
+    a, label {
+      animation-duration: 1s;
+      animation-name: show-dialog;
+    }
+  }
+
+  &::backdrop {
+    background: #000000a0;
+  }
+}
