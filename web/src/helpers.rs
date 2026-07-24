@@ -18,7 +18,7 @@ use leptos_router::{
 /// Can be used to block phone number detection for browsers that ignore the meta tag
 pub(crate) const ZWNJ: char = '\u{200C}';
 
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 pub(crate) trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce());
@@ -128,8 +128,9 @@ pub(crate) struct IntervalIterator<I, F> {
     owner: WeakOwner,
 }
 
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIterator<I, F> {
+    #[allow(dead_code)]
     pub(crate) fn into_scoped_timeout(mut self) {
         let Some(i) = self.it.next() else { return };
         let Some(owner) = self.owner.upgrade() else {

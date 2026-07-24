@@ -36,10 +36,13 @@ impl LazyRoute for ChatControl {
 
     fn view(_this: Self) -> AnyView {
         let osint = || view! { <Abbr title="Open Source Intelligence">"OSINT"</Abbr> }.into_inner();
-        #[cfg(not(feature = "client-side"))]
-        Effect::new(move |_| {
-            leptos::task::spawn_local_scoped(ChatControlReplyV::preload());
-        });
+        #[cfg(feature = "client-side")]
+        if let Some(owner) = Owner::current() {
+            use crate::helpers::ScopedTimeout as _;
+            owner.request_idle_callback(std::time::Duration::from_secs(2), None, || {
+                leptos::task::spawn_local_scoped(ChatControlReplyV::preload())
+            });
+        }
         view! {
             <fieldset>
                 <legend>Note</legend>
