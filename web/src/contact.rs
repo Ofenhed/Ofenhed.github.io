@@ -396,13 +396,13 @@ impl LazyRoute for Contact {
                 assert_eq!("target/qr", QR_ROOT_PATH);
                 let image = include_bytes!("../../target/qr/qrcode.png");
                 let content = STANDARD.encode(image);
-                Some(format!("data:image/png;base64,{content}"))
+                format!("data:image/png;base64,{content}")
             }}
             feature = "ssr" => {
-                Some("qrcode.png")
+                "qrcode.png"
             }
-            _ => {
-                None::<&'static str>
+            feature = "client-side" => {
+                "qrlogo.png"
             }
         };
 
