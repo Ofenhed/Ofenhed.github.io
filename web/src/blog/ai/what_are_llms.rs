@@ -239,10 +239,6 @@ impl LazyRoute for WhatAreLLMs {
                         </Footnote>"."
                     </li>
                     <li>
-                        "An "{llm}" is not "<em>"aware"</em>" that it's an "{ai}
-                        ". It's a programmed response which (despite it literally claiming the opposite) makes it feel more human."
-                    </li>
-                    <li>
                         "You "<i>"could"</i>" argue that "<q>"reasoning models"</q>" are "
                         <em>"reasoning"</em>
                         ", but it's really more about creating a separate context with a more predictable path in the massive branching tree that is "
