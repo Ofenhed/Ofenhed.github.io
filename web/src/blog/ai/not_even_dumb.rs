@@ -68,6 +68,7 @@ impl LazyRoute for NotEvenDumb {
                 <YouTube video=youtube!("m_shkDLGWEQ" (9:16)) />
             </div>
             <h2>"Vision issues"</h2>
+            "These will surprise literally nobody who understands how the technology works. Might also not surprise anyone else, I don’t know... but at least they’re entertaining."
             <div class:videos class:carousel-or-grid>
                 <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
                 <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
