@@ -87,9 +87,15 @@ jobs:
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
 
+    - name: Write contact card hash
+      run: |
+        cat >target/.new_contact_card <<<"$(sha256sum <<<"$contact_card" | awk '{ print $1 }')"
+      env:
+        contact_card: ${{ secrets.CONTACT_CARD }}
+
     - name: Compile file generator
       id: compile
-      if: ${{ !cancelled() && hashFiles('target/qr/qrcode.png') == '' }}
+      if: ${{ !cancelled() && !failure() && hashFiles('target/.new_contact_card') != hashFiles('target/qr/.contact_card') }}
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
@@ -97,6 +103,9 @@ jobs:
     - name: Generate initial files
       if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
       run: target/release/conditionraise
+
+    - name: Save successful contact card
+      run: mv target/.new_contact_card target/qr/.contact_card
 
     - name: Recompile targets
       id: recompile
