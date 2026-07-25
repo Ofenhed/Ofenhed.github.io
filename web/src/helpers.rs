@@ -1,4 +1,4 @@
-use std::{cell::LazyCell, marker::PhantomData, sync::atomic::AtomicUsize};
+use std::{cell::LazyCell, marker::PhantomData, mem::MaybeUninit, sync::atomic::AtomicUsize};
 
 use leptos::{
     attr::{
@@ -12,6 +12,7 @@ use leptos::{
 use leptos_router::{
     LazyRoute, MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
 };
+use wasm_bindgen::JsValue;
 
 /// Zero Width Non-Joiner
 ///
@@ -60,39 +61,74 @@ impl ScopedTimeout for Owner {
     ) {
         let action = ArcRwSignal::new(Some(action));
         let owner = self.downgrade();
-        let idle_timeout = request_idle_callback_with_handle({
-            let action = action.clone();
-            let owner = owner.clone();
-            move || {
-                let owner = owner.clone();
-                let mut action = action.write();
-                if let Some(inner) = action.take()
-                    && let Some(owner) = owner.upgrade()
-                {
-                    owner.with(inner);
+        #[derive(Clone)]
+        struct IdleCallback<T> {
+            action: ArcRwSignal<Option<T>>,
+            owner: WeakOwner,
+            callback_handle: ArcRwSignal<MaybeUninit<IdleCallbackHandle>>,
+            derived: Option<Signal<IdleCallbackHandle>>,
+        }
+        impl<T: 'static + FnOnce()> IdleCallback<T> {
+            fn request_idle_callback(mut self) -> Result<Signal<IdleCallbackHandle>, JsValue> {
+                let callback_handle = self.callback_handle.clone();
+                let mut saved_handle = callback_handle.write_untracked();
+                let repl = self
+                    .derived
+                    .get_or_insert_with(|| {
+                        let cb = self.callback_handle.clone();
+                        Signal::derive(move || unsafe { cb.get_untracked().assume_init_read() })
+                    })
+                    .clone();
+                let handle = request_idle_callback_with_handle({
+                    let this = ArcRwSignal::new(Some(self));
+                    move || {
+                        if let Some(cb) = this.write_untracked().take() {
+                            cb.callback()
+                        }
+                    }
+                })?;
+                saved_handle.write(handle);
+                drop(saved_handle);
+                Ok(repl)
+            }
+            fn callback(self) {
+                if let Some(owner) = self.owner.upgrade() {
+                    if let Some(context) = Owner::current_shared_context() {
+                        if context.during_hydration() {
+                            _ = self.request_idle_callback();
+                            return;
+                        }
+                    }
+                    let mut action = self.action.write_untracked();
+                    if let Some(inner) = action.take() {
+                        owner.with(inner);
+                    }
                 }
             }
-        });
+        }
+        let ic = IdleCallback {
+            action: action.clone(),
+            owner: owner.clone(),
+            callback_handle: ArcRwSignal::new(MaybeUninit::uninit()),
+            derived: None,
+        };
+        let idle_timeout = ic.request_idle_callback();
 
         if let Ok(idle_timeout) = idle_timeout {
             if let Some(max_wait) = max_wait {
                 self.set_scoped_timeout(max_wait, move || {
-                    let mut action = action.write();
-                    idle_timeout.cancel();
+                    let mut action = action.write_untracked();
+                    idle_timeout.get_untracked().cancel();
                     if let Some(inner) = action.take() {
                         inner()
-                    } else {
-                        action.untrack()
                     }
                 });
             }
         } else {
             self.set_scoped_timeout(fallback, move || {
-                let mut action = action.write();
+                let mut action = action.write_untracked();
                 if let Some(inner) = action.take() {
                     inner();
-                } else {
-                    action.untrack();
                 }
             })
         }
