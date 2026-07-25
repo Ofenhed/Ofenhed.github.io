@@ -42,10 +42,12 @@ div.contact {
       top: 0;
       left: 0;
       position: absolute;
-      pointer-events: none;
       canvas {
         top: 0;
         left: 0;
+        &:not(:first-child) {
+          pointer-events: none;
+        }
         &:nth-child(1) {
           position: relative;
           z-index: 1;
