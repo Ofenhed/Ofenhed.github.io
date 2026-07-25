@@ -1,4 +1,4 @@
-use leptos::{ev, html, prelude::*};
+use leptos::{html, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
 use crate::helpers::{NoScript, NoWasm, img_def, scoped_style};
@@ -263,6 +263,12 @@ impl LazyRoute for Contact {
                 }
             }
             set_show_canvas.set(None);
+            if let Some(static_qr) = static_qr.get_untracked()
+                && let Some(qr_parent) = static_qr.parent_node()
+            {
+                _ = qr_parent.remove_child(&static_qr);
+            }
+
             if let Some(setter) = use_context::<WriteSignal<PersistentQrLogo>>() {
                 set_scoped_timeout(
                     std::time::Duration::from_secs_f64(
