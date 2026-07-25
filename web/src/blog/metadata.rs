@@ -95,7 +95,7 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
 
 pub trait BlogEntryHandler {
     type Result;
-    fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result;
+    fn with_blog<B: BlogEntry>(&mut self) -> Self::Result;
 }
 
 #[derive(Clone, Copy)]
@@ -112,16 +112,17 @@ where
     }
 }
 
-pub fn with_blog_simple<T>(blog: impl BlogEntry) -> T
+pub fn with_blog_simple<BE: BlogEntry, T>() -> T
 where
     BlogEntryHandlerFor<T>: BlogEntryHandler<Result = T>,
 {
-    BlogEntryHandlerFor::<T>::new().with_blog(blog)
+    BlogEntryHandlerFor::<T>::new().with_blog::<BE>()
 }
 
 impl BlogEntryHandler for () {
     type Result = ();
-    fn with_blog<B: BlogEntry>(&mut self, _blog: B) -> Self::Result {}
+    #[inline(always)]
+    fn with_blog<B: BlogEntry>(&mut self) -> Self::Result {}
 }
 
 pub struct PreloadUids(pub Vec<u32>);
@@ -129,7 +130,7 @@ pub struct PreloadUids(pub Vec<u32>);
 impl BlogEntryHandler for PreloadUids {
     type Result = Option<Pin<Box<dyn Future<Output = ()>>>>;
 
-    fn with_blog<B: BlogEntry>(&mut self, _blog: B) -> Self::Result {
+    fn with_blog<B: BlogEntry>(&mut self) -> Self::Result {
         self.0
             .iter()
             .enumerate()

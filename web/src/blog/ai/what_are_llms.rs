@@ -35,6 +35,7 @@ impl LazyRoute for WhatAreLLMs {
 
     fn view(_this: Self) -> AnyView {
         idle_preload::<NotEvenDumb>();
+        let not_even_dumb_link = || blog_entry_href::<NotEvenDumb>();
         let ai = || {
             view! {
                 <Abbr no_expand=true title="Artificial Intelligence">
@@ -233,8 +234,7 @@ impl LazyRoute for WhatAreLLMs {
                         <Footnote id=Oco::Borrowed(
                             "not-even-dumb",
                         )>
-                            "I've collected "
-                            <a href=blog_entry_href(&NotEvenDumb.into())>"a couple of videos"</a>
+                            "I've collected " <a href=not_even_dumb_link>"a couple of videos"</a>
                             " to demonstrate what I mean by this, but I would recommend reading the rest of this clog post first."
                         </Footnote>"."
                     </li>

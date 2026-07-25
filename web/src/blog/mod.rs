@@ -33,15 +33,21 @@ use leptos_router::{
     path,
     static_routes::StaticRoute,
 };
-use std::{borrow::Cow, str::FromStr};
+use std::{borrow::Cow, marker::PhantomData, str::FromStr};
 use strum::{EnumString, IntoStaticStr, VariantArray};
 
 const ENTRIES_PER_PAGE: usize = 10;
 
-pub(crate) fn blog_entry_href(entry: &BlogEntryMeta) -> Oco<'static, str> {
-    let mut path = vec![PathSegment::Static(Cow::Borrowed("clog"))];
-    entry.generate_path(&mut path);
-    Oco::Owned(format!("{}#{}", format_path(path), to_title(entry.title)))
+impl BlogEntryMeta {
+    pub(crate) fn gen_href(&self) -> Oco<'static, str> {
+        let mut path = vec![PathSegment::Static(Cow::Borrowed("clog"))];
+        self.generate_path(&mut path);
+        Oco::Owned(format!("{}#{}", format_path(path), to_title(self.title)))
+    }
+}
+
+pub(crate) fn blog_entry_href<B: BlogEntry>() -> Oco<'static, str> {
+    BlogEntryMeta::for_entry::<B>().gen_href()
 }
 
 fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
@@ -65,14 +71,15 @@ fn current_url_with(f: impl Fn()) -> String {
     format_path(current_path_with(f)).into_owned()
 }
 
+#[inline(always)]
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
     let published = [
-        b.with_blog(ai::NotEvenDumb),
-        b.with_blog(ai::WhatAreLLMs),
-        b.with_blog(chat_control::ChatControl),
-        b.with_blog(emails::ChatControlReplyV),
-        b.with_blog(unremarkable::Unremarkable),
-        b.with_blog(why::WhyBlog),
+        b.with_blog::<ai::NotEvenDumb>(),
+        b.with_blog::<ai::WhatAreLLMs>(),
+        b.with_blog::<chat_control::ChatControl>(),
+        b.with_blog::<emails::ChatControlReplyV>(),
+        b.with_blog::<unremarkable::Unremarkable>(),
+        b.with_blog::<why::WhyBlog>(),
     ];
     let unpublished = {
         #[cfg(not(debug_assertions))]
@@ -98,8 +105,8 @@ where
 impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
     type Result = AnyNestedRoute;
 
-    fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
-        let metadata = with_blog_simple::<BlogEntryMeta>(blog.clone());
+    fn with_blog<B: BlogEntry>(&mut self) -> Self::Result {
+        let metadata = with_blog_simple::<B, BlogEntryMeta>();
         let b = Lazy::<B>::new();
         view! {
             <ParentRoute
@@ -107,7 +114,7 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
                 view=move || {
                     reset_footnote();
                     view! {
-                        <BlogHeading entry=blog.clone() />
+                        <BlogHeading<B> />
                         <Outlet />
                     }
                 }
@@ -431,13 +438,13 @@ pub struct BlogEntryMeta {
 impl BlogEntryHandler for BlogEntryHandlerFor<BlogEntryMeta> {
     type Result = BlogEntryMeta;
 
-    fn with_blog<B: BlogEntry>(&mut self, blog: B) -> Self::Result {
-        blog.into()
+    fn with_blog<B: BlogEntry>(&mut self) -> Self::Result {
+        BlogEntryMeta::for_entry::<B>()
     }
 }
 
-impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
-    fn from(_: T) -> Self {
+impl BlogEntryMeta {
+    pub(crate) const fn for_entry<T: BlogEntry>() -> Self {
         BlogEntryMeta {
             uid: T::UID,
             publish_date: T::PUBLISH_DATE,
@@ -453,9 +460,10 @@ impl<T: metadata::BlogEntry> From<T> for BlogEntryMeta {
 }
 
 #[component]
-pub(crate) fn BlogHeading<B: BlogEntry>(entry: B) -> impl IntoView {
+pub(crate) fn BlogHeading<B: BlogEntry>(
+    #[prop(optional)] _phantom: PhantomData<B>,
+) -> impl IntoView {
     use leptos_meta::Title;
-    _ = entry;
     use_head();
     let last_update = B::LAST_UPDATED.map(|x| {
         let mut date: Oco<'static, str> = Oco::Owned(x.date_naive().to_string());
@@ -619,7 +627,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li {..article_pinned(&entry)}>
                     <article {..lang(&entry)}>
-                        <A on:click=on_click href=blog_entry_href(&entry)>
+                        <A on:click=on_click href=entry.gen_href()>
                             {entry.title.to_owned()}
                         </A>
                         {info(&entry)}
