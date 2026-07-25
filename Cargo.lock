@@ -160,7 +160,7 @@ dependencies = [
 [[package]]
 name = "any_spawner"
 version = "0.3.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "futures",
  "thiserror 2.0.19",
@@ -1134,7 +1134,7 @@ dependencies = [
 [[package]]
 name = "const_str_slice_concat"
 version = "0.1.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 
 [[package]]
 name = "convert_case"
@@ -1590,7 +1590,7 @@ checksum = "91622ff5e7162018101f2fea40d6ebf4a78bbe5a49736a2020649edf9693679e"
 [[package]]
 name = "either_of"
 version = "0.1.9"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "paste",
  "pin-project-lite",
@@ -2497,11 +2497,11 @@ checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 [[package]]
 name = "hydration_context"
 version = "0.3.1"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "futures",
  "js-sys",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "pin-project-lite",
  "serde",
  "throw_error",
@@ -3064,7 +3064,7 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 [[package]]
 name = "leptos"
 version = "0.8.20"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "any_spawner",
  "base64",
@@ -3075,11 +3075,11 @@ dependencies = [
  "hydration_context",
  "leptos_config",
  "leptos_dom",
- "leptos_hot_reload 0.8.6 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "leptos_hot_reload 0.8.6 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "leptos_macro",
  "leptos_server",
  "oco_ref",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "paste",
  "rand 0.9.5",
  "reactive_graph",
@@ -3105,7 +3105,7 @@ dependencies = [
 [[package]]
 name = "leptos_axum"
 version = "0.8.10"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "any_spawner",
  "axum",
@@ -3116,7 +3116,7 @@ dependencies = [
  "leptos_macro",
  "leptos_meta",
  "leptos_router",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "server_fn",
  "tachys",
  "tokio",
@@ -3127,7 +3127,7 @@ dependencies = [
 [[package]]
 name = "leptos_config"
 version = "0.8.10"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "config",
  "serde",
@@ -3138,10 +3138,10 @@ dependencies = [
 [[package]]
 name = "leptos_dom"
 version = "0.8.8"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "js-sys",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "reactive_graph",
  "send_wrapper",
  "tachys",
@@ -3170,12 +3170,12 @@ dependencies = [
 [[package]]
 name = "leptos_hot_reload"
 version = "0.8.6"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "anyhow",
  "camino",
  "indexmap",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "proc-macro2",
  "quote",
  "rstml",
@@ -3187,7 +3187,7 @@ dependencies = [
 [[package]]
 name = "leptos_integration_utils"
 version = "0.8.8"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "futures",
  "hydration_context",
@@ -3201,7 +3201,7 @@ dependencies = [
 [[package]]
 name = "leptos_macro"
 version = "0.8.17"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "attribute-derive",
  "cfg-if",
@@ -3209,7 +3209,7 @@ dependencies = [
  "convert_case_extras",
  "html-escape",
  "itertools 0.14.0",
- "leptos_hot_reload 0.8.6 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "leptos_hot_reload 0.8.6 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "prettyplease",
  "proc-macro-error2",
  "proc-macro2",
@@ -3224,12 +3224,12 @@ dependencies = [
 [[package]]
 name = "leptos_meta"
 version = "0.8.6"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "futures",
  "indexmap",
  "leptos",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "send_wrapper",
  "wasm-bindgen",
  "web-sys",
@@ -3237,8 +3237,8 @@ dependencies = [
 
 [[package]]
 name = "leptos_router"
-version = "0.8.14"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+version = "0.8.15"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "any_spawner",
  "either_of",
@@ -3247,7 +3247,7 @@ dependencies = [
  "js-sys",
  "leptos",
  "leptos_router_macro",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "percent-encoding",
  "reactive_graph",
  "rustc_version",
@@ -3262,7 +3262,7 @@ dependencies = [
 [[package]]
 name = "leptos_router_macro"
 version = "0.8.6"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",
@@ -3273,14 +3273,14 @@ dependencies = [
 [[package]]
 name = "leptos_server"
 version = "0.8.7"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "any_spawner",
  "base64",
  "codee",
  "futures",
  "hydration_context",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "reactive_graph",
  "send_wrapper",
  "serde",
@@ -3715,7 +3715,7 @@ checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 [[package]]
 name = "next_tuple"
 version = "0.1.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 
 [[package]]
 name = "nix"
@@ -3884,7 +3884,7 @@ dependencies = [
 [[package]]
 name = "oco_ref"
 version = "0.2.1"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "serde",
  "thiserror 2.0.19",
@@ -4012,7 +4012,7 @@ checksum = "8c04f5d74368e4d0dfe06c45c8627c81bd7c317d52762d118fb9b3076f6420fd"
 [[package]]
 name = "or_poisoned"
 version = "0.1.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 
 [[package]]
 name = "ordered-float"
@@ -4799,7 +4799,7 @@ dependencies = [
 [[package]]
 name = "reactive_graph"
 version = "0.2.14"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "any_spawner",
  "async-lock",
@@ -4807,7 +4807,7 @@ dependencies = [
  "guardian",
  "hydration_context",
  "indexmap",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "paste",
  "pin-project-lite",
  "rustc-hash",
@@ -4822,12 +4822,12 @@ dependencies = [
 [[package]]
 name = "reactive_stores"
 version = "0.4.3"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "guardian",
  "indexmap",
  "itertools 0.14.0",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "paste",
  "reactive_graph",
  "reactive_stores_macro",
@@ -4838,7 +4838,7 @@ dependencies = [
 [[package]]
 name = "reactive_stores_macro"
 version = "0.4.3"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "convert_case 0.11.0",
  "proc-macro-error2",
@@ -5444,7 +5444,7 @@ dependencies = [
 [[package]]
 name = "server_fn"
 version = "0.8.13"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "axum",
  "base64",
@@ -5458,7 +5458,7 @@ dependencies = [
  "hyper",
  "inventory",
  "js-sys",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "pin-project-lite",
  "rkyv 0.8.17",
  "rustc_version",
@@ -5484,7 +5484,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro"
 version = "0.8.10"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "const_format",
  "convert_case 0.11.0",
@@ -5498,7 +5498,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro_default"
 version = "0.8.5"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "server_fn_macro",
  "syn 2.0.119",
@@ -6818,7 +6818,7 @@ dependencies = [
 [[package]]
 name = "tachys"
 version = "0.2.18"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "any_spawner",
  "async-trait",
@@ -6833,7 +6833,7 @@ dependencies = [
  "js-sys",
  "next_tuple",
  "oco_ref",
- "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=always-nonce)",
+ "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=nonce-bug)",
  "paste",
  "reactive_graph",
  "reactive_stores",
@@ -6982,7 +6982,7 @@ dependencies = [
 [[package]]
 name = "throw_error"
 version = "0.3.1"
-source = "git+https://github.com/Ofenhed/leptos?branch=always-nonce#39a437c54798067d160043976a6920200f7aceef"
+source = "git+https://github.com/Ofenhed/leptos?branch=nonce-bug#bb41e94105a8a6396591a99d9db228ea339c483a"
 dependencies = [
  "pin-project-lite",
 ]
