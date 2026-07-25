@@ -1,4 +1,4 @@
-use leptos::{html, prelude::*};
+use leptos::{ev, html, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
 use crate::helpers::{NoScript, NoWasm, img_def, scoped_style};
@@ -399,10 +399,22 @@ impl LazyRoute for Contact {
                 format!("data:image/png;base64,{content}")
             }}
             feature = "ssr" => {
-                "qrcode.png"
+                "/qrcode.png"
             }
             feature = "client-side" => {
-                "qrlogo.png"
+                None::<&str>
+            }
+            _ => unreachable!(),
+        };
+        Effect::new(move || {
+            if let Some(static_qr) = static_qr.get() {
+                static_qr.set_src("");
+            }
+        });
+
+        let on_context_menu = move |_: ev::MouseEvent| {
+            if let Some(static_qr) = static_qr.get_untracked() {
+                static_qr.set_src("/qrlogo.png");
             }
         };
 
@@ -417,7 +429,7 @@ impl LazyRoute for Contact {
                     style:margin="0 auto 1em auto"
                 >
                     <a download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
-                        <img alt="Contact Card QR" node_ref=static_qr src=original_qr_src />
+                        <img alt="Contact Card QR" node_ref=static_qr src=original_qr_src on:contextmenu=on_context_menu />
                         <NoScript>
                             <img alt class:fallback {..img_def()} src="qrlogo.png" />
                         </NoScript>

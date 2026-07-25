@@ -37,6 +37,7 @@ web-sys = { workspace = true, optional = true, features = [
     "CanvasRenderingContext2d",
     "Element",
     "HtmlCanvasElement",
+    "HtmlImageElement",
     "Location",
     "ScrollBehavior",
     "ScrollIntoViewOptions",
