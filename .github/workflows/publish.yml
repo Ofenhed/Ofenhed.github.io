@@ -89,6 +89,7 @@ jobs:
 
     - name: Write contact card hash
       run: |
+        mkdir -p target/qr
         cat >target/.new_contact_card <<<"$(sha256sum <<<"$contact_card" | awk '{ print $1 }')"
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
