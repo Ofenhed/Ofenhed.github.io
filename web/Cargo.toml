@@ -38,11 +38,12 @@ web-sys = { workspace = true, optional = true, features = [
     "Element",
     "HtmlCanvasElement",
     "Location",
-    "Storage",
-    "Window",
     "ScrollBehavior",
     "ScrollIntoViewOptions",
     "ScrollLogicalPosition",
+    "Storage",
+    "VisibilityState",
+    "Window",
 ] }
 
 [build-dependencies]

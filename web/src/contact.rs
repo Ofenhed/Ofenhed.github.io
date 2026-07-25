@@ -123,9 +123,9 @@ impl LazyRoute for Contact {
     }
 
     fn view(_this: Self) -> AnyView {
-        #[cfg_attr(feature = "ssr", allow(unused))]
+        #[cfg_attr(not(feature = "client-side"), expect(unused))]
         let (show_canvas, set_show_canvas) = signal(Some("none"));
-        #[cfg_attr(feature = "ssr", allow(unused))]
+        #[cfg_attr(not(feature = "client-side"), expect(unused))]
         let (vcard_href, set_vcard_href) = signal(None::<String>);
         let static_qr = NodeRef::<html::Img>::new();
         let canvas_ref = NodeRef::<html::Canvas>::new();
@@ -158,6 +158,7 @@ impl LazyRoute for Contact {
                 width: usize,
                 for_dark: Box<[Oco<'static, str>]>,
                 for_light: Box<[Oco<'static, str>]>,
+                is_visible: Signal<bool>,
                 canvas_context: web_sys::CanvasRenderingContext2d,
             }
             let Some(canvas) = canvas_ref.get() else {
@@ -204,6 +205,7 @@ impl LazyRoute for Contact {
                     for_dark: worm_for_dark,
                     for_light: worm_for_light,
                     canvas_context: context,
+                    is_visible: document_visible(),
                 }
             };
             let context = canvas
@@ -271,76 +273,75 @@ impl LazyRoute for Contact {
                     ),
                     move || {
                         setter.update_untracked(|x| x.logo_animated = true);
-                        if let Some(canvas) = canvas_ref.get_untracked()
-                            && let Some(static_qr) = static_qr.get_untracked()
-                            && let Ok(canvas_data) = canvas.to_data_url()
-                        {
-                            static_qr.set_src(&canvas_data);
-                        }
                     },
                 );
             }
             fn create_worm(state: WormsState) {
-                let worm_length = MIN_WORM_LENGTH
-                    + (Math::random() * (MAX_WORM_LENGTH - MIN_WORM_LENGTH) as f64) as usize;
-                let mut x = (Math::random() * state.width as f64) as isize;
-                let mut y = (Math::random() * state.width as f64) as isize;
-                let mut angle = Math::random() * Math::PI.with(|x| x * 2f64);
+                let is_visible = state.is_visible.get_untracked();
                 let mut worm_part_delay = 0f64;
-                let Some(owner) = Owner::current() else {
-                    return;
-                };
-                for _ in 0..worm_length {
-                    x = Math::round(
-                        x as f64
-                            + Math::random()
-                                * Math::max(Math::min(1f64, 2f64 * Math::cos(angle)), -1f64),
-                    ) as isize;
-                    y = Math::round(
-                        y as f64
-                            + Math::random()
-                                * Math::max(Math::min(1f64, 2f64 * Math::sin(angle)), -1f64),
-                    ) as isize;
-                    const HALF_ANGLE: f64 = WORM_MOVE_ANGLE / 2.0;
-                    angle = angle - HALF_ANGLE + Math::random() * WORM_MOVE_ANGLE;
-                    worm_part_delay += WORM_MOVE_INTERVAL;
-                    if std::cmp::min(x, y) < 0 || std::cmp::max(x, y) >= state.width as isize {
-                        continue;
-                    }
-
-                    let light = state.qr_code[x as usize][y as usize];
-
-                    let make_worm = if light {
-                        state.for_light.clone()
-                    } else {
-                        state.for_dark.clone()
+                if is_visible {
+                    let worm_length = MIN_WORM_LENGTH
+                        + (Math::random() * (MAX_WORM_LENGTH - MIN_WORM_LENGTH) as f64) as usize;
+                    let mut x = (Math::random() * state.width as f64) as isize;
+                    let mut y = (Math::random() * state.width as f64) as isize;
+                    let mut angle = Math::random() * Math::PI.with(|x| x * 2f64);
+                    let Some(owner) = Owner::current() else {
+                        return;
                     };
-                    let context = state.canvas_context.clone();
-                    owner.set_scoped_timeout(
-                        std::time::Duration::from_secs_f64(worm_part_delay),
-                        move || {
-                            make_worm
-                                .clone()
-                                .into_iter()
-                                .skip(1)
-                                .chain(make_worm.into_iter().rev().skip(1))
-                                .on_interval(
-                                    std::time::Duration::from_secs_f64(WORM_SHADE_INTERVAL),
-                                    move |shade| {
-                                        context.set_fill_style_str(&shade);
-                                        context.fill_rect(x as f64, y as f64, 1.0, 1.0);
-                                    },
-                                )
-                                .into_scoped_animation_timeout()
-                        },
-                    );
+                    for _ in 0..worm_length {
+                        x = Math::round(
+                            x as f64
+                                + Math::random()
+                                    * Math::max(Math::min(1f64, 2f64 * Math::cos(angle)), -1f64),
+                        ) as isize;
+                        y = Math::round(
+                            y as f64
+                                + Math::random()
+                                    * Math::max(Math::min(1f64, 2f64 * Math::sin(angle)), -1f64),
+                        ) as isize;
+                        const HALF_ANGLE: f64 = WORM_MOVE_ANGLE / 2.0;
+                        angle = angle - HALF_ANGLE + Math::random() * WORM_MOVE_ANGLE;
+                        worm_part_delay += WORM_MOVE_INTERVAL;
+                        if std::cmp::min(x, y) < 0 || std::cmp::max(x, y) >= state.width as isize {
+                            continue;
+                        }
+
+                        let light = state.qr_code[x as usize][y as usize];
+
+                        let make_worm = if light {
+                            state.for_light.clone()
+                        } else {
+                            state.for_dark.clone()
+                        };
+                        let context = state.canvas_context.clone();
+                        owner.set_scoped_timeout(
+                            std::time::Duration::from_secs_f64(worm_part_delay),
+                            move || {
+                                make_worm
+                                    .clone()
+                                    .into_iter()
+                                    .skip(1)
+                                    .chain(make_worm.into_iter().rev().skip(1))
+                                    .on_interval(
+                                        std::time::Duration::from_secs_f64(WORM_SHADE_INTERVAL),
+                                        move |shade| {
+                                            context.set_fill_style_str(&shade);
+                                            context.fill_rect(x as f64, y as f64, 1.0, 1.0);
+                                        },
+                                    )
+                                    .into_scoped_animation_timeout()
+                            },
+                        );
+                    }
                 }
                 set_scoped_timeout(
-                    std::time::Duration::from_secs_f64(
+                    std::time::Duration::from_secs_f64(if is_visible {
                         worm_part_delay
                             + MIN_WORM_INTERVAL
-                            + Math::random() * (MAX_WORM_INTERVAL - MIN_WORM_INTERVAL),
-                    ),
+                            + Math::random() * (MAX_WORM_INTERVAL - MIN_WORM_INTERVAL)
+                    } else {
+                        MAX_WORM_INTERVAL
+                    }),
                     || request_scoped_animation_frame(|| create_worm(state)),
                 );
             }

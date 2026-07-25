@@ -41,7 +41,7 @@ impl ScopedTimeout for Owner {
                 }
             },
             timeout,
-        );
+        )
     }
 
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce()) {
@@ -127,7 +127,7 @@ impl ScopedTimeout for Owner {
                 if let Some(inner) = action.take() {
                     inner();
                 }
-            })
+            });
         }
     }
 }
@@ -145,6 +145,38 @@ pub(crate) fn idle_preload<T: LazyRoute>() {
 #[inline(always)]
 pub(crate) fn scoped_style() -> CustomAttr<&'static str, bool> {
     custom_attribute("scoped", true)
+}
+
+#[cfg_attr(feature = "ssr", allow(unused))]
+pub(crate) fn document_visible() -> Signal<bool> {
+    #[derive(Clone)]
+    struct DocumentVisible(Signal<bool>);
+    once_by_type(
+        true,
+        cfg_select! {
+            feature = "client-side" => || {
+                use web_sys::VisibilityState;
+                let (signal, set_signal) = arc_signal(false);
+                window_event_listener(ev::visibilitychange, {
+                    let set_signal = set_signal.clone();
+                    move |_| {
+                    let mut setter = set_signal.write();
+                    let new = document().visibility_state() == VisibilityState::Visible;
+                    if new != *setter {
+                        *setter = new;
+                    } else {
+                        setter.untrack();
+                    }
+                }});
+                *set_signal.write() = document().visibility_state() == VisibilityState::Visible;
+                (DocumentVisible(signal.into()), None)
+            },
+            _ => || {
+                (DocumentVisible(Signal::derive(|| true)), None)
+            }
+        },
+        |DocumentVisible(signal)| signal,
+    )
 }
 
 #[cfg_attr(feature = "ssr", allow(unused))]
