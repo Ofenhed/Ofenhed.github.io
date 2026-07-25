@@ -158,7 +158,6 @@ impl LazyRoute for Contact {
                 width: usize,
                 for_dark: Box<[Oco<'static, str>]>,
                 for_light: Box<[Oco<'static, str>]>,
-                is_visible: Signal<bool>,
                 canvas_context: web_sys::CanvasRenderingContext2d,
             }
             let Some(canvas) = canvas_ref.get() else {
@@ -205,7 +204,6 @@ impl LazyRoute for Contact {
                     for_dark: worm_for_dark,
                     for_light: worm_for_light,
                     canvas_context: context,
-                    is_visible: document_visible(),
                 }
             };
             let context = canvas
@@ -276,18 +274,21 @@ impl LazyRoute for Contact {
                     },
                 );
             }
-            fn create_worm(state: WormsState) {
-                let is_visible = state.is_visible.get_untracked();
+            let (worm_timer, request_worm) = signal(());
+            let (worm_interval, trigger_worm_interval) = signal(());
+            let mut initial_worm_state = Some(state);
+            Effect::new(move |state: Option<WormsState>| {
+                worm_timer.track();
+                let Some(state) = state else {
+                    return initial_worm_state.take().unwrap();
+                };
                 let mut worm_part_delay = 0f64;
-                if is_visible {
-                    let worm_length = MIN_WORM_LENGTH
-                        + (Math::random() * (MAX_WORM_LENGTH - MIN_WORM_LENGTH) as f64) as usize;
-                    let mut x = (Math::random() * state.width as f64) as isize;
-                    let mut y = (Math::random() * state.width as f64) as isize;
-                    let mut angle = Math::random() * Math::PI.with(|x| x * 2f64);
-                    let Some(owner) = Owner::current() else {
-                        return;
-                    };
+                let worm_length = MIN_WORM_LENGTH
+                    + (Math::random() * (MAX_WORM_LENGTH - MIN_WORM_LENGTH) as f64) as usize;
+                let mut x = (Math::random() * state.width as f64) as isize;
+                let mut y = (Math::random() * state.width as f64) as isize;
+                let mut angle = Math::random() * Math::PI.with(|x| x * 2f64);
+                if let Some(owner) = Owner::current() {
                     for _ in 0..worm_length {
                         x = Math::round(
                             x as f64
@@ -335,23 +336,34 @@ impl LazyRoute for Contact {
                     }
                 }
                 set_scoped_timeout(
-                    std::time::Duration::from_secs_f64(if is_visible {
+                    std::time::Duration::from_secs_f64(
                         worm_part_delay
                             + MIN_WORM_INTERVAL
-                            + Math::random() * (MAX_WORM_INTERVAL - MIN_WORM_INTERVAL)
-                    } else {
-                        MAX_WORM_INTERVAL
-                    }),
-                    || request_scoped_animation_frame(|| create_worm(state)),
+                            + Math::random() * (MAX_WORM_INTERVAL - MIN_WORM_INTERVAL),
+                    ),
+                    move || trigger_worm_interval.notify(),
                 );
-            }
+                state
+            });
+            let (worm_allowed, set_worm_allowed) = signal(false);
+            let is_visible = document_visible();
+
+            Effect::new(move || {
+                if worm_allowed.get_untracked() && is_visible.get_untracked() {
+                    worm_interval.track();
+                    request_worm.notify();
+                } else {
+                    worm_allowed.track();
+                    is_visible.track();
+                }
+            });
             set_scoped_timeout(
                 std::time::Duration::from_secs_f64(
                     worm_delay
                         + MIN_WORM_INTERVAL
                         + Math::random() * (MAX_WORM_INTERVAL - MIN_WORM_INTERVAL),
                 ),
-                || {
+                move || {
                     set_scoped_timeout(
                         std::time::Duration::from_secs_f64(Math::random() * 5.0),
                         || {
@@ -371,7 +383,7 @@ impl LazyRoute for Contact {
                             }
                         },
                     );
-                    create_worm(state);
+                    set_worm_allowed.set(true);
                 },
             );
             use base64::{Engine as _, engine::general_purpose::STANDARD};

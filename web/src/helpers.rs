@@ -188,14 +188,6 @@ pub(crate) fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'sta
 }
 
 #[cfg_attr(feature = "ssr", allow(unused))]
-pub(crate) fn request_scoped_animation_frame(action: impl 'static + FnOnce()) {
-    let Some(owner) = Owner::current() else {
-        return;
-    };
-    owner.request_scoped_animation_frame(action)
-}
-
-#[cfg_attr(feature = "ssr", allow(unused))]
 pub(crate) struct IntervalIterator<I, F> {
     it: I,
     interval: std::time::Duration,
