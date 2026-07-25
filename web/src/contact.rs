@@ -345,7 +345,7 @@ impl LazyRoute for Contact {
                 );
                 state
             });
-            let (worm_allowed, set_worm_allowed) = signal(false);
+            let (worm_allowed, set_worm_allowed) = signal(!animate_logo);
             let is_visible = document_visible();
 
             Effect::new(move || {
