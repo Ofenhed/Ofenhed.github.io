@@ -72,13 +72,10 @@ impl ScopedTimeout for Owner {
             fn request_idle_callback(mut self) -> Result<Signal<IdleCallbackHandle>, JsValue> {
                 let callback_handle = self.callback_handle.clone();
                 let mut saved_handle = callback_handle.write_untracked();
-                let repl = self
-                    .derived
-                    .get_or_insert_with(|| {
-                        let cb = self.callback_handle.clone();
-                        Signal::derive(move || unsafe { cb.get_untracked().assume_init_read() })
-                    })
-                    .clone();
+                let repl = *self.derived.get_or_insert_with(|| {
+                    let cb = self.callback_handle.clone();
+                    Signal::derive(move || unsafe { cb.get_untracked().assume_init_read() })
+                });
                 let handle = request_idle_callback_with_handle({
                     let this = ArcRwSignal::new(Some(self));
                     move || {
@@ -93,11 +90,11 @@ impl ScopedTimeout for Owner {
             }
             fn callback(self) {
                 if let Some(owner) = self.owner.upgrade() {
-                    if let Some(context) = Owner::current_shared_context() {
-                        if context.during_hydration() {
-                            _ = self.request_idle_callback();
-                            return;
-                        }
+                    if let Some(context) = Owner::current_shared_context()
+                        && context.during_hydration()
+                    {
+                        _ = self.request_idle_callback();
+                        return;
                     }
                     let mut action = self.action.write_untracked();
                     if let Some(inner) = action.take() {
