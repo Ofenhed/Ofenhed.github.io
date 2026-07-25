@@ -9,7 +9,7 @@ proc-macro = true
 [dependencies]
 image.workspace = true
 qrcode = { workspace = true, features = ["image"] }
-qr = { path = "../qr" }
+qr.workspace = true
 quote.workspace = true
 syn = { workspace = true, features = ["parsing", "proc-macro"] }
 thiserror.workspace = true

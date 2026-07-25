@@ -4,24 +4,32 @@ resolver = "3"
 
 [workspace.dependencies]
 anyhow = "1.0"
-any_spawner = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
+any_spawner = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix" }
 axum = { version = "0.8.1", default-features = false }
 base64 = "0.22.1"
 chrono = { version = "0.4.44", default-features = false, features = ["std", "wasmbind", "alloc"] }
 cargo-leptos = "0.3.7"
+conditionraise.path = "./web"
 console_error_panic_hook = "0.1.7"
 console_log = "1.0"
 futures = { version = "0.3", default-features = false }
-hydration_context = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
+hydration_context = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix" }
 image = { version = "0.25", default-features = false, features = ["png"] }
-leptos = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug", default-features = false }
-leptos_axum = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
-leptos_integration_utils = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
-leptos_meta = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug", default-features = false }
-leptos_router = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug", default-features = false }
+js-macro.path = "./js-macro"
+leptos = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix", default-features = false }
+leptos_axum = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix" }
+leptos_integration_utils = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix" }
+leptos_meta = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix", default-features = false }
+leptos_static_files.path = "./leptos_static_files"
+leptos_router = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-fix", default-features = false }
 libc = "0.2"
 log = "0.4.22"
+oembed.path = "./oembed"
+oembed-macro.path = "./oembed-macro"
+oembed-type.path = "./oembed-type"
 proc-macro2 = "1.0.106"
+qr.path = "./qr"
+qr-macro.path = "./qr-macro"
 qrcode = { version = "0.14.1", default-features = false }
 quote = "1.0.45"
 reactive_graph = "0.2"

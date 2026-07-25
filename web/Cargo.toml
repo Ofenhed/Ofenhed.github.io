@@ -17,16 +17,16 @@ console_log.workspace = true
 chrono.workspace = true
 futures = { workspace = true, features = ["alloc"] }
 image = { workspace = true, optional = true }
-js-macro = { path = "../js-macro" }
+js-macro.workspace = true
 leptos = { workspace = true, features = ["rkyv"] }
 leptos_axum = { workspace = true, optional = true }
 leptos_meta.workspace = true
 leptos_router.workspace = true
-leptos_static_files = { path = "../leptos_static_files", optional = true }
+leptos_static_files = { workspace = true, optional = true }
 log.workspace = true
-oembed = { path = "../oembed", features = ["macro"] }
-qr = { path = "../qr" }
-qr-macro = { path = "../qr-macro" }
+oembed = { workspace = true, features = ["macro"] }
+qr.workspace = true
+qr-macro.workspace = true
 reqwest = { workspace = true, optional = true, features = ["stream"] }
 strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true

@@ -6,8 +6,8 @@ edition = "2024"
 [lib]
 
 [dependencies]
-oembed-macro = { path = "../oembed-macro", optional = true }
-oembed-type.path = "../oembed-type"
+oembed-macro = { workspace = true, optional = true }
+oembed-type.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true

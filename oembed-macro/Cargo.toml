@@ -9,7 +9,7 @@ proc-macro = true
 [dependencies]
 image.workspace = true
 libc.workspace = true
-oembed-type = { path = "../oembed-type", features = ["serde"] }
+oembed-type = { workspace = true, features = ["serde"] }
 proc-macro2.workspace = true
 quote.workspace = true
 sha2.workspace = true
