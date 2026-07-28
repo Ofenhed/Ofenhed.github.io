@@ -80,7 +80,7 @@ ul#blog-entries {
       display: inline-block;
       margin: 0.5ex 1ex;
       text-decoration: none;
-      color: light-dark(#000, #fff);
+      color: var(--font-color);
       &[aria-current] {
         opacity: 0.5;
       }

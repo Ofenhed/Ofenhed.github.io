@@ -9,6 +9,7 @@
 @use 'quoting.scss';
 @use 'dialog.scss';
 @use 'boxxy.scss';
+@use 'highlighter.scss';
 
 nav {
   a {
@@ -32,12 +33,20 @@ nav {
 body {
   display: grid;
   margin: 0px;
+  color: var(--font-color);
   grid-template-columns: [menu-start] 0px [menu-end main-start footer-start] 0px 100% 0px [footer-end main-end];
   &:has(> footer) {
     grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] min-content [footer-end menu-end];
   }
   &:not(:has(> footer)) {
     grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] 0 [footer-end menu-end];
+  }
+  mark {
+    @include highlighter.base;
+    @include highlighter.marker-color(#ffff00);
+    @at-root .pink-marker mark, &.pink {
+      @include highlighter.marker-color(#ff00bb, #900020);
+    }
   }
   time {
     white-space: nowrap;
@@ -245,11 +254,11 @@ body {
     display: inline;
     grid-template-columns: 0px 0px [main-start] auto [main-end] 0px !important;
     grid-template-rows: 0px [main-start] max-content [main-end] 0px !important;
+
     nav { display: none };
     main {
       border-radius: 0 !important;
       background: #fff !important;
-      color: #000;
       details {
         padding: 0.5em;
         summary {

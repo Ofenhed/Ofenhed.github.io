@@ -1,0 +1,34 @@
+@use 'root.scss';
+@use 'sass:color';
+@use 'sass:math';
+
+@mixin base {
+  margin: 0 -0.4em;
+  padding: 0.1em 0.4em;
+  border-radius: 0.8em 0.3em;
+  &:nth-child(3n + 1) {
+    border-radius: 0.4em 0.7em;
+  }
+  &:nth-child(3n + 2) {
+    border-radius: 0.6em 0.3em 0.9em 10%;
+  }
+  background: transparent;
+  box-decoration-break: clone;
+  print-color-adjust: exact !important;
+  @media not print {
+    color: var(--font-color);
+  }
+}
+
+@mixin marker-color($color, $dark-color: null) {
+  $color: color.adjust($color, $alpha: 1);
+  @if ($dark-color == null) {
+    $dark-color: color.adjust($color, $lightness: -30%);
+  }
+  @media not print {
+      background-image: linear-gradient(to right, light-dark(color.adjust($color, $alpha: -0.9), color.adjust($dark-color, $alpha: -0.9)), light-dark(color.adjust($color, $alpha: -0.3), color.adjust($dark-color, $alpha: -0.3)) 4%, light-dark(color.adjust($color, $alpha: -0.7), color.adjust($dark-color, $alpha: -0.7)));
+  }
+  @media print {
+      background-image: linear-gradient(to right, color.adjust($color, $alpha: -0.9), color.adjust($color, $alpha: -0.3) 4%, color.adjust($color, $alpha: -0.7));
+  }
+}
