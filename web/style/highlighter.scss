@@ -3,7 +3,7 @@
 @use 'sass:math';
 
 @mixin base {
-  margin: 0 -0.4em;
+  margin: -0.1em -0.4em;
   padding: 0.1em 0.4em;
   border-radius: 0.8em 0.3em;
   &:nth-child(3n + 1) {
