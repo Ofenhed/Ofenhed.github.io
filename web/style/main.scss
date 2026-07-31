@@ -35,6 +35,10 @@ body {
   margin: 0px;
   color: var(--font-color);
   grid-template-columns: [menu-start] 0px [menu-end main-start footer-start] 0px 100% 0px [footer-end main-end];
+  interpolate-size: allow-keywords;
+  > * {
+    interpolate-size: unset;
+  }
   &:has(> footer) {
     grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] min-content [footer-end menu-end];
   }
