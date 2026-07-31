@@ -18,10 +18,7 @@ pub enum Tag {
 
 impl Tag {
     pub const fn listed(self) -> bool {
-        match self {
-            Tag::Review => false,
-            _ => true,
-        }
+        !matches!(self, Tag::Review)
     }
 }
 

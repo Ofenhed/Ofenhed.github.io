@@ -14,7 +14,7 @@ use crate::{
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
-    helpers::{Footnotes, img_def},
+    helpers::{Footnotes, idle_preload, img_def},
     local_storage::provide_local_storage_context,
     third_party::ThirdPartyConsentDialogs,
 };
@@ -185,6 +185,7 @@ pub(crate) fn App() -> impl IntoView {
     let cookie_consent = Lazy::<CookieConsent>::new();
     let build_info = Lazy::<BuildInfo>::new();
     let should_show_cookie_consent_link = should_show_cookie_consent_link();
+    idle_preload::<Contact>();
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />

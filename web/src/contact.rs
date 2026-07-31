@@ -410,7 +410,7 @@ impl LazyRoute for Contact {
             feature = "client-side" => {
                 None::<&str>
             }
-            _ => unreachable!(),
+            _ => (),
         };
 
         view! {

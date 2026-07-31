@@ -147,7 +147,7 @@ pub(crate) fn scoped_style() -> CustomAttr<&'static str, bool> {
     custom_attribute("scoped", true)
 }
 
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), expect(unused))]
 pub(crate) fn document_visible() -> Signal<bool> {
     #[derive(Clone)]
     struct DocumentVisible(Signal<bool>);
@@ -179,7 +179,7 @@ pub(crate) fn document_visible() -> Signal<bool> {
     )
 }
 
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), expect(unused))]
 pub(crate) fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'static + FnOnce()) {
     let Some(owner) = Owner::current() else {
         return;
