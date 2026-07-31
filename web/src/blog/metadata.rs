@@ -16,6 +16,15 @@ pub enum Tag {
     Keyboards,
 }
 
+impl Tag {
+    pub const fn listed(self) -> bool {
+        match self {
+            Tag::Review => false,
+            _ => true,
+        }
+    }
+}
+
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, IntoStaticStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]

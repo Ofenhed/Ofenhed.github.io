@@ -345,7 +345,7 @@ impl LazyRoute for BlogListing {
                         if let Some(TagFilter(filter)) = tags {
                             x.tags.contains(&filter)
                         } else {
-                            true
+                            x.tags.iter().find(|x| !x.listed()).is_none()
                         }
                     })
                     .cloned()
