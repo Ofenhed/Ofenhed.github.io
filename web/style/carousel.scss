@@ -5,7 +5,7 @@
   align-items: center;
   display: block flex;
   flex-flow: row nowrap;
-  height: 95vh;
+  max-height: calc(100vh - 1em);
   justify-content: space-around;
   overflow-x: auto;
   overflow-y: hidden;
@@ -22,7 +22,7 @@
     flex-flow: row wrap !important;
     overflow: hidden !important;
     max-width: 100% !important;
-    height: unset !important;
+    max-height: unset !important;
     & > * {
       break-inside: avoid;
     }
@@ -41,7 +41,7 @@ div.carousel-or-grid {
     @include carousel;
     overflow: unset;
     flex-flow: row wrap;
-    height: unset;
+    max-height: unset;
     @supports (flex-wrap: balance) {
       flex-wrap: balance
     }
