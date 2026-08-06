@@ -653,6 +653,7 @@ pub(crate) fn Footnote(
                 id=footnote_source.clone()
                 aria-describedby=footnote_name.clone()
                 aria-current=move || is_current(footnote_source.clone())
+                aria-label="Jump to footnote"
                 class="footnote-link"
                 href=move || format!("#{}", footnote_name())
             />
