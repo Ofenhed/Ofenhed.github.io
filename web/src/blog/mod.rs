@@ -114,8 +114,10 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
                 view=move || {
                     reset_footnote();
                     view! {
-                        <BlogHeading<B> />
-                        <Outlet />
+                        <article>
+                            <BlogHeading<B> />
+                            <Outlet />
+                        </article>
                     }
                 }
                 ssr=SsrMode::OutOfOrder
@@ -501,7 +503,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
                 view! { <Meta property="og:article:tag" content=into_static_str(tag) /> }
             }
         />
-        <h1 id="pageHeader">{B::TITLE}</h1>
+        <h1>{B::TITLE}</h1>
         <section class="article-info">{publish}" "{last_update}</section>
     }
 }
