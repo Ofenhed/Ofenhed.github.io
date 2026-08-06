@@ -57,31 +57,30 @@ pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
         use_context().ok_or(LocalStorageError::NoContextProvided)?;
     let (read, write) = signal(None);
     cfg_select! {
-        feature = "client-side" =>
-    {
-        let storage = local_storage()?;
-        Effect::new(move || {
-            reader.track();
-            if let Some(value) = storage
-                .get_item(crate::helpers::into_static_str(T::KEY))
-                .expect("This should always work if we get this far")
-                .and_then(|x|
-                    <T::Data as FromStr>::from_str(x.as_str())
-                        .inspect_err(|_| leptos::logging::error!("Could not parse {x}"))
-                        .ok()
-                )
-            {
-                write.set(Some(value));
-            } else {
-                let mut w = write.write();
-                if w.is_some() {
-                    *w = None;
+        feature = "client-side" => {
+            let storage = local_storage()?;
+            Effect::new(move || {
+                reader.track();
+                if let Some(value) = storage
+                    .get_item(crate::helpers::into_static_str(T::KEY))
+                    .expect("This should always work if we get this far")
+                    .and_then(|x| {
+                        <T::Data as FromStr>::from_str(x.as_str())
+                            .inspect_err(|_| leptos::logging::error!("Could not parse {x}"))
+                            .ok()
+                    })
+                {
+                    write.set(Some(value));
                 } else {
-                    w.untrack();
+                    let mut w = write.write();
+                    if w.is_some() {
+                        *w = None;
+                    } else {
+                        w.untrack();
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
         _ => {
             _ = (reader, write, LocalStorageError::NoContextProvided);
         }
@@ -93,16 +92,15 @@ pub(crate) fn set_local_storage_value<T: LocalStorageAccessor>(
     value: T::Data,
 ) -> Result<(), LocalStorageError> {
     cfg_select! {
-        feature = "client-side" =>
-    {
-        let storage = local_storage()?;
-        let LocalStorageChanged(_, writer) =
-            use_context().ok_or(LocalStorageError::NoContextProvided)?;
-        storage
-            .set_item(crate::helpers::into_static_str(T::KEY), &value.to_string())
-            .map_err(|_| LocalStorageError::SaveFailed)?;
-        writer.notify();
-    }
+        feature = "client-side" => {
+            let storage = local_storage()?;
+            let LocalStorageChanged(_, writer) =
+                use_context().ok_or(LocalStorageError::NoContextProvided)?;
+            storage
+                .set_item(crate::helpers::into_static_str(T::KEY), &value.to_string())
+                .map_err(|_| LocalStorageError::SaveFailed)?;
+            writer.notify();
+        }
         _ => {
             _ = (value, T::KEY, LocalStorageError::SaveFailed);
         }

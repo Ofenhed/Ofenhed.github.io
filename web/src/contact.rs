@@ -397,19 +397,15 @@ impl LazyRoute for Contact {
             set_vcard_href.set(Some(format!("data:text/vcard;base64,{content}")));
         });
         let original_qr_src = cfg_select! {
-            feature = "static-qr" => {{
+            feature = "static-qr" => {
                 use base64::{Engine as _, engine::general_purpose::STANDARD};
                 assert_eq!("target/qr", QR_ROOT_PATH);
                 let image = include_bytes!("../../target/qr/qrcode.png");
                 let content = STANDARD.encode(image);
                 format!("data:image/png;base64,{content}")
-            }}
-            feature = "ssr" => {
-                "/qrcode.png"
             }
-            feature = "client-side" => {
-                None::<&str>
-            }
+            feature = "ssr" => "/qrcode.png",
+            feature = "client-side" => None::<&str>,
             _ => (),
         };
 

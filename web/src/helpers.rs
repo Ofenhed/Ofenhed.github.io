@@ -160,20 +160,19 @@ pub(crate) fn document_visible() -> Signal<bool> {
                 window_event_listener(ev::visibilitychange, {
                     let set_signal = set_signal.clone();
                     move |_| {
-                    let mut setter = set_signal.write();
-                    let new = document().visibility_state() == VisibilityState::Visible;
-                    if new != *setter {
-                        *setter = new;
-                    } else {
-                        setter.untrack();
+                        let mut setter = set_signal.write();
+                        let new = document().visibility_state() == VisibilityState::Visible;
+                        if new != *setter {
+                            *setter = new;
+                        } else {
+                            setter.untrack();
+                        }
                     }
-                }});
+                });
                 *set_signal.write() = document().visibility_state() == VisibilityState::Visible;
                 (DocumentVisible(signal.into()), None)
             },
-            _ => || {
-                (DocumentVisible(Signal::derive(|| true)), None)
-            }
+            _ => || (DocumentVisible(Signal::derive(|| true)), None),
         },
         |DocumentVisible(signal)| signal,
     )
