@@ -78,7 +78,8 @@ impl LazyRoute for BuildInfo {
         ) {
             Some(view! {
                 <a href=format!("{url}/{repo}/actions/runs/{run_id}")>
-                    <img {..img_def()}
+                    <img
+                        {..img_def()}
                         src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
                     />
                 </a>
