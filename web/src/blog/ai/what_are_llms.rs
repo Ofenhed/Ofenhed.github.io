@@ -4,7 +4,7 @@ use crate::{
         blog_entry_href,
         metadata::{BlogEntry, Locale, Tag, date},
     },
-    helpers::{Abbr, Footnote, Url, idle_preload, scoped_style},
+    helpers::{Abbr, Footnote, Url, idle_preload},
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
@@ -65,12 +65,6 @@ impl LazyRoute for WhatAreLLMs {
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
-            <style {..scoped_style()} nonce=use_nonce media="screen,print and (color)">
-                "ul.lies em {background:#ff000040;padding:0.5ex;margin:-0.5ex;font-style:normal;display:inline-block;transform: skew(-5deg);print-color-adjust:exact !important}"
-            </style>
-            <style {..scoped_style()} nonce=use_nonce media="print and not (color)">
-                "a {color:#fff}ul.lies em {color:#fff;background:#000}"
-            </style>
             <section>
                 "When we talk about "{ai}" today, we pretty much talk about "{llms}
                 ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
