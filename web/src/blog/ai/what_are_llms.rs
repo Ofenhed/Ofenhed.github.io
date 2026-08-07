@@ -107,7 +107,7 @@ impl LazyRoute for WhatAreLLMs {
 
             <h2>"Where does the intelligence come from?"</h2>
             "I have identified the following sources:"
-            <ul class:has-header=true>
+            <ul>
                 <li>
                     <b>"Volume"</b>
                     ": Pretty much all text humanity has ever written has been used to optimize these models. Your query may not be as unique as you think."

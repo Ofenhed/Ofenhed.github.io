@@ -274,7 +274,7 @@ body {
     section, main li {
       break-inside: avoid;
     }
-    ul.has-header {
+    ul {
       break-before: avoid;
     }
     a:not(.just-url) {
