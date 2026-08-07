@@ -261,7 +261,8 @@ jobs:
         git stash
         git checkout -B "$gh_action_fmt_branch" "${{ github.ref_name }}"
         git stash pop
-        git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
+        git add --all
+        git commit -m "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         echo "Pushing to branch $gh_action_fmt_branch"
         git push origin "$gh_action_fmt_branch"
         git checkout "${{ github.ref_name }}"
