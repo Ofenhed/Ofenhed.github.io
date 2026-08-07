@@ -231,12 +231,6 @@ jobs:
       id: setup-completed
       run: mkdir -p target/qr && touch target/qr/qrcode.png
 
-    - name: Clippy analysis
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
-      run: cargo clippy --no-deps --release --all-features -- -Dwarnings
-      env:
-        contact_card: "No call me, clippy"
-
     - name: Verify unmodified source directory
       id: source-unmodified
       run: git diff-index --quiet HEAD
@@ -266,6 +260,12 @@ jobs:
         git commit -am "Automatic formatting by automation $GITHUB_RUN_NUMBER"
         git push origin "$gh_action_fmt_branch"
         git checkout ${{ github.ref_name }}
+
+    - name: Clippy analysis
+      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+      run: cargo clippy --no-deps --release --all-features -- -Dwarnings
+      env:
+        contact_card: "No call me, clippy"
 
     - name: Download wasm binary
       uses: actions/download-artifact@v8
