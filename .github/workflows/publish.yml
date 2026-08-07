@@ -269,6 +269,8 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
         ref_name: ${{ github.ref_name }}
+      permissions:
+        contents: write
 
     #- name: Create pull request if it doesn't exist
     #  if: ${{ steps.push-formatting.outcome == 'success' && !cancelled() }}
