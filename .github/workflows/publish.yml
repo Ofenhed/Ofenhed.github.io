@@ -342,21 +342,11 @@ jobs:
         git config --local user.name "Automatic formatting"
         git checkout -B "$gh_action_fmt_branch" "$gh_ref"
         git apply --allow-empty "$patch_path"
-        pr_args=( --base "$gh_ref" --head "$gh_action_fmt_branch" )
-        title="Automatic formatting by automation #$GITHUB_RUN_NUMBER"
-        open_pr=$(gh pr list "${pr_args[@]}" --limit 1 --json number --jq '.[].number')
-        if git commit -am "$title"; then
+        if git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"; then
           echo "Pushing to branch $gh_action_fmt_branch"
           git push --force origin "$gh_action_fmt_branch"
-          if [ -z "$open_pr" ]; then
-            gh pr create "${pr_args[@]}" --title "$title" --body "Created by Github action"
-          else
-            gh pr edit "$(($open_pr))" --title "$title"
-          fi
         else
-          if [ ! -z "$open_pr" ]; then
-            gh pr close "$(($open_pr))" --comment "I guess I'm not needed." --delete-branch
-          fi
+          git push -d origin "$gh_action_fmt_branch" || true
         fi
       env:
         patch_path: ${{ runner.temp }}/formatting/format.patch
