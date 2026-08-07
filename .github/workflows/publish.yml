@@ -258,8 +258,9 @@ jobs:
         set -e
         git config --local user.email ""
         git config --local user.name "Automatic formatting"
+        git stash
         git checkout -B "$gh_action_fmt_branch" "${{ github.ref_name }}"
-        git reset --hard "${{ github.ref_name }}"
+        git stash pop
         git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         echo "Pushing to branch $gh_action_fmt_branch"
         git push origin "$gh_action_fmt_branch"
