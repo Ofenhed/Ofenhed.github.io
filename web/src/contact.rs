@@ -424,10 +424,24 @@ impl LazyRoute for Contact {
                     <a download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
                         <img alt="Contact Card QR" node_ref=static_qr src=original_qr_src />
                         <NoScript>
-                            <img alt {..img_def()} fetchpriority="low" class:fallback=true decoding="async" src="qrlogo.png" />
+                            <img
+                                alt
+                                {..img_def()}
+                                fetchpriority="low"
+                                class:fallback=true
+                                decoding="async"
+                                src="qrlogo.png"
+                            />
                         </NoScript>
                         <NoWasm>
-                            <img alt {..img_def()} fetchpriority="low" class:fallback=true decoding="async" src="qrlogo.png" />
+                            <img
+                                alt
+                                {..img_def()}
+                                fetchpriority="low"
+                                class:fallback=true
+                                decoding="async"
+                                src="qrlogo.png"
+                            />
                         </NoWasm>
                         <div id="canvasHolder" style:display=show_canvas>
                             <canvas node_ref=canvas_ref width=width height=height />
