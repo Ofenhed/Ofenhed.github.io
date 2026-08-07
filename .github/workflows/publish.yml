@@ -20,6 +20,7 @@ env:
   CARGO_TERM_COLOR: always
   cargo_leptos_version: ./.cargo-leptos-version
   rust_version: ./.rust-version
+  gh_action_fmt_branch: github-actions-automatic-formatting
   LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
 jobs:
@@ -236,13 +237,35 @@ jobs:
       env:
         contact_card: "No call me, clippy"
 
-    - name: Rust formatting
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
-      run: cargo fmt --check --all
+    - name: Verify unmodified source directory
+      id: source-unmodified
+      run: git diff-index --quiet HEAD
 
     - name: Leptos view formatting
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
-      run: leptosfmt --check web/
+      run: leptosfmt web/
+
+    - name: Rust formatting
+      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+      run: cargo fmt --all
+
+    - name: Formatting result
+      id: invalid-formatting
+      run: |
+        git diff-index --quiet HEAD || (git diff && false)
+
+    - name: Push to automatic formatting branch
+      if: ${{ steps.source-unmodified.outcome == 'success' && steps.invalid-formatting.outcome == 'failure' && !cancelled() }}
+      run: |
+        git push -d "$gh_action_fmt_branch" "$gh_action_fmt_branch"
+        git branch -D "$gh_action_fmt_branch"
+        set +e
+        git config --local user.email ""
+        git config --local user.name "Automatic formatting"
+        git checkout -b "$gh_action_fmt_branch"
+        git commit -am "Automatic formatting by automation $GITHUB_RUN_NUMBER"
+        git push origin "$gh_action_fmt_branch"
+        git checkout ${{ github.ref_name }}
 
     - name: Download wasm binary
       uses: actions/download-artifact@v8
