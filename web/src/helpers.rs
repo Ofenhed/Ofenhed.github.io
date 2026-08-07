@@ -436,7 +436,7 @@ pub(crate) fn img_def() -> (Attr<Loading, &'static str>,) {
 pub(crate) enum BoxType {
     Info,
     ExtraInfo,
-    Note,
+    Context,
     Thought,
 }
 

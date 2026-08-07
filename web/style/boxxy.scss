@@ -1,5 +1,13 @@
 @use 'sass:map';
 
+$box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F50E"),
+             extra-info: (light: #ffffcc, dark: #333300, icon: "\1F4CB"),
+             thought: (light: #ffffcc, dark: #333300, icon: "\1F4AD"),
+             //warning: (light: #ffcccc, dark: #330000, icon: "\26A0"),
+             //weird-fact: (light: #ffcccc, dark: #330000, icon: "\2049"),
+             context: (light: #eeeeee, dark: #111111, icon: "\1FADF"),
+            );
+
 details, *[data-box-type] {
   border: 1px solid #aaaaaa;
   border-radius: 5mm;
@@ -58,10 +66,6 @@ details, *[data-box-type] {
         filter: brightness(90%);
     }
   }
-  $box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F50E"),
-               extra-info: (light: #ffffcc, dark: #333300, icon: "\1F4CB"),
-               thought: (light: #ffffcc, dark: #333300, icon: "\1F4AD")
-              );
   @each $box-type, $data in $box-types {
     &[data-box-type="#{$box-type}"] {
       background: light-dark(map.get($data, 'light'), map.get($data, 'dark'));
