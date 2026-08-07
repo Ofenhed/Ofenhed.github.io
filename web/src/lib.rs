@@ -82,6 +82,7 @@ pub fn hydrate() {
                             )
                             .is_ok()
                         {
+                            // Doing nothing if we can set the variable
                         } else if hash != RELOAD_KEYWORD {
                             _ = location.set_hash(RELOAD_KEYWORD);
                         }
