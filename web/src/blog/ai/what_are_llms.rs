@@ -70,18 +70,17 @@ impl LazyRoute for WhatAreLLMs {
 
             "To be able to understand what an "{llm}
             " is, we'll take a detour to compression algorithms. "
-            <details class:extra-info=true>
-                <summary>
-                    "There are two categories of compression: lossless compression and lossy compression."
-                </summary>
-                <b>"Lossless compression"</b>
-                " means that you will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."
-                <br />
-                <b>"Lossy compression"</b>
-                " means that you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
-                {jpeg}
-                " images sometimes being blocky."
-            </details>
+            <div class:box=true class:extra-info=true>
+                "There are two categories of compression: lossless compression and lossy compression."
+                <dl>
+                    <dt>"Lossless compression"</dt>
+                    <dd>"This will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."</dd>
+                    <dt>"Lossy compression"</dt>
+                    <dd>"In this case you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
+                    {jpeg}
+                    " images sometimes being blocky."</dd>
+                </dl>
+            </div>
             "Historically, text has almost exclusively been used with lossless compression. "
             {llms}" are a revolutionary change to that. "{llms}
             " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
