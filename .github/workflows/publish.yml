@@ -272,6 +272,7 @@ jobs:
         git push origin "$gh_action_fmt_branch"
         git checkout "$ref_name"
       env:
+        GH_TOKEN: ${{ github.token }}
         ref_name: ${{ github.ref_name }}
 
     #- name: Create pull request if it doesn't exist
