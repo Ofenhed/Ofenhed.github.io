@@ -84,10 +84,9 @@ impl LazyRoute for CookieConsent {
                     <legend class:with-youtube-logo=true>YouTube</legend>
                     <YoutubeConsent />
                 </fieldset>
-                <div {..BoxType::Thought.attr()}>
-                    "Speaking of consent, what's the opposite of "
-                    <q>"legitimate interest"</q>
-                    "?"
+                <div {..BoxType::Thought
+                    .attr()}>
+                    "Speaking of consent, what's the opposite of " <q>"legitimate interest"</q> "?"
                 </div>
             </form>
         }
@@ -114,7 +113,7 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
     };
     view! {
         <fieldset class:youtube=true>
-            <legend {..prefix_symbol('\u{1F576}')} >"No tracking or cookies"</legend>
+            <legend {..prefix_symbol('\u{1F576}')}>"No tracking or cookies"</legend>
             <label tabindex="0">
                 <input
                     type="radio"
@@ -132,7 +131,8 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 />
                 "A regular link to youtube"
             </label>
-            <div {..BoxType::Info.attr()}>
+            <div {..BoxType::Info
+                .attr()}>
                 "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
             </div>
         </fieldset>
@@ -174,10 +174,10 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 />
                 "Embedded without any cookie or tracking reduction"
             </label>
-            <div {..BoxType::Info.attr()}>
+            <div {..BoxType::Info
+                .attr()}>
                 "These options will send data to YouTube each time you visit a page "
-                <i>"with an embedded video"</i>
-                ", "
+                <i>"with an embedded video"</i> ", "
                 <b>"even without you even playing any videos"</b>
                 ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
                 <a

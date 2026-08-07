@@ -72,8 +72,9 @@ impl LazyRoute for WhatAreLLMs {
                 "To be able to understand what an " {llm}
                 " is, we'll take a detour to compression algorithms."
             </p>
-            <span {..BoxType::ExtraInfo.attr()}>
-                    "There are two categories of compression: lossless compression and lossy compression."
+            <span {..BoxType::ExtraInfo
+                .attr()}>
+                "There are two categories of compression: lossless compression and lossy compression."
                 <dl>
                     <dt>"Lossless compression"</dt>
                     <dd>

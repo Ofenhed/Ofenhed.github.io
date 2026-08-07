@@ -38,7 +38,8 @@ impl LazyRoute for ChatControl {
         let osint = || view! { <Abbr title="Open Source Intelligence">"OSINT"</Abbr> }.into_inner();
         idle_preload::<ChatControlReplyV>();
         view! {
-            <div {..BoxType::Context.attr()}>
+            <div {..BoxType::Context
+                .attr()}>
                 "This is a letter I sent to my representatives on "
                 <time datetime="2025-08-27">"the 27th of August, 2025"</time>
                 ". To date, the only reply I've received has been from "
