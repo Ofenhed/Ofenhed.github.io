@@ -557,7 +557,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
                     key=|(name, _)| name.get()
                     let((name, inner))
                 >
-                    <div id=name.clone() aria-current=is_current(name.clone())>
+                    <div id=name.clone() role="note" aria-current=is_current(name.clone())>
                         <div>{inner}</div>
                         {return_link(Oco::Owned(format!("{}-source", name.get())))}
                     </div>
