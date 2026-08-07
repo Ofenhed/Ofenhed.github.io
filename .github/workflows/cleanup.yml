@@ -1,0 +1,26 @@
+name: Clear build cache
+
+on:
+  workflow_dispatch:
+    inputs:
+
+jobs:
+  cleanup:
+    name: Remove all current build caches
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: write
+
+    steps:
+      - name: Cleanup
+      - run: |
+          cache_keys=$(gh cache list --key "$cache_prefix" --json id --jq '.[].id')
+          set +e
+          echo "Deleting caches"
+          for cache_key in $cache_keys; do
+            gh cache delete -- "$cache_key"
+          done
+          echo "Done"
+      - env:
+          cache_prefix: ${{ runner.os }}-cargo-lock-
