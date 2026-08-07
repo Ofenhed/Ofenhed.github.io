@@ -12,6 +12,7 @@ use leptos::{
 use leptos_router::{
     LazyRoute, MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
 };
+use strum::IntoStaticStr;
 use wasm_bindgen::JsValue;
 
 /// Zero Width Non-Joiner
@@ -428,6 +429,22 @@ pub(crate) fn NoWasm(children: ChildrenFn) -> impl IntoView {
 #[inline(always)]
 pub(crate) fn img_def() -> (Attr<Loading, &'static str>,) {
     (Attr(Loading, "lazy"),)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, IntoStaticStr)]
+#[strum(serialize_all = "kebab-case")]
+pub(crate) enum BoxType {
+    Info,
+    ExtraInfo,
+    Note,
+    Thought,
+}
+
+impl BoxType {
+    #[inline(always)]
+    pub(crate) fn attr(self) -> CustomAttr<&'static str, &'static str> {
+        custom_attribute("data-box-type", self.into())
+    }
 }
 
 #[derive(Clone)]

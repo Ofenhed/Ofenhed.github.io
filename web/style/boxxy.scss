@@ -1,7 +1,10 @@
-details, div.box {
+@use 'sass:map';
+
+details, *[data-box-type] {
   border: 1px solid #aaaaaa;
   border-radius: 5mm;
   padding: 0.5em 0.5em 0;
+  display: block;
   @media not print {
     box-shadow: 0.5ex 0.5ex 0.6ex light-dark(#000000af, #ffffff30);
     margin-bottom: 1ex;
@@ -50,52 +53,24 @@ details, div.box {
     background: none !important;
     border-width: 1mm !important;
   }
-  &.info {
-    background: light-dark(#ccffcc, #003300);
-    @media print {
-      border-color: #ccffcc;
+  @media (any-hover: hover) {
+    &:not([open]):has(summary:hover:not(:active)) {
+        filter: brightness(90%);
     }
-    @media (any-hover: hover) {
-      &:not([open]):has(summary:hover:not(:active)) {
-          filter: brightness(90%);
+  }
+  $box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F50E"),
+               extra-info: (light: #ffffcc, dark: #333300, icon: "\1F4CB"),
+               thought: (light: #ffffcc, dark: #333300, icon: "\1F4AD")
+              );
+  @each $box-type, $data in $box-types {
+    &[data-box-type="#{$box-type}"] {
+      background: light-dark(map.get($data, 'light'), map.get($data, 'dark'));
+      @media print {
+        border-color: map.get($data, 'light');
       }
-    }
-  }
-  &.extra-info {
-    background: light-dark(#ffffcc, #333300);
-    @media print {
-      border-color: #ffffcc;
-    }
-    @media (any-hover: hover) {
-      &:not([open]):has(summary:hover:not(:active)) {
-          filter: brightness(90%);
+      &:not(:has(> summary)):before, & > summary::marker {
+        content: "#{map.get($data, 'icon')}  ";
       }
-    }
-  }
-  &.thought {
-    background: light-dark(#ffffcc, #333300);
-    @media print {
-      border-color: #ccffcc;
-    }
-    @media (any-hover: hover) {
-      &:not([open]):has(summary:hover:not(:active)) {
-          filter: brightness(90%);
-      }
-    }
-  }
-  &.extra-info {
-    &:not(:has(> summary)):before, & > summary::marker {
-      content: "\1F50E  ";
-    }
-  }
-  &.info {
-    &:not(:has(> summary)):before, & > summary::marker {
-      content: "\1F4CB  ";
-    }
-  }
-  &.thought {
-    &:not(:has(> summary)):before, & > summary::marker {
-      content: "\1F4AD  ";
     }
   }
 }

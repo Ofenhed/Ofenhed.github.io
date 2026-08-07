@@ -4,7 +4,7 @@ use crate::{
         blog_entry_href,
         metadata::{BlogEntry, Locale, Tag, date},
     },
-    helpers::{Abbr, Footnote, Url, idle_preload},
+    helpers::{Abbr, BoxType, Footnote, Url, idle_preload},
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
@@ -72,8 +72,8 @@ impl LazyRoute for WhatAreLLMs {
                 "To be able to understand what an " {llm}
                 " is, we'll take a detour to compression algorithms."
             </p>
-            <div class:box=true class:extra-info=true role="note">
-                "There are two categories of compression: lossless compression and lossy compression."
+            <span {..BoxType::ExtraInfo.attr()}>
+                    "There are two categories of compression: lossless compression and lossy compression."
                 <dl>
                     <dt>"Lossless compression"</dt>
                     <dd>
@@ -85,7 +85,7 @@ impl LazyRoute for WhatAreLLMs {
                         {jpeg} " images sometimes being blocky."
                     </dd>
                 </dl>
-            </div>
+            </span>
             <p>
                 "Historically, text has almost exclusively been used with lossless compression. "
                 {llms} " are a revolutionary change to that. " {llms}

@@ -1,7 +1,7 @@
 use leptos::{logging::error, prelude::*, task};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{NoScript, NoWasm};
+use crate::helpers::{BoxType, NoScript, NoWasm};
 use crate::local_storage::{
     LocalStorageAccessor, LocalStorageKey, get_local_storage_value, set_local_storage_value,
 };
@@ -84,7 +84,7 @@ impl LazyRoute for CookieConsent {
                     <legend class:with-youtube-logo=true>YouTube</legend>
                     <YoutubeConsent />
                 </fieldset>
-                <div class:box=true class:thought=true>
+                <div {..BoxType::Thought.attr()}>
                     "Speaking of consent, what's the opposite of "
                     <q>"legitimate interest"</q>
                     "?"
@@ -132,7 +132,7 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 />
                 "A regular link to youtube"
             </label>
-            <div class:box=true class:info=true>
+            <div {..BoxType::Info.attr()}>
                 "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
             </div>
         </fieldset>
@@ -174,7 +174,7 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 />
                 "Embedded without any cookie or tracking reduction"
             </label>
-            <div class:box=true class:info=true>
+            <div {..BoxType::Info.attr()}>
                 "These options will send data to YouTube each time you visit a page "
                 <i>"with an embedded video"</i>
                 ", "

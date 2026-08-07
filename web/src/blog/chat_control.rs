@@ -5,7 +5,7 @@ use crate::{
         emails::ChatControlReplyV,
         metadata::{BlogEntry, Locale, Tag, date},
     },
-    helpers::{Abbr, Footnote, Url, idle_preload},
+    helpers::{Abbr, BoxType, Footnote, Url, idle_preload},
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
@@ -38,14 +38,13 @@ impl LazyRoute for ChatControl {
         let osint = || view! { <Abbr title="Open Source Intelligence">"OSINT"</Abbr> }.into_inner();
         idle_preload::<ChatControlReplyV>();
         view! {
-            <fieldset>
-                <legend>Note</legend>
+            <div {..BoxType::Note.attr()}>
                 "This is a letter I sent to my representatives on "
                 <time datetime="2025-08-27">"the 27th of August, 2025"</time>
                 ". To date, the only reply I've received has been from "
                 <a href=format!("/clog/{}", ChatControlReplyV::UID)>"Vänsterpartiet"</a>
                 ", who also opposes Chat Control."
-            </fieldset>
+            </div>
             <p>"Hello,"</p>
             <section>
                 <p>
