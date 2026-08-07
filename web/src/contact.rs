@@ -417,7 +417,7 @@ impl LazyRoute for Contact {
                     class="qr-code"
                     style:display="block"
                     style:box-sizing="border-box"
-                    style:aspect-ratio="1/1"
+                style:aspect-ratio="1/1"
                     style:width="calc(min(308px,100%))"
                     style:margin="0 auto 1em auto"
                 >
