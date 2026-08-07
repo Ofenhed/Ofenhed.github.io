@@ -12,7 +12,10 @@ $box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F50E"),
 details, *[data-box-type] {
   border: 1px solid #aaaaaa;
   border-radius: 5mm;
-  padding: 0.5em 0.5em 0;
+  padding: 0.5em 0.5em 0.5ex 0;
+  & > *:last-child {
+    margin-bottom: 0;
+  }
   display: block;
   @media not print {
     box-shadow: 0.5ex 0.5ex 0.6ex light-dark(#000000af, #ffffff30);
