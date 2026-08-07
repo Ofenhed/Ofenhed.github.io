@@ -263,12 +263,11 @@ jobs:
         git stash pop
         git add --all
         git commit -m "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
-        old_url=$(git remote get-url origin)
         reset_repo_url() {
-          git remote set-url origin "$old_url"
+          gh auth logout
         }
         trap reset_repo_url EXIT
-        git remote set-url origin "https://$gh_token@github.com/$gh_repo"
+        gh auth login --with-token <<<"$gh_token"
         echo "Pushing to branch $gh_action_fmt_branch"
         git push origin "$gh_action_fmt_branch"
         git checkout "$ref_name"
