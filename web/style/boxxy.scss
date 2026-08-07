@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:map';
 
 $box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F50E"),
@@ -70,7 +71,12 @@ details, *[data-box-type] {
     &[data-box-type="#{$box-type}"] {
       background: light-dark(map.get($data, 'light'), map.get($data, 'dark'));
       @media print {
-        border-color: map.get($data, 'light');
+        $print-color: map.get($data, 'print');
+        @if $print-color {
+          border-color: $print-color;
+        } @else {
+          border-color: color.scale(map.get($data, 'light'), $lightness: -50%);
+        }
       }
       &:not(:has(> summary)):before, & > summary::marker {
         content: "#{map.get($data, 'icon')}  ";
