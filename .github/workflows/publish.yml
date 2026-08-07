@@ -265,6 +265,7 @@ jobs:
         if-no-files-found: error
         retention-days: 1
         include-hidden-files: true
+        archive: false
 
     #- name: Clippy analysis
     #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
