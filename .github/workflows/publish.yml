@@ -260,8 +260,11 @@ jobs:
       uses: actions/upload-artifact@v7
       id: automatic-formatting
       with:
-        name: format-diff
+        name: format-diff-${{ github.ref_name }}
         path: .formatting-patch
+        if-no-files-found: error
+        retention-days: 1
+        include-hidden-files: true
 
     #- name: Clippy analysis
     #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
@@ -311,6 +314,10 @@ jobs:
     needs: check
     permissions:
       contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-formatting
+      cancel-in-progress: true
+
     steps:
     - uses: actions/checkout@v6
       with:
