@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Cleanup
-      - run: |
+        run: |
           cache_keys=$(gh cache list --key "$cache_prefix" --json id --jq '.[].id')
           set +e
           echo "Deleting caches"
@@ -22,5 +22,5 @@ jobs:
             gh cache delete -- "$cache_key"
           done
           echo "Done"
-      - env:
+        env:
           cache_prefix: ${{ runner.os }}-cargo-lock-
