@@ -250,10 +250,9 @@ jobs:
       run: cargo fmt --all
 
     - name: Formatting result
-      continue-on-error: true
       id: invalid-formatting
       run: |
-        git diff | tee ./.formatting-patch
+        git diff | tee .formatting-patch
         git diff-index --quiet HEAD
 
     - name: Push to automatic formatting branch
@@ -262,7 +261,7 @@ jobs:
       id: automatic-formatting
       with:
         name: format-diff
-        path: ./.formatting-patch
+        path: .formatting-patch
 
     #- name: Clippy analysis
     #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
@@ -321,7 +320,7 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         artifact-ids: ${{ needs.check.outputs.formatting }}
-        path: ./.formatting-patch
+        path: .formatting-patch
 
 
     - name: Upload branch
