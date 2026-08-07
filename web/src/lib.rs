@@ -63,7 +63,7 @@ pub fn hydrate() {
                         panic_msg.push_str(panic_info);
                         _ = set_local_storage_value::<LastPanic>(panic_msg);
                     }
-                    loop {
+                    'reload_page: {
                         let build_number = build_number();
                         let stored_build_number =
                             get_current_local_storage_value::<LastPanicBuildNumber>();
@@ -75,7 +75,7 @@ pub fn hydrate() {
                             leptos::logging::error!(
                                 "Reload did not help with the crash, refusing to reload again"
                             );
-                            break;
+                            break 'reload_page;
                         } else if let Some(build_number) = build_number
                             && set_local_storage_value::<LastPanicBuildNumber>(
                                 build_number.to_string(),
@@ -83,11 +83,12 @@ pub fn hydrate() {
                             .is_ok()
                         {
                             // Doing nothing if we can set the variable
-                        } else if hash != RELOAD_KEYWORD {
+                        } else if hash == RELOAD_KEYWORD {
+                            break 'reload_page;
+                        } else {
                             _ = location.set_hash(RELOAD_KEYWORD);
                         }
                         _ = location.reload_with_forceget(true);
-                        break;
                     }
                 }
                 prev_hook(info);
