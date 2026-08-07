@@ -256,10 +256,9 @@ jobs:
       if: ${{ steps.source-unmodified.outcome == 'success' && steps.invalid-formatting.outcome == 'failure' && !cancelled() }}
       run: |
         set -e
-        git branch -D "$gh_action_fmt_branch" 2>/dev/null || true
         git config --local user.email ""
         git config --local user.name "Automatic formatting"
-        git checkout "$gh_action_fmt_branch"
+        git checkout -B "$gh_action_fmt_branch" "${{ github.ref_name }}"
         git reset --hard "${{ github.ref_name }}"
         git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         echo "Pushing to branch $gh_action_fmt_branch"
