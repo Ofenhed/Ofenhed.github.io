@@ -342,7 +342,7 @@ jobs:
         git config --local user.name "Automatic formatting"
         git checkout -B "$gh_action_fmt_branch" "$gh_ref"
         git apply --allow-empty "$patch_path"
-        pr_args=( --base "$gh_ref" --head "$gh_action_fmt_branch" --label automatic-formatting )
+        pr_args=( --base "$gh_ref" --head "$gh_action_fmt_branch" )
         title="Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         open_pr=$(gh pr list "${pr_args[@]}" --limit 1 --json number --jq '.[].number')
         if git commit -am "$title"; then
