@@ -155,9 +155,9 @@ jobs:
 
   check:
     name: Check source code rules
-    #if: ${{ !cancelled() }}
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
-    #needs: build
+    needs: build
     outputs:
       formatting: ${{ steps.automatic-formatting.outputs.artifact-id }}
 
