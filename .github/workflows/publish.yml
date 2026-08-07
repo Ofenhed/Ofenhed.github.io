@@ -255,15 +255,16 @@ jobs:
     - name: Push to automatic formatting branch
       if: ${{ steps.source-unmodified.outcome == 'success' && steps.invalid-formatting.outcome == 'failure' && !cancelled() }}
       run: |
-        git push -d "$gh_action_fmt_branch" "$gh_action_fmt_branch"
-        git branch -D "$gh_action_fmt_branch"
-        set +e
+        set -e
+        git branch -D "$gh_action_fmt_branch" 2>/dev/null || true
         git config --local user.email ""
         git config --local user.name "Automatic formatting"
-        git checkout -b "$gh_action_fmt_branch"
-        git commit -am "Automatic formatting by automation $GITHUB_RUN_NUMBER"
+        git checkout "$gh_action_fmt_branch"
+        git reset --hard "${{ github.ref_name }}"
+        git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
+        echo "Pushing to branch $gh_action_fmt_branch"
         git push origin "$gh_action_fmt_branch"
-        git checkout ${{ github.ref_name }}
+        git checkout "${{ github.ref_name }}"
 
     - name: Clippy analysis
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
