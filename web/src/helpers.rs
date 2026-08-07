@@ -2,7 +2,7 @@ use std::{cell::LazyCell, marker::PhantomData, mem::MaybeUninit, sync::atomic::A
 
 use leptos::{
     attr::{
-        Attr, Loading,
+        Attr, AttributeValue, Loading,
         custom::{CustomAttr, custom_attribute},
     },
     ev, html, logging,
@@ -445,6 +445,11 @@ impl BoxType {
     pub(crate) fn attr(self) -> CustomAttr<&'static str, &'static str> {
         custom_attribute("data-box-type", self.into())
     }
+}
+
+#[inline(always)]
+pub(crate) fn prefix_symbol<T: AttributeValue>(value: T) -> CustomAttr<&'static str, T> {
+    custom_attribute("data-prefix-symbol", value)
 }
 
 #[derive(Clone)]

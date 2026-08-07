@@ -1,7 +1,7 @@
 use leptos::{logging::error, prelude::*, task};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{BoxType, NoScript, NoWasm};
+use crate::helpers::{BoxType, NoScript, NoWasm, prefix_symbol};
 use crate::local_storage::{
     LocalStorageAccessor, LocalStorageKey, get_local_storage_value, set_local_storage_value,
 };
@@ -114,7 +114,7 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
     };
     view! {
         <fieldset class:youtube=true>
-            <legend>No tracking or cookies</legend>
+            <legend {..prefix_symbol('\u{1F576}')} >"No tracking or cookies"</legend>
             <label tabindex="0">
                 <input
                     type="radio"
@@ -137,7 +137,7 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
             </div>
         </fieldset>
         <fieldset>
-            <legend>"Data is shared with YouTube"</legend>
+            <legend {..prefix_symbol('\u{1F575}')}>"Data is shared with YouTube"</legend>
             <label tabindex="0">
                 <input
                     type="radio"
