@@ -267,14 +267,12 @@ jobs:
           gh auth logout
         }
         trap reset_repo_url EXIT
-        gh auth login --with-token <<<"$gh_token"
+        gh auth login
         echo "Pushing to branch $gh_action_fmt_branch"
         git push origin "$gh_action_fmt_branch"
         git checkout "$ref_name"
       env:
-        gh_token: ${{ github.token }}
         ref_name: ${{ github.ref_name }}
-        gh_repo: ${{ github.repository }}
 
     #- name: Create pull request if it doesn't exist
     #  if: ${{ steps.push-formatting.outcome == 'success' && !cancelled() }}
