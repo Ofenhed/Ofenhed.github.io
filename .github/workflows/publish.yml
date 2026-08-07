@@ -261,14 +261,9 @@ jobs:
         git stash
         git checkout -B "$gh_action_fmt_branch" "$ref_name"
         git stash pop
-        git add --all
-        git commit -m "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
-        reset_repo_url() {
-          gh auth logout
-        }
-        trap reset_repo_url EXIT
-        gh auth login
+        git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         echo "Pushing to branch $gh_action_fmt_branch"
+        gh auth setup-git
         git push origin "$gh_action_fmt_branch"
         git checkout "$ref_name"
       env:
