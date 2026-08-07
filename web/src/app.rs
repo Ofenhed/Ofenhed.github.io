@@ -14,7 +14,7 @@ use crate::{
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
-    helpers::{Footnotes, idle_preload, img_def},
+    helpers::{Footnotes, build_number, idle_preload, img_def},
     local_storage::provide_local_storage_context,
     third_party::ThirdPartyConsentDialogs,
 };
@@ -62,10 +62,7 @@ impl LazyRoute for BuildInfo {
                 Oco::Borrowed("Commit"),
                 option_env!("GITHUB_SHA").map(Oco::Borrowed),
             ),
-            (
-                Oco::Borrowed("Run number"),
-                option_env!("GITHUB_RUN_NUMBER").map(Oco::Borrowed),
-            ),
+            (Oco::Borrowed("Run number"), build_number()),
             (
                 Oco::Borrowed("Build OS"),
                 option_env!("RUNNER_OS").map(Oco::Borrowed),

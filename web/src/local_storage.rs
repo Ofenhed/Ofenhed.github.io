@@ -23,6 +23,7 @@ pub(crate) enum LocalStorageKey {
     WantsCookies,
     YoutubeCookieConsent,
     LastPanic,
+    LastPanicBuildNumber,
 }
 
 pub(crate) trait LocalStorageData: 'static + Send + Sync + FromStr + ToString {}
@@ -51,6 +52,22 @@ fn local_storage() -> Result<web_sys::Storage, LocalStorageError> {
     }
 }
 
+#[cfg(feature = "client-side")]
+pub(crate) fn get_current_local_storage_value<T: LocalStorageAccessor>()
+-> Result<Option<T::Data>, LocalStorageError> {
+    cfg_select! {
+        feature = "client-side" => Ok(local_storage()?
+            .get_item(crate::helpers::into_static_str(T::KEY))
+            .expect("This should always work if we get this far")
+            .and_then(|x| {
+                <T::Data as FromStr>::from_str(x.as_str())
+                    .inspect_err(|_| leptos::logging::error!("Could not parse {x}"))
+                    .ok()
+            })),
+        _ => Err(LocalStorageError::NoContextProvided),
+    }
+}
+
 pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
 -> Result<Signal<Option<T::Data>>, LocalStorageError> {
     let LocalStorageChanged(reader, _) =
@@ -58,18 +75,9 @@ pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
     let (read, write) = signal(None);
     cfg_select! {
         feature = "client-side" => {
-            let storage = local_storage()?;
             Effect::new(move || {
                 reader.track();
-                if let Some(value) = storage
-                    .get_item(crate::helpers::into_static_str(T::KEY))
-                    .expect("This should always work if we get this far")
-                    .and_then(|x| {
-                        <T::Data as FromStr>::from_str(x.as_str())
-                            .inspect_err(|_| leptos::logging::error!("Could not parse {x}"))
-                            .ok()
-                    })
-                {
+                if let Some(value) = get_current_local_storage_value::<T>().ok().flatten() {
                     write.set(Some(value));
                 } else {
                     let mut w = write.write();

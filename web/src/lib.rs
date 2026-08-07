@@ -21,51 +21,77 @@ pub fn hydrate() {
     use app::*;
     console_error_panic_hook::set_once();
 
-    #[cfg(not(debug_assertions))]
+    //#[cfg(not(debug_assertions))]
     {
-        use crate::local_storage::{
-            LocalStorageAccessor, LocalStorageKey, set_local_storage_value,
+        use crate::{
+            helpers::build_number,
+            local_storage::{
+                LocalStorageAccessor, LocalStorageKey, get_current_local_storage_value,
+                set_local_storage_value,
+            },
         };
         pub use leptos::prelude::*;
-        use std::{panic, sync::Once, time::Duration};
+        use std::{panic, sync::Once};
         struct LastPanic;
+        struct LastPanicBuildNumber;
         const RELOAD_KEYWORD: &str = "reloaded";
         impl LocalStorageAccessor for LastPanic {
             const KEY: LocalStorageKey = LocalStorageKey::LastPanic;
             type Data = String;
         }
+        impl LocalStorageAccessor for LastPanicBuildNumber {
+            const KEY: LocalStorageKey = LocalStorageKey::LastPanicBuildNumber;
+            type Data = String;
+        }
         static SET_HOOK: Once = Once::new();
-        set_timeout(
-            || {
-                SET_HOOK.call_once(|| {
-                    let prev_hook = panic::take_hook();
-                    std::panic::set_hook(Box::new(move |info| {
-                        if let Some(location) = document().location()
-                            && let Ok(hash) = location.hash()
-                            && hash != RELOAD_KEYWORD
-                            && location.set_hash(RELOAD_KEYWORD).is_ok()
+        SET_HOOK.call_once(|| {
+            let prev_hook = panic::take_hook();
+            std::panic::set_hook(Box::new(move |info| {
+                if let Some(location) = document().location()
+                    && let Ok(hash) = location.hash()
+                {
+                    let mut panic_msg = String::new();
+                    if let Some(location) = info.location() {
+                        panic_msg.push_str(&format!(
+                            "{}@{}:{}\n",
+                            location.file(),
+                            location.line(),
+                            location.column()
+                        ));
+                    }
+                    if let Some(panic_info) = info.payload_as_str() {
+                        panic_msg.push_str(panic_info);
+                        _ = set_local_storage_value::<LastPanic>(panic_msg);
+                    }
+                    loop {
+                        let build_number = build_number();
+                        let stored_build_number =
+                            get_current_local_storage_value::<LastPanicBuildNumber>();
+
+                        if let Some(last_build) = stored_build_number.ok().flatten()
+                            && Some(last_build.as_str())
+                                == build_number.as_ref().map(|x| x.as_str())
                         {
-                            let mut panic_msg = String::new();
-                            if let Some(location) = info.location() {
-                                panic_msg.push_str(&format!(
-                                    "{}@{}:{}\n",
-                                    location.file(),
-                                    location.line(),
-                                    location.column()
-                                ));
-                            }
-                            if let Some(panic_info) = info.payload_as_str() {
-                                panic_msg.push_str(panic_info);
-                                _ = set_local_storage_value::<LastPanic>(panic_msg);
-                            }
-                            _ = location.reload_with_forceget(true);
+                            leptos::logging::error!(
+                                "Reload did not help with the crash, refusing to reload again"
+                            );
+                            break;
+                        } else if let Some(build_number) = build_number
+                            && set_local_storage_value::<LastPanicBuildNumber>(
+                                build_number.to_string(),
+                            )
+                            .is_ok()
+                        {
+                        } else if hash != RELOAD_KEYWORD {
+                            _ = location.set_hash(RELOAD_KEYWORD);
                         }
-                        prev_hook(info);
-                    }))
-                })
-            },
-            Duration::from_secs(3),
-        );
+                        _ = location.reload_with_forceget(true);
+                        break;
+                    }
+                }
+                prev_hook(info);
+            }))
+        });
     }
     leptos::mount::hydrate_lazy(App);
 }

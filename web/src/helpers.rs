@@ -448,6 +448,11 @@ impl BoxType {
 }
 
 #[inline(always)]
+pub(crate) fn build_number() -> Option<Oco<'static, str>> {
+    option_env!("GITHUB_RUN_NUMBER").map(Oco::Borrowed)
+}
+
+#[inline(always)]
 pub(crate) fn prefix_symbol<T: AttributeValue>(value: T) -> CustomAttr<&'static str, T> {
     custom_attribute("data-prefix-symbol", value)
 }

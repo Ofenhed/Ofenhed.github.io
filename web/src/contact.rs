@@ -407,7 +407,7 @@ impl LazyRoute for Contact {
                 }
                 feature = "ssr" => "/qrcode.png",
                 feature = "client-side" => None::<&str>,
-                _ => (),
+                _ => None::<&str>,
             }
         };
 
