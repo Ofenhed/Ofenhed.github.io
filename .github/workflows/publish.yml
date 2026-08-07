@@ -342,7 +342,7 @@ jobs:
         git apply "$patch_path"
         git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         echo "Pushing to branch $gh_action_fmt_branch"
-        git push origin "$gh_action_fmt_branch"
+        git push --force origin "$gh_action_fmt_branch"
       env:
         patch_path: ${{ runner.temp }}/formatting/format.patch
         GH_TOKEN: ${{ github.token }}
