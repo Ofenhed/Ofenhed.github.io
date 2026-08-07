@@ -252,8 +252,11 @@ jobs:
     - name: Formatting result
       id: invalid-formatting
       run: |
-        git diff | tee .formatting-patch
+        mkdir -p "$patch_dir"
+        git diff | tee "$patch_dir/format.patch"
         git diff-index --quiet HEAD
+      env:
+        patch_dir: ${{ runner.temp }}/formatting
 
     - name: Push to automatic formatting branch
       if: ${{ steps.source-unmodified.outcome == 'success' && steps.invalid-formatting.outcome == 'failure' && !cancelled() }}
@@ -261,11 +264,10 @@ jobs:
       id: automatic-formatting
       with:
         name: format-diff-${{ github.ref_name }}
-        path: .formatting-patch
+        path: ${{ runner.temp }}/formatting
         if-no-files-found: error
         retention-days: 1
         include-hidden-files: true
-        archive: false
 
     #- name: Clippy analysis
     #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
@@ -328,8 +330,7 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         artifact-ids: ${{ needs.check.outputs.formatting }}
-        path: .formatting-patch
-
+        path: ${{ runner.temp }}/formatting
 
     - name: Upload branch
       run: |
@@ -337,11 +338,12 @@ jobs:
         git config --local user.email ""
         git config --local user.name "Automatic formatting"
         git checkout -B "$gh_action_fmt_branch" "$gh_ref"
-        git apply ./.formatting-patch
+        git apply "$patch_path"
         git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
         echo "Pushing to branch $gh_action_fmt_branch"
         git push origin "$gh_action_fmt_branch"
       env:
+        patch_path: ${{ runner.temp }}/formatting/format.patch
         GH_TOKEN: ${{ github.token }}
         ref_name: ${{ github.ref_name }}
         gh_ref: ${{ github.ref }}
