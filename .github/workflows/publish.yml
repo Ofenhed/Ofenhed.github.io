@@ -20,7 +20,7 @@ env:
   CARGO_TERM_COLOR: always
   cargo_leptos_version: ./.cargo-leptos-version
   rust_version: ./.rust-version
-  gh_action_fmt_branch: github-actions-automatic-formatting
+  gh_action_fmt_branch: github-actions-automatic-formatting-${{ github.ref_name }}
   LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
 jobs:
@@ -36,6 +36,7 @@ jobs:
     - uses: actions/checkout@v6
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
+        persist-credentials: false
 
     - name: Check locked cargo-leptos version
       id: write-cargo-leptos-version
@@ -159,6 +160,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+      with:
+        ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
+        persist-credentials: false
 
     - name: Restore tool cache
       id: cache-tools-restore
