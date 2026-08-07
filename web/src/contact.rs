@@ -1,7 +1,7 @@
 use leptos::{html, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{NoScript, NoWasm, img_def, scoped_style};
+use crate::helpers::{NoScript, NoWasm, scoped_style};
 
 #[cfg(feature = "client-side")]
 mod qr_settings {
