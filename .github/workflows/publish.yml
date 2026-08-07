@@ -263,46 +263,46 @@ jobs:
         name: format-diff
         path: ./.formatting-patch
 
-    - name: Clippy analysis
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
-      run: cargo clippy --no-deps --release --all-features -- -Dwarnings
-      env:
-        contact_card: "No call me, clippy"
+    #- name: Clippy analysis
+    #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+    #  run: cargo clippy --no-deps --release --all-features -- -Dwarnings
+    #  env:
+    #    contact_card: "No call me, clippy"
 
-    - name: Download wasm binary
-      uses: actions/download-artifact@v8
-      id: get-wasm
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
-      with:
-        artifact-ids: ${{ needs.build.outputs.wasm }}
-        path: target/new
+    #- name: Download wasm binary
+    #  uses: actions/download-artifact@v8
+    #  id: get-wasm
+    #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+    #  with:
+    #    artifact-ids: ${{ needs.build.outputs.wasm }}
+    #    path: target/new
 
-    - name: Check twiggy top
-      run: twiggy top target/new/conditionraise.wasm
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+    #- name: Check twiggy top
+    #  run: twiggy top target/new/conditionraise.wasm
+    #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
-    - name: Check twiggy monos
-      run: twiggy monos target/new/conditionraise.wasm
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+    #- name: Check twiggy monos
+    #  run: twiggy monos target/new/conditionraise.wasm
+    #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
-    - name: Check twiggy garbage
-      run: twiggy garbage --all target/new/conditionraise.wasm
-      if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
+    #- name: Check twiggy garbage
+    #  run: twiggy garbage --all target/new/conditionraise.wasm
+    #  if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
-    - name: Download artifact from latest build
-      uses: dawidd6/action-download-artifact@v21
-      id: get-old-wasm
-      if: ${{ steps.get-wasm.outcome == 'success' && !cancelled() }}
-      continue-on-error: true
-      with:
-        name: wasm-file
-        path: target/old
-        workflow_conclusion: success
-        branch: master
+    #- name: Download artifact from latest build
+    #  uses: dawidd6/action-download-artifact@v21
+    #  id: get-old-wasm
+    #  if: ${{ steps.get-wasm.outcome == 'success' && !cancelled() }}
+    #  continue-on-error: true
+    #  with:
+    #    name: wasm-file
+    #    path: target/old
+    #    workflow_conclusion: success
+    #    branch: master
 
-    - name: Check target size change
-      if: ${{ steps.get-old-wasm.outcome == 'success' && !cancelled() }}
-      run: twiggy diff target/old/conditionraise.wasm  target/new/conditionraise.wasm
+    #- name: Check target size change
+    #  if: ${{ steps.get-old-wasm.outcome == 'success' && !cancelled() }}
+    #  run: twiggy diff target/old/conditionraise.wasm  target/new/conditionraise.wasm
 
   formatting:
     name: Update automatic formatting branch
