@@ -340,8 +340,7 @@ jobs:
         git config --local user.name "Automatic formatting"
         git checkout -B "$gh_action_fmt_branch" "$gh_ref"
         git apply --allow-empty "$patch_path"
-        if git diff-index --quiet HEAD; then
-          git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"
+        if git commit -am "Automatic formatting by automation #$GITHUB_RUN_NUMBER"; then
           echo "Pushing to branch $gh_action_fmt_branch"
           git push --force origin "$gh_action_fmt_branch"
         else
