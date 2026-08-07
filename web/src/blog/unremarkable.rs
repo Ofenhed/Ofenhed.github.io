@@ -12,6 +12,7 @@ impl BlogEntry for Unremarkable {
     const PUBLISH_DATE: DateTime<Utc> = date(2022, 1, 20);
 
     const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 8));
+    const HIDDEN: bool = true;
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
