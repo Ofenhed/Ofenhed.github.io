@@ -65,15 +65,13 @@ impl LazyRoute for WhatAreLLMs {
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
-            "When we talk about "
-            {ai}
-            " today, we pretty much talk about "
-            {llms}
-            ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
+            <p>
+                "When we talk about " {ai} " today, we pretty much talk about " {llms}
+                ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
 
-            "To be able to understand what an "
-            {llm}
-            " is, we'll take a detour to compression algorithms. "
+                "To be able to understand what an " {llm}
+                " is, we'll take a detour to compression algorithms."
+            </p>
             <div class:box=true class:extra-info=true>
                 "There are two categories of compression: lossless compression and lossy compression."
                 <dl>
@@ -88,29 +86,28 @@ impl LazyRoute for WhatAreLLMs {
                     </dd>
                 </dl>
             </div>
-            "Historically, text has almost exclusively been used with lossless compression. "
-            {llms}
-            " are a revolutionary change to that. "
-            {llms}
-            " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
-            {llms}
-            " you create the output file from the start, then you take an arbitrary amount of data and optimize the parameters in that existing output file to be able to approximate the data you provide."
-
-            "I get that some of you will have an instant reaction of this comparison being ridiculous. I would like to direct you to a study"
-            <Footnote id=Oco::Borrowed("extracting-books-from-llm")>
-                <b>Extracting books from production language models</b>
-                <br />
-                <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
-                <br />
-                <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
-            </Footnote>
-            " where researchers could get "
-            {llm}
-            " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. This doesn't prove lack of intelligence, but it proves that the data is there."
+            <p>
+                "Historically, text has almost exclusively been used with lossless compression. "
+                {llms} " are a revolutionary change to that. " {llms}
+                " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
+                {llms}
+                " you create the output file from the start, then you take an arbitrary amount of data and optimize the parameters in that existing output file to be able to approximate the data you provide."
+            </p>
+            <p>
+                "I get that some of you will have an instant reaction of this comparison being ridiculous. I would like to direct you to a study"
+                <Footnote id=Oco::Borrowed("extracting-books-from-llm")>
+                    <b>Extracting books from production language models</b>
+                    <br />
+                    <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
+                    <br />
+                    <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
+                </Footnote> " where researchers could get " {llm}
+                " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. This doesn't prove lack of intelligence, but it proves that the data is there."
+            </p>
 
             <h2>"Where does the intelligence come from?"</h2>
             "I have identified the following sources:"
-            <ul>
+            <ul class:has-header=true>
                 <li>
                     <b>"Volume"</b>
                     ": Pretty much all text humanity has ever written has been used to optimize these models. Your query may not be as unique as you think."
@@ -190,9 +187,11 @@ impl LazyRoute for WhatAreLLMs {
             <blockquote cite="Oxford English Dictionary, 1st ed. \"anthropomorphism, n.\" Oxford University Press (Oxford), 1885">
                 "Anthropomorphism is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
             </blockquote>
-            "Let's break down a few of these terminologies, and why I find them to be problematic. I have skipped some obvious ones, such as calling them "
-            {ai}
-            " agents or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
+            <p>
+                "Let's break down a few of these terminologies, and why I find them to be problematic. I have skipped some obvious ones, such as calling them "
+                {ai}
+                " agents or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
+            </p>
             <ul class:pink-marker=true>
                 <li>
                     "You don't "<mark>"train"</mark>" an "{ai}

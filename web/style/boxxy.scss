@@ -50,10 +50,21 @@ details, div.box {
     background: none !important;
     border-width: 1mm !important;
   }
-  &.info, &.extra-info {
+  &.info {
     background: light-dark(#ccffcc, #003300);
     @media print {
       border-color: #ccffcc;
+    }
+    @media (any-hover: hover) {
+      &:not([open]):has(summary:hover:not(:active)) {
+          filter: brightness(90%);
+      }
+    }
+  }
+  &.extra-info {
+    background: light-dark(#ffffcc, #333300);
+    @media print {
+      border-color: #ffffcc;
     }
     @media (any-hover: hover) {
       &:not([open]):has(summary:hover:not(:active)) {

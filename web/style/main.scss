@@ -274,6 +274,9 @@ body {
     section, main li {
       break-inside: avoid;
     }
+    ul.has-header {
+      break-before: avoid;
+    }
     a:not(.just-url) {
       &[href^="https://"], &[href^="http://"], &[href^="/"] {
         &[href^="/"]:after {
