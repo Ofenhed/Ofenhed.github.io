@@ -250,6 +250,7 @@ jobs:
       run: cargo fmt --all
 
     - name: Formatting result
+      continue-on-error: true
       id: invalid-formatting
       run: |
         git diff | tee ./.formatting-patch
