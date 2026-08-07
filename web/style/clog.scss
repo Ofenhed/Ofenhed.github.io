@@ -64,6 +64,7 @@ ul#blog-entries {
   main .article-info {
     font-size: 60%;
     time {
+      white-space: nowrap;
       margin-left: 1ex;
     }
     &:has(> time.update) {
