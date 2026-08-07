@@ -24,139 +24,139 @@ env:
   LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
 
 jobs:
-  build:
-    name: Build static files
+  #build:
+  #  name: Build static files
 
-    runs-on: ubuntu-latest
+  #  runs-on: ubuntu-latest
 
-    outputs:
-      wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
+  #  outputs:
+  #    wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
 
-    steps:
-    - uses: actions/checkout@v6
-      with:
-        ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
-        persist-credentials: false
+  #  steps:
+  #  - uses: actions/checkout@v6
+  #    with:
+  #      ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
+  #      persist-credentials: false
 
-    - name: Check locked cargo-leptos version
-      id: write-cargo-leptos-version
-      run: |
-        awk '/\[\[package\]\]/ { right_place=0; checksum = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /checksum\s*=/ { checksum=$0 }; { if (right_place && checksum != null) { print(checksum); exit }  }' < Cargo.lock | tee "$cargo_leptos_version"
+  #  - name: Check locked cargo-leptos version
+  #    id: write-cargo-leptos-version
+  #    run: |
+  #      awk '/\[\[package\]\]/ { right_place=0; checksum = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /checksum\s*=/ { checksum=$0 }; { if (right_place && checksum != null) { print(checksum); exit }  }' < Cargo.lock | tee "$cargo_leptos_version"
 
-    - name: Use nightly rust
-      run: rustup override set nightly
+  #  - name: Use nightly rust
+  #    run: rustup override set nightly
 
-    - name: Log rust version
-      run: rustc --version | tee "$rust_version"
+  #  - name: Log rust version
+  #    run: rustc --version | tee "$rust_version"
 
-    - name: Restore build cache
-      id: cache-primes-restore
-      uses: actions/cache/restore@v6
-      with:
-        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles(env.rust_version) }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}-
-          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
-          ${{ runner.os }}-cargo-lock-
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target/front
-          target/oembed
-          target/qr
-          target/release
+  #  - name: Restore build cache
+  #    id: cache-primes-restore
+  #    uses: actions/cache/restore@v6
+  #    with:
+  #      key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles(env.rust_version) }}
+  #      restore-keys: |
+  #        ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock') }}-
+  #        ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
+  #        ${{ runner.os }}-cargo-lock-
+  #      path: |
+  #        ~/.cargo/registry
+  #        ~/.cargo/git
+  #        target/front
+  #        target/oembed
+  #        target/qr
+  #        target/release
 
-    - name: Restore cargo-leptos
-      id: cargo-leptos-restore
-      if: ${{ !cancelled() }}
-      uses: actions/cache/restore@v6
-      with:
-        key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
-        path: |
-          ~/.cargo/bin/cargo-leptos
+  #  - name: Restore cargo-leptos
+  #    id: cargo-leptos-restore
+  #    if: ${{ !cancelled() }}
+  #    uses: actions/cache/restore@v6
+  #    with:
+  #      key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
+  #      path: |
+  #        ~/.cargo/bin/cargo-leptos
 
-    - name: Build leptos toolkit
-      id: cargo-leptos-build
-      if: ${{ !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
-      run: cargo install cargo-leptos --locked
-      env:
-        CARGO_TARGET_DIR: ./target
+  #  - name: Build leptos toolkit
+  #    id: cargo-leptos-build
+  #    if: ${{ !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
+  #    run: cargo install cargo-leptos --locked
+  #    env:
+  #      CARGO_TARGET_DIR: ./target
 
-    - name: Save leptos cache
-      if: ${{ steps.cargo-leptos-build.outcome == 'success' && !cancelled() }}
-      uses: actions/cache/save@v6
-      with:
-        key: ${{ steps.cargo-leptos-restore.outputs.cache-primary-key }}
-        path: |
-          ~/.cargo/bin/cargo-leptos
+  #  - name: Save leptos cache
+  #    if: ${{ steps.cargo-leptos-build.outcome == 'success' && !cancelled() }}
+  #    uses: actions/cache/save@v6
+  #    with:
+  #      key: ${{ steps.cargo-leptos-restore.outputs.cache-primary-key }}
+  #      path: |
+  #        ~/.cargo/bin/cargo-leptos
 
-    - name: Add wasm target
-      run: rustup target add wasm32-unknown-unknown
+  #  - name: Add wasm target
+  #    run: rustup target add wasm32-unknown-unknown
 
-    - name: Write contact card hash
-      run: |
-        mkdir -p target/qr
-        cat >target/.new_contact_card <<<"$(sha256sum <<<"$contact_card" | awk '{ print $1 }')"
-      env:
-        contact_card: ${{ secrets.CONTACT_CARD }}
+  #  - name: Write contact card hash
+  #    run: |
+  #      mkdir -p target/qr
+  #      cat >target/.new_contact_card <<<"$(sha256sum <<<"$contact_card" | awk '{ print $1 }')"
+  #    env:
+  #      contact_card: ${{ secrets.CONTACT_CARD }}
 
-    - name: Compile file generator
-      id: compile
-      if: ${{ !cancelled() && !failure() && hashFiles('target/.new_contact_card') != hashFiles('target/qr/.contact_card') }}
-      run: cargo leptos build --split --server-only --release --bin-features ssr,statics
-      env:
-        contact_card: ${{ secrets.CONTACT_CARD }}
+  #  - name: Compile file generator
+  #    id: compile
+  #    if: ${{ !cancelled() && !failure() && hashFiles('target/.new_contact_card') != hashFiles('target/qr/.contact_card') }}
+  #    run: cargo leptos build --split --server-only --release --bin-features ssr,statics
+  #    env:
+  #      contact_card: ${{ secrets.CONTACT_CARD }}
 
-    - name: Generate initial files
-      if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
-      run: target/release/conditionraise
+  #  - name: Generate initial files
+  #    if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+  #    run: target/release/conditionraise
 
-    - name: Save successful contact card
-      run: mv target/.new_contact_card target/qr/.contact_card
+  #  - name: Save successful contact card
+  #    run: mv target/.new_contact_card target/qr/.contact_card
 
-    - name: Recompile targets
-      id: recompile
-      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
-      env:
-        contact_card: ${{ secrets.CONTACT_CARD }}
+  #  - name: Recompile targets
+  #    id: recompile
+  #    run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
+  #    env:
+  #      contact_card: ${{ secrets.CONTACT_CARD }}
 
-    - name: Save build cache
-      uses: actions/cache/save@v6
-      if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile.outcome == 'success' || steps.recompile.outcome == 'failure' }}
-      with:
-        key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target/front
-          target/oembed
-          target/qr
-          target/release
+  #  - name: Save build cache
+  #    uses: actions/cache/save@v6
+  #    if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile.outcome == 'success' || steps.recompile.outcome == 'failure' }}
+  #    with:
+  #      key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
+  #      path: |
+  #        ~/.cargo/registry
+  #        ~/.cargo/git
+  #        target/front
+  #        target/oembed
+  #        target/qr
+  #        target/release
 
-    - name: Regenerate static files
-      run: target/release/conditionraise
+  #  - name: Regenerate static files
+  #    run: target/release/conditionraise
 
-    - name: Upload site root
-      uses: actions/upload-pages-artifact@v5
-      id: deployment
-      with:
-        path: target/site/
+  #  - name: Upload site root
+  #    uses: actions/upload-pages-artifact@v5
+  #    id: deployment
+  #    with:
+  #      path: target/site/
 
-    - name: Save wasm file
-      uses: actions/upload-artifact@v7
-      id: upload-wasm-file
-      with:
-        name: wasm-file
-        path: target/front/wasm32-unknown-unknown/wasm-release/conditionraise.wasm
+  #  - name: Save wasm file
+  #    uses: actions/upload-artifact@v7
+  #    id: upload-wasm-file
+  #    with:
+  #      name: wasm-file
+  #      path: target/front/wasm32-unknown-unknown/wasm-release/conditionraise.wasm
 
-    - name: Log compiled sizes
-      run: find target/site/ -exec du -sh {} \;
+  #  - name: Log compiled sizes
+  #    run: find target/site/ -exec du -sh {} \;
 
   check:
     name: Check source code rules
-    if: ${{ !cancelled() }}
+    #if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
-    needs: build
+    #needs: build
 
     steps:
     - uses: actions/checkout@v6
@@ -265,6 +265,11 @@ jobs:
         git push origin "$gh_action_fmt_branch"
         git checkout "${{ github.ref_name }}"
 
+    #- name: Create pull request if it doesn't exist
+    #  if: ${{ steps.push-formatting.outcome == 'success' && !cancelled() }}
+    #  run: |
+    #    gh pr
+
     - name: Clippy analysis
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
       run: cargo clippy --no-deps --release --all-features -- -Dwarnings
@@ -306,24 +311,24 @@ jobs:
       if: ${{ steps.get-old-wasm.outcome == 'success' && !cancelled() }}
       run: twiggy diff target/old/conditionraise.wasm  target/new/conditionraise.wasm
 
-  deploy:
-    name: Deploy to Github Pages
-    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
-    runs-on: ubuntu-latest
-    needs: build
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
+  #deploy:
+  #  name: Deploy to Github Pages
+  #  if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || github.event_name == 'push') }}
+  #  runs-on: ubuntu-latest
+  #  needs: build
+  #  concurrency:
+  #    group: ${{ github.workflow }}-${{ github.ref }}
+  #    cancel-in-progress: true
 
-    permissions:
-      pages: write
-      id-token: write
+  #  permissions:
+  #    pages: write
+  #    id-token: write
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.output.page_url }}
+  #  environment:
+  #    name: github-pages
+  #    url: ${{ steps.deployment.output.page_url }}
 
-    steps:
-    - name: Deploy artifact
-      uses: actions/deploy-pages@v5
-      id: deployment
+  #  steps:
+  #  - name: Deploy artifact
+  #    uses: actions/deploy-pages@v5
+  #    id: deployment
