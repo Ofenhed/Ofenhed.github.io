@@ -65,24 +65,33 @@ impl LazyRoute for WhatAreLLMs {
             || view! { <Abbr title="Artificial General Intelligence">AGI</Abbr> }.into_inner();
         let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
-            "When we talk about "{ai}" today, we pretty much talk about "{llms}
+            "When we talk about "
+            {ai}
+            " today, we pretty much talk about "
+            {llms}
             ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
 
-            "To be able to understand what an "{llm}
+            "To be able to understand what an "
+            {llm}
             " is, we'll take a detour to compression algorithms. "
             <div class:box=true class:extra-info=true>
                 "There are two categories of compression: lossless compression and lossy compression."
                 <dl>
                     <dt>"Lossless compression"</dt>
-                    <dd>"This will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."</dd>
+                    <dd>
+                        "This will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."
+                    </dd>
                     <dt>"Lossy compression"</dt>
-                    <dd>"In this case you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
-                    {jpeg}
-                    " images sometimes being blocky."</dd>
+                    <dd>
+                        "In this case you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
+                        {jpeg} " images sometimes being blocky."
+                    </dd>
                 </dl>
             </div>
             "Historically, text has almost exclusively been used with lossless compression. "
-            {llms}" are a revolutionary change to that. "{llms}
+            {llms}
+            " are a revolutionary change to that. "
+            {llms}
             " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
             {llms}
             " you create the output file from the start, then you take an arbitrary amount of data and optimize the parameters in that existing output file to be able to approximate the data you provide."
@@ -94,7 +103,9 @@ impl LazyRoute for WhatAreLLMs {
                 <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
                 <br />
                 <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
-            </Footnote>" where researchers could get "{llm}
+            </Footnote>
+            " where researchers could get "
+            {llm}
             " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. This doesn't prove lack of intelligence, but it proves that the data is there."
 
             <h2>"Where does the intelligence come from?"</h2>
@@ -241,8 +252,7 @@ impl LazyRoute for WhatAreLLMs {
                 "My point with this clog post is that we all perpetuate the illusion of intelligence. Terminology and framing matters. Thinking of "
                 {llms} " as " {ai}
                 " creates a abstract entity with hard to define properties, and it becomes very easy to fall into the anthropomorphism trap. On the other hand, if you think of "
-                {llm} " models as lossy text compression, it will help you understand what "
-                {llms}
+                {llm} " models as lossy text compression, it will help you understand what " {llms}
                 " are actually capable of, and even somewhat what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; It's not your friend; Any belief to the contrary is dangerous. We may some day create an actual "
                 {ai} ", but it will not be an " {llm}
                 ". You may rightfully argue that this is an oversimplification, but at least it's an oversimplification where you don't have to argue the philosophic point of "
