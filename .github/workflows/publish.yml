@@ -345,7 +345,7 @@ jobs:
           echo "Pushing to branch $gh_action_fmt_branch"
           git push --force origin "$gh_action_fmt_branch"
         else
-          git push -d origin "$gh_action_fmt_branch"
+          git push -d origin "$gh_action_fmt_branch" || true
         fi
       env:
         patch_path: ${{ runner.temp }}/formatting/format.patch
