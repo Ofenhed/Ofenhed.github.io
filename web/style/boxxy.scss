@@ -1,8 +1,8 @@
 @use 'sass:color';
 @use 'sass:map';
 
-$box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F50E"),
-             extra-info: (light: #ffffcc, dark: #333300, icon: "\1F4CB"),
+$box-types: (info: (light: #ccffcc, dark: #003300, icon: "\1F4CB"),
+             extra-info: (light: #ffffcc, dark: #333300, icon: "\1F50E"),
              thought: (light: #ffffcc, dark: #333300, icon: "\1F4AD"),
              //warning: (light: #ffcccc, dark: #330000, icon: "\26A0"),
              //weird-fact: (light: #ffcccc, dark: #330000, icon: "\2049"),
