@@ -55,6 +55,7 @@ default = []
 hydrate = ["leptos/hydrate", "client-side"]
 client-side = ["dep:web-sys", "dep:base64"]
 static-qr = ["dep:base64", "ssr"]
+debug-reload-panics = []
 ssr = [
   "dep:image",
   "dep:reqwest",

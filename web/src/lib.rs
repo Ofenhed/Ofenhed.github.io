@@ -21,10 +21,10 @@ pub fn hydrate() {
     use app::*;
     console_error_panic_hook::set_once();
 
-    #[cfg(not(debug_assertions))]
+    #[cfg(any(feature = "debug-reload-panics", not(debug_assertions)))]
     {
         use crate::{
-            helpers::build_number,
+            helpers,
             local_storage::{
                 LocalStorageAccessor, LocalStorageKey, get_current_local_storage_value,
                 set_local_storage_value,
@@ -34,7 +34,13 @@ pub fn hydrate() {
         use std::{panic, sync::Once};
         struct LastPanic;
         struct LastPanicBuildNumber;
-        const RELOAD_KEYWORD: &str = "reloaded";
+        const BUILD_NUMBER: Option<&str> = helpers::build_number();
+        const RELOAD_PREFIX: &str = "reloaded";
+        let reload_keyword = if let Some(number) = BUILD_NUMBER {
+            Oco::Owned(format!("{RELOAD_PREFIX}-{number}"))
+        } else {
+            Oco::Borrowed(RELOAD_PREFIX)
+        };
         impl LocalStorageAccessor for LastPanic {
             const KEY: LocalStorageKey = LocalStorageKey::LastPanic;
             type Data = String;
@@ -64,26 +70,31 @@ pub fn hydrate() {
                 'reload_page: {
                     if let Some(location) = document().location() {
                         'reload_with_hash: {
-                            let build_number = build_number().map(|x| x.to_string());
                             let stored_build_number =
                                 get_current_local_storage_value::<LastPanicBuildNumber>()
                                     .ok()
                                     .flatten();
 
-                            if let Some(build_number) = build_number
-                                && stored_build_number.as_ref() != Some(&build_number)
-                                && set_local_storage_value::<LastPanicBuildNumber>(build_number)
-                                    .is_ok()
+                            if let Some(build_number) = BUILD_NUMBER
+                                && stored_build_number.as_ref().map(|x| x.as_str())
+                                    != Some(build_number)
+                                && set_local_storage_value::<LastPanicBuildNumber>(
+                                    build_number.to_string(),
+                                )
+                                .is_ok()
                             {
                                 leptos::logging::log!("First panic attack is free");
                                 break 'reload_with_hash;
                             }
 
                             if let Ok(hash) = location.hash() {
-                                if hash.strip_prefix('#').unwrap_or(&hash) == RELOAD_KEYWORD {
+                                if hash.strip_prefix('#').unwrap_or(&hash) == reload_keyword {
                                     break 'reload_page;
                                 } else {
-                                    _ = location.set_hash(RELOAD_KEYWORD);
+                                    leptos::logging::warn!(
+                                        "It's likely the backend has updated, trying to reload"
+                                    );
+                                    _ = location.set_hash(&reload_keyword);
                                 }
                             }
                         }

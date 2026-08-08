@@ -62,7 +62,10 @@ impl LazyRoute for BuildInfo {
                 Oco::Borrowed("Commit"),
                 option_env!("GITHUB_SHA").map(Oco::Borrowed),
             ),
-            (Oco::Borrowed("Run number"), build_number()),
+            (
+                Oco::Borrowed("Run number"),
+                build_number().map(Oco::Borrowed),
+            ),
             (
                 Oco::Borrowed("Build OS"),
                 option_env!("RUNNER_OS").map(Oco::Borrowed),

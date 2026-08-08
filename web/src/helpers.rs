@@ -448,8 +448,8 @@ impl BoxType {
 }
 
 #[inline(always)]
-pub(crate) fn build_number() -> Option<Oco<'static, str>> {
-    option_env!("GITHUB_RUN_NUMBER").map(Oco::Borrowed)
+pub(crate) const fn build_number() -> Option<&'static str> {
+    option_env!("GITHUB_RUN_NUMBER")
 }
 
 #[inline(always)]
