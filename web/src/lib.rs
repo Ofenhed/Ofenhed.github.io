@@ -47,46 +47,47 @@ pub fn hydrate() {
         SET_HOOK.call_once(|| {
             let prev_hook = panic::take_hook();
             std::panic::set_hook(Box::new(move |info| {
-                if let Some(location) = document().location()
-                    && let Ok(hash) = location.hash()
-                {
-                    let mut panic_msg = String::new();
-                    if let Some(location) = info.location() {
-                        panic_msg.push_str(&format!(
-                            "{}@{}:{}\n",
-                            location.file(),
-                            location.line(),
-                            location.column()
-                        ));
-                    }
-                    if let Some(panic_info) = info.payload_as_str() {
-                        panic_msg.push_str(panic_info);
-                        _ = set_local_storage_value::<LastPanic>(panic_msg);
-                    }
-                    'reload_page: {
-                        let build_number = build_number();
-                        let stored_build_number =
-                            get_current_local_storage_value::<LastPanicBuildNumber>();
+                let mut panic_msg = String::new();
+                if let Some(location) = info.location() {
+                    panic_msg.push_str(&format!(
+                        "{}@{}:{}\n",
+                        location.file(),
+                        location.line(),
+                        location.column()
+                    ));
+                }
+                if let Some(panic_info) = info.payload_as_str() {
+                    panic_msg.push_str(panic_info);
+                    _ = set_local_storage_value::<LastPanic>(panic_msg);
+                }
 
-                        if let Some(last_build) = stored_build_number.ok().flatten()
-                            && Some(last_build.as_str())
-                                == build_number.as_ref().map(|x| x.as_str())
-                        {
-                            leptos::logging::error!(
-                                "Reload did not help with the crash, refusing to reload again"
-                            );
-                            break 'reload_page;
-                        } else if let Some(build_number) = build_number
-                            && set_local_storage_value::<LastPanicBuildNumber>(
-                                build_number.to_string(),
-                            )
-                            .is_ok()
-                        {
-                            // Doing nothing if we can set the variable
-                        } else if hash == RELOAD_KEYWORD {
-                            break 'reload_page;
-                        } else {
-                            _ = location.set_hash(RELOAD_KEYWORD);
+                'reload_page: {
+                    if let Some(location) = document().location() {
+                        'reload_with_hash: {
+                            let build_number = build_number().map(|x| x.to_string());
+                            let stored_build_number =
+                                get_current_local_storage_value::<LastPanicBuildNumber>()
+                                    .ok()
+                                    .flatten();
+
+                            if let Some(build_number) = build_number
+                                && stored_build_number.as_ref() != Some(&build_number)
+                            {
+                                if set_local_storage_value::<LastPanicBuildNumber>(build_number)
+                                    .is_ok()
+                                {
+                                    leptos::logging::log!("First panic attack is free");
+                                    break 'reload_with_hash;
+                                }
+                            }
+
+                            if let Some(hash) = location.hash().ok() {
+                                if hash.strip_prefix('#').unwrap_or(&hash) == RELOAD_KEYWORD {
+                                    break 'reload_page;
+                                } else {
+                                    _ = location.set_hash(RELOAD_KEYWORD);
+                                }
+                            }
                         }
                         _ = location.reload_with_forceget(true);
                     }
