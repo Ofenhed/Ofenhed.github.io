@@ -21,7 +21,7 @@ pub fn hydrate() {
     use app::*;
     console_error_panic_hook::set_once();
 
-    //#[cfg(not(debug_assertions))]
+    #[cfg(not(debug_assertions))]
     {
         use crate::{
             helpers::build_number,
@@ -72,16 +72,14 @@ pub fn hydrate() {
 
                             if let Some(build_number) = build_number
                                 && stored_build_number.as_ref() != Some(&build_number)
-                            {
-                                if set_local_storage_value::<LastPanicBuildNumber>(build_number)
+                                && set_local_storage_value::<LastPanicBuildNumber>(build_number)
                                     .is_ok()
-                                {
-                                    leptos::logging::log!("First panic attack is free");
-                                    break 'reload_with_hash;
-                                }
+                            {
+                                leptos::logging::log!("First panic attack is free");
+                                break 'reload_with_hash;
                             }
 
-                            if let Some(hash) = location.hash().ok() {
+                            if let Ok(hash) = location.hash() {
                                 if hash.strip_prefix('#').unwrap_or(&hash) == RELOAD_KEYWORD {
                                     break 'reload_page;
                                 } else {
