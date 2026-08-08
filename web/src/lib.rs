@@ -76,8 +76,7 @@ pub fn hydrate() {
                                     .flatten();
 
                             if let Some(build_number) = BUILD_NUMBER
-                                && stored_build_number.as_ref().map(|x| x.as_str())
-                                    != Some(build_number)
+                                && stored_build_number.as_deref() != Some(build_number)
                                 && set_local_storage_value::<LastPanicBuildNumber>(
                                     build_number.to_string(),
                                 )
