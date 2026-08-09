@@ -57,19 +57,10 @@ impl LazyRoute for BuildInfo {
 
     fn view(_this: Self) -> AnyView {
         use std::option_env;
-        let data: [(Oco<'static, str>, Option<Oco<'static, str>>); _] = [
-            (
-                Oco::Borrowed("Commit"),
-                option_env!("GITHUB_SHA").map(Oco::Borrowed),
-            ),
-            (
-                Oco::Borrowed("Run number"),
-                build_number().map(Oco::Borrowed),
-            ),
-            (
-                Oco::Borrowed("Build OS"),
-                option_env!("RUNNER_OS").map(Oco::Borrowed),
-            ),
+        let data: [(&str, Option<Oco<'static, str>>); _] = [
+            ("Commit", option_env!("GITHUB_SHA").map(Oco::Borrowed)),
+            ("Run number", build_number().map(Oco::Borrowed)),
+            ("Build OS", option_env!("RUNNER_OS").map(Oco::Borrowed)),
         ];
         let server_url = if let (Some(url), Some(repo), Some(run_id)) = (
             option_env!("GITHUB_SERVER_URL"),
