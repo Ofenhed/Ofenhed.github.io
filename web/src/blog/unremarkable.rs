@@ -7,7 +7,7 @@ use leptos_router::{LazyRoute, lazy_route};
 pub(crate) struct Unremarkable;
 
 impl BlogEntry for Unremarkable {
-    const UID: u32 = 2;
+    const UID: u32 = 0x1f3f403f;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2022, 1, 20);
 

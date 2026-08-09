@@ -1,4 +1,10 @@
-use crate::blog::metadata::{BlogEntry, Locale, Tag, date};
+use crate::{
+    blog::{
+        chat_control::ChatControl,
+        metadata::{BlogEntry, Locale, Tag, date},
+    },
+    helpers::{BoxType, idle_preload},
+};
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
@@ -7,7 +13,7 @@ use leptos_router::{LazyRoute, lazy_route};
 pub(crate) struct ChatControlReplyV;
 
 impl BlogEntry for ChatControlReplyV {
-    const UID: u32 = 6;
+    const UID: u32 = 0x2c3f3f23;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2025, 9, 4);
 
@@ -29,7 +35,13 @@ impl LazyRoute for ChatControlReplyV {
     }
 
     fn view(_this: Self) -> AnyView {
+        idle_preload::<ChatControl>();
         view! {
+            <div {..BoxType::Context
+                .attr()}>
+                "Det här Vänsterpartiets svar till mitt "
+                <a href=format!("/clog/{}", ChatControl::UID)>"mail om ChatControl"</a>"."
+            </div>
             <p>"Hej,"</p>
 
             <p>"Tack för ditt mejl och ditt engagemang i frågan om Chat Control."</p>

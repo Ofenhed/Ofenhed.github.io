@@ -32,7 +32,7 @@ impl LazyRoute for WhyBlog {
     fn view(_this: Self) -> AnyView {
         let llm = || view! { <Abbr title="Large Language Model">LLM</Abbr> }.into_inner();
         view! {
-            "This is an experiment with this new concept I thought of, where someone could share their thoughts in some kind of captain's log on the web, like web captain's log, or a captain's web log. With all "
+            "This is an experiment with this new concept I thought of, where someone could share their thoughts in some kind of captain's log on the web, like web captain's log, or a captain's web log. I wanted to put mine on a platform I control. With all "
             {llm}
             " generated text online, we clearly need more people sending text into the dark void that is the modern internet for... reasons."
         }.into_any()
