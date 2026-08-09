@@ -59,6 +59,7 @@ impl LazyRoute for NotEvenDumb {
                 <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
                 <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
                 <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
+                <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
             </div>
             <h2>"Spelling issues"</h2>
             "These are somewhat dismissable as the model using tokens instead of words."
