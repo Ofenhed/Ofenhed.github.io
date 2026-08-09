@@ -17,8 +17,7 @@
 
 div {
   $carousel-targets:
-    "var" "--carousel-transform" -30% true,
-    "trigger" "transform" -50% false;
+    "trigger" "transform" -50% false, ;
   @each $suffix, $target, $amount, $bounce in $carousel-targets {
     @keyframes carousel-peek-#{$suffix} {
       0% {
@@ -73,23 +72,13 @@ div {
             animation-timing-function: ease-in-out;
           }
         }
-        @supports (animation-timeline: view()) and (not (timeline-trigger-source: view())) {
-          animation-fill-mode: both;
-          animation-name: carousel-peek-var;
-          animation-timing-function: ease-in-out;
-          animation-timeline: view(y);
-          animation-range: cover 10% cover 90%;
-          &:has(:not(:first-child)) > * {
-            transform: var(--carousel-transform);
-          }
-        }
       }
       @media (not (prefers-reduced-motion: no-preference)) and (not (pointer: fine)) {
         > * {
           max-width: calc(80vw - 2 * var(--main-padding)) !important;
         }
       }
-      @supports (not (animation-timeline: view())) and (not (timeline-trigger-source: view())) {
+      @supports (not (timeline-trigger-source: view())) {
         > * {
           max-width: calc(80vw - 2 * var(--main-padding)) !important;
         }
