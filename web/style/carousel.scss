@@ -1,22 +1,3 @@
-@mixin carousel {
-  scroll-snap-type: x mandatory;
-  overscroll-behavior-x: contain;
-  scroll-snap-align: center;
-  align-items: center;
-  display: block flex;
-  flex-flow: row nowrap;
-  max-height: calc(100vh - 1em);
-  justify-content: space-around;
-  overflow-x: auto;
-  overflow-y: hidden;
-  & > * {
-    scroll-snap-align: center;
-    margin: 1em;
-    flex: none;
-    box-sizing: content-box;
-  }
-}
-
 @media print {
   div.carousel {
     flex-flow: row wrap !important;
@@ -29,21 +10,97 @@
   }
 }
 
-div.carousel {
-  @include carousel;
+:root {
+  --carousel-margin: none;
+  //--carousel-border: none;
 }
 
-div.carousel-or-grid {
-  @media not (pointer: fine) {
-    @include carousel;
+div {
+  $carousel-targets:
+    "var" "--carousel-transform" -30% true,
+    "trigger" "transform" -50% false;
+  @each $suffix, $target, $amount, $bounce in $carousel-targets {
+    @keyframes carousel-peek-#{$suffix} {
+      0% {
+        #{$target}: translateX(0);
+      }
+      @if $bounce {
+        10% {
+          #{$target}: translateX(#{$amount});
+        }
+        20% {
+          #{$target}: translateX(0);
+        }
+        80% {
+          #{$target}: translateX(0);
+        }
+        90% {
+          #{$target}: translateX(#{$amount});
+        }
+      }
+      @else {
+        50% {
+          #{$target}: translateX(#{$amount});
+        }
+      }
+      100% {
+        #{$target}: translateX(0);
+      }
+    }
   }
-  @media (pointer:fine) {
-    @include carousel;
-    overflow: unset;
-    flex-flow: row wrap;
-    max-height: unset;
-    @supports (flex-wrap: balance) {
-      flex-wrap: balance
+  &.carousel {
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scroll-snap-align: center;
+    align-items: center;
+    display: block flex;
+    flex-flow: row nowrap;
+    max-height: calc(100vh - 1em);
+    box-sizing: content-box;
+    justify-content: space-around;
+    overflow-x: auto;
+    overflow-y: hidden;
+    &:has(:not(:first-child)) {
+      @media (prefers-reduced-motion: no-preference) and (not (pointer: fine)) {
+        @supports (timeline-trigger-source: view()) {
+          timeline-trigger: --carousel-trigger view() cover 10% cover 90%;
+          timeline-trigger-source: view();
+          > * {
+            animation-trigger: --carousel-trigger play-forwards;
+            animation-duration: 1s;
+            animation-fill-mode: both;
+            animation-name: carousel-peek-trigger;
+            animation-timing-function: ease-in-out;
+          }
+        }
+        @supports (animation-timeline: view()) and (not (timeline-trigger-source: view())) {
+          animation-fill-mode: both;
+          animation-name: carousel-peek-var;
+          animation-timing-function: ease-in-out;
+          animation-timeline: view(y);
+          animation-range: cover 10% cover 90%;
+          &:has(:not(:first-child)) > * {
+            transform: var(--carousel-transform);
+          }
+        }
+      }
+    }
+    > * {
+      scroll-snap-align: center;
+      margin: 1em;
+      flex: none;
+      box-sizing: content-box;
+    }
+  }
+  &.carousel-or-grid {
+    @extend .carousel;
+    @media (pointer:fine) {
+      overflow: unset;
+      flex-flow: row wrap;
+      max-height: unset;
+      @supports (flex-wrap: balance) {
+        flex-wrap: balance
+      }
     }
   }
 }
