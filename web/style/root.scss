@@ -8,6 +8,7 @@
   --space-width: min(100%, 120ex);
   --symbol-font-text: "Helvetica Neue","Vitesco W05 Roman",Helvetica,Arial,sans-serif;
   --font-color: light-dark(#000, #fff);
+  --main-padding: 1em;
 }
 @media print {
   :root {

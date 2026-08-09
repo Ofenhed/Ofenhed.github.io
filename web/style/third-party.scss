@@ -113,9 +113,9 @@ div.simple-embed {
   }
   &.youtube-embed {
     @at-root iframe.youtube-embed, & {
-      max-width: min(480px, 100vw);
-      max-height: min(480px, 100vh);
-      box-sizing: content-box;
+      max-width: calc(100vw - var(--main-padding) * 2);
+      max-height: 100vh;
+      box-sizing: border-box;
     }
     @media (pointer:fine) {
       @at-root iframe.youtube-embed, & {

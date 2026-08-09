@@ -84,6 +84,16 @@ div {
           }
         }
       }
+      @media (not (prefers-reduced-motion: no-preference)) and (not (pointer: fine)) {
+        > * {
+          max-width: calc(80vw - 2 * var(--main-padding)) !important;
+        }
+      }
+      @supports (not (animation-timeline: view())) and (not (timeline-trigger-source: view())) {
+        > * {
+          max-width: calc(80vw - 2 * var(--main-padding)) !important;
+        }
+      }
     }
     > * {
       scroll-snap-align: center;

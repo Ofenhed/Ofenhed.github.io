@@ -133,7 +133,7 @@ body {
       margin-top: 0;
     }
     grid-area: main-start / main-start / main-end / main-end;
-    padding: 1em;
+    padding: var(--main-padding);
     span:has(> a.footnote-link:only-child) {
       & {
         break-before: avoid;
