@@ -78,8 +78,7 @@ pub fn hydrate() {
                                         .flatten();
 
                                 if let Some(build_number) = BUILD_NUMBER
-                                    && stored_build_number.as_ref().map(|x| x.as_str())
-                                        != Some(build_number)
+                                    && stored_build_number.as_deref() != Some(build_number)
                                     && set_local_storage_value::<LastPanicBuildNumber>(
                                         build_number.to_string(),
                                     )
@@ -112,7 +111,6 @@ pub fn hydrate() {
                                     "Failed to reload: {}",
                                     e.as_string().unwrap_or("Unknown".to_string())
                                 );
-                                break 'reload_page;
                             } else {
                                 if let Ok(l) = location.href() {
                                     _ = location.replace(&l);
