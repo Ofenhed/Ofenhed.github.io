@@ -64,20 +64,32 @@ div {
           }
         }
       }
-      @media (not (prefers-reduced-motion: no-preference)) and (not (pointer: fine)) {
+      @mixin no-animation-attrs {
+        // Make it so that the carousel reveals itself without animation when on the first entry
         > * {
-          max-width: calc(80vw - 2 * var(--main-padding)) !important;
+          max-width: calc(100vw - 2.5 * var(--main-padding)) !important;
+          &:first-child {
+            margin-left: 0em;
+            margin-right: 0em;
+          }
         }
       }
+      @media (not (prefers-reduced-motion: no-preference)) and (not (pointer: fine)) {
+        @include no-animation-attrs
+      }
       @supports (not (timeline-trigger-source: view())) {
-        > * {
-          max-width: calc(80vw - 2 * var(--main-padding)) !important;
-        }
+        @include no-animation-attrs
       }
     }
     > * {
       scroll-snap-align: center;
-      margin: 1em;
+      margin: 1em 0.5em;
+      &:first-child {
+        margin-left: 1em;
+      }
+      &:last-child {
+        margin-right: 1em;
+      }
       flex: none;
       box-sizing: content-box;
     }
