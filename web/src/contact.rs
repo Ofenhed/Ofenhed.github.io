@@ -414,12 +414,7 @@ impl LazyRoute for Contact {
         view! {
             <div class="contact">
                 <div
-                    class="qr-code"
-                    style:display="block"
-                    style:box-sizing="border-box"
-                    style:aspect-ratio="1/1"
-                    style:width="calc(min(308px,100%))"
-                    style:margin="0 auto 1em auto"
+                    class:qr-code = true
                 >
                     <a download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
                         <img alt="Contact Card QR" node_ref=static_qr src=original_qr_src />

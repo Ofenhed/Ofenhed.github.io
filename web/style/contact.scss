@@ -3,6 +3,10 @@ div.contact {
     text-align: center;
   }
   div.qr-code {
+    box-sizing: border-box;
+    aspect-ratio: 1/1;
+    width: min(var(--qr-size), 100%);
+    margin: 0 auto 1em auto;
     position: relative;
     img, canvas, div#canvasHolder {
       width: 100%;
