@@ -11,8 +11,7 @@
 }
 
 :root {
-  --carousel-margin: none;
-  //--carousel-border: none;
+  --carousel-margin: 0.5em;
 }
 
 div {
@@ -67,7 +66,7 @@ div {
       @mixin no-animation-attrs {
         // Make it so that the carousel reveals itself without animation when on the first entry
         > * {
-          max-width: calc(100vw - 2.5 * var(--main-padding)) !important;
+          max-width: calc(100vw - 2 * var(--main-padding) - var(--carousel-margin)) !important;
           &:first-child {
             margin-left: 0em;
             margin-right: 0em;
@@ -83,12 +82,12 @@ div {
     }
     > * {
       scroll-snap-align: center;
-      margin: 1em 0.5em;
+      margin: var(--carousel-margin) calc(var(--carousel-margin) / 2);
       &:first-child {
-        margin-left: 1em;
+        margin-left: var(--carousel-margin);
       }
       &:last-child {
-        margin-right: 1em;
+        margin-right: var(--carousel-margin);
       }
       flex: none;
       box-sizing: content-box;
