@@ -35,6 +35,7 @@
     height: fit-content;
     z-index: 100;
     margin: 0;
+    margin-top: var(--open-burger-leak-down);
 
     transform-origin: top left;
     transform: translateX(-100%);
