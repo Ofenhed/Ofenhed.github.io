@@ -17,33 +17,24 @@
 
 div {
   $carousel-targets:
-    "trigger" "transform" -50% false, ;
+    "trigger" "transform" -10%,
+    ;
   @each $suffix, $target, $amount, $bounce in $carousel-targets {
     @keyframes carousel-peek-#{$suffix} {
       0% {
         #{$target}: translateX(0);
+        margin-left: 1em;
+        margin-right: 1em;
       }
-      @if $bounce {
-        10% {
-          #{$target}: translateX(#{$amount});
-        }
-        20% {
-          #{$target}: translateX(0);
-        }
-        80% {
-          #{$target}: translateX(0);
-        }
-        90% {
-          #{$target}: translateX(#{$amount});
-        }
-      }
-      @else {
-        50% {
-          #{$target}: translateX(#{$amount});
-        }
+      50% {
+        #{$target}: translateX(#{$amount});
+        margin-left: 2px;
+        margin-right: 2px;
       }
       100% {
         #{$target}: translateX(0);
+        margin-left: 1em;
+        margin-right: 1em;
       }
     }
   }
@@ -69,7 +60,7 @@ div {
             animation-duration: 1s;
             animation-fill-mode: both;
             animation-name: carousel-peek-trigger;
-            animation-timing-function: ease-in-out;
+            animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
           }
         }
       }
