@@ -11,7 +11,7 @@
 }
 
 :root {
-  --carousel-margin: 0.5em;
+  --carousel-margin: 1em;
 }
 
 div {
@@ -22,8 +22,8 @@ div {
     @keyframes carousel-peek-#{$suffix} {
       0% {
         #{$target}: translateX(0);
-        margin-left: 1em;
-        margin-right: 1em;
+        margin-left: var(--carousel-margin);
+        margin-right: var(--carousel-margin);
       }
       50% {
         #{$target}: translateX(#{$amount});
@@ -32,8 +32,8 @@ div {
       }
       100% {
         #{$target}: translateX(0);
-        margin-left: 1em;
-        margin-right: 1em;
+        margin-left: var(--carousel-margin);
+        margin-right: var(--carousel-margin);
       }
     }
   }
