@@ -88,8 +88,11 @@ div.simple-embed {
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
     > .author {
       display: block;
-      padding: calc(1em / 0.66);
+      padding: 1ex calc(1em / 0.66);
       margin-bottom: calc(1em / -0.66);
+      @media not (pointer:fine) {
+        padding-top: calc(1em / 0.66);
+      }
       width: fit-content;
       font-size: 66%;
       @media print {
