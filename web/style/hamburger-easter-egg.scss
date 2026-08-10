@@ -4,11 +4,12 @@
 @use 'nav.scss';
 
 #navigation #hamburger {
-  $sword_length: 40px;
-  $sword_width: 0.75px;
-  $handle_length: 8px;
-  $handle_width: 2.5px;
-  $glow_side: 16px;
+  $scaled_pixel: var(--hamburger-size) / 32;
+  $sword_length: 40;
+  $sword_width: 0.75;
+  $handle_length: 8;
+  $handle_width: 2.5;
+  $glow_side: 16;
   @include nav.with-path-prefix('/clog', $invert-path: true, $selector: &) {
     &.ultra-realistic .slice {
       @include nav.closed($selector: &) {
@@ -50,8 +51,8 @@
               &:nth-child(#{$index}) {
                 opacity: 1;
                 box-shadow: 0 0 1px 1px $color;
-                height: $sword_width;
-                width: $sword_length;
+                height: calc($scaled_pixel * $sword_width);
+                width: calc($scaled_pixel * $sword_length);
                 background: color.scale($color, $lightness: +80%);
                 border: none;
                 &::after {
@@ -61,10 +62,10 @@
                   position: absolute;
                   filter: none !important;
                   border-radius: 1px;
-                  left: -$handle_length+0.25px;
-                  top: ($sword_width - $handle_width) / 2;
-                  height: $handle_width;
-                  width: $handle_length;
+                  left: calc((0.25 - #{$handle_length}) * $scaled_pixel);
+                  top: calc($scaled_pixel * ($sword_width - $handle_width) / 2);
+                  height: calc($scaled_pixel * $handle_width);
+                  width: calc($scaled_pixel * $handle_length);
                 }
               }
             }
@@ -151,7 +152,7 @@
                 }
               }
               z-index: 5;
-              top: calc(50% - $sword_width);
+              top: calc(50% - $scaled_pixel * $sword_width);
               left: 0;
               animation-name: blue-sword-in;
               animation-timing-function: linear;
@@ -173,11 +174,11 @@
                 }
               }
               transform: scale(0.8);
-              width: $glow_side;
-              height: $glow_side;
+              width: calc($scaled_pixel * $glow_side);
+              height: calc($scaled_pixel * $glow_side);
               opacity: 1;
-              top: calc(50% - 2 * $sword_width - $glow_side / 2);
-              left: math.div(math.sqrt(math.pow($sword_length / 1px, 2) / 2) * 1px, 2) - $sword_width;
+              top: calc(50% - $scaled_pixel * $glow_side / 2);
+              left: calc($scaled_pixel * (sqrt(pow($sword_length, 2) / 2) / 2));
               z-index: 4;
               border: none;
               animation-name: sword-sparcles;
