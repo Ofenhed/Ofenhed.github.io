@@ -215,7 +215,7 @@ pub(crate) fn App() -> impl IntoView {
                         </A>
                     </li>
                     <li>
-                        <A href="/clogs">"Clog"</A>
+                        <A href="/clog">"Clog"</A>
                     </li>
                     <Show when=move || should_show_cookie_consent_link.get()>
                         <li>

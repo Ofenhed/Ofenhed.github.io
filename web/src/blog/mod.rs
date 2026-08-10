@@ -52,7 +52,7 @@ pub(crate) fn blog_entry_href<B: BlogEntry>() -> Oco<'static, str> {
 
 fn current_path_with(f: impl Fn()) -> Vec<PathSegment> {
     let owner = Owner::current().unwrap();
-    let mut ret = vec![PathSegment::Static(Cow::Borrowed("clogs"))];
+    let mut ret = vec![PathSegment::Static(Cow::Borrowed("clog"))];
     owner.child().with(|| {
         f();
         use_context::<SortBy>().unwrap().generate_path(&mut ret);
@@ -413,8 +413,6 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
         <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
             <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
                 <ForRoute each=blogs children=|b| b />
-            </ParentRoute>
-            <ParentRoute path=path!("/clogs") view=Outlet ssr=SsrMode::OutOfOrder>
                 <BlogSorting />
             </ParentRoute>
         </ParentRoute>
