@@ -55,9 +55,9 @@ div {
           timeline-trigger: --carousel-trigger view() cover 10% cover 90%;
           timeline-trigger-source: view();
           > * {
-            animation-trigger: --carousel-trigger play-forwards;
+            animation-trigger: --carousel-trigger play-once;
             animation-duration: 1s;
-            animation-fill-mode: both;
+            animation-fill-mode: forwards;
             animation-name: carousel-peek-trigger;
             animation-timing-function: cubic-bezier(0.5, 0, 0.5, 1);
           }
