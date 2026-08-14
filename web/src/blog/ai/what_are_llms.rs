@@ -195,7 +195,7 @@ impl LazyRoute for WhatAreLLMs {
                 "Anthropomorphism is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
             </blockquote>
             <p>
-                "Let's break down a few of these terminologies, and why I find them to be problematic. I have skipped some obvious ones, such as calling them "
+                "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling them "
                 {ai}
                 " agents or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
             </p>
