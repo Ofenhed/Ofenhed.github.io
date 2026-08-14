@@ -163,7 +163,7 @@ impl LazyRoute for WhatAreLLMs {
                         <em>
                             "All of these claims strengthens the confidence in "{llm}
                             " as a road to intelligence. It also keeps lawmakers focused on sci-fi threats, instead of the damage the "
-                            {ai}" hype is already doing."
+                            {ai}" hype is already responsible for."
                         </em>
                     </Footnote>
                     "."
