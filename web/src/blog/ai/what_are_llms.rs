@@ -196,8 +196,10 @@ impl LazyRoute for WhatAreLLMs {
             </blockquote>
             <p>
                 "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling them "
-                {ai}
-                " agents or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
+                <span title="This word means something completely different to people outside of computer science">
+                    {ai} " agents"
+                </span>
+                " or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
             </p>
             <ul class:pink-marker=true>
                 <li>
