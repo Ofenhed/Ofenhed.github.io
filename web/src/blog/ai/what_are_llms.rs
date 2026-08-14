@@ -18,7 +18,7 @@ impl BlogEntry for WhatAreLLMs {
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 6);
 
-    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 7, 28));
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 8, 14));
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
@@ -118,6 +118,10 @@ impl LazyRoute for WhatAreLLMs {
                     ": The generated text is put together based on a ridiculous number of parameters. In combination with the volume of data, it will mostly output coherent text, even when the text is completely nonsensical."
                 </li>
                 <li>
+                    <b>"Complexity"</b>
+                    ": It's difficult (probably not possible) to imagine the amount of data that has been used to optimize these models, or the amount of parameters that a model uses. It's a lot easier to just assume that there is some kind of intelligence."
+                </li>
+                <li>
                     <b>
                         "Idealization/"
                         <a href="https://en.wikipedia.org/wiki/Apophenia">Apophenia</a>
@@ -129,15 +133,17 @@ impl LazyRoute for WhatAreLLMs {
                     " as you would a friend, then I would expect that you want there to be a meaning to those conversations."
                 </li>
                 <li>
+                    <b>"Generous interpretation"</b>
+                    ": If you read the sentence "
+                    <q>"c u in 5 at bus stop"</q>
+                    ", you will likely assume what the author meant. We are good at this, and it usually serves us well as there's usually an intent behind words. When there isn't, we're still likely to fill that gap, and then assume that the meaning we found was intended."
+                </li>
+                <li>
                     <b>"Authority"</b>
                     ": These techniques are developed by the richest people in the world. They can't all be lying, right? "
                     <i>
                         "(This is obviously written from my Tesla Roadster while autonomously riding along the open roads on Mars)"
                     </i>
-                </li>
-                <li>
-                    <b>"Complexity"</b>
-                    ": It's difficult (probably not possible) to imagine the amount of data that has been used to optimize these models, or the amount of parameters that a model uses. It's a lot easier to just assume that there is some kind of intelligence."
                 </li>
                 <li>
                     <b>"Trojan horses"</b>
