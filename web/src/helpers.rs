@@ -711,18 +711,20 @@ pub(crate) fn Abbr<T: IntoView + 'static>(
 
     title.upgrade_inplace();
 
-    write_abbrs.update({
-        let title = title.clone();
-        move |abbrs| abbrs.push((uid, ArcSignal::derive(move || title.clone())))
-    });
-
-    Owner::on_cleanup(move || {
-        write_abbrs.update(move |abbrs| {
-            if let Some((index, _)) = abbrs.iter().enumerate().find(|(_, (id, _))| *id == uid) {
-                abbrs.remove(index);
-            }
+    if !no_expand {
+        write_abbrs.update({
+            let title = title.clone();
+            move |abbrs| abbrs.push((uid, ArcSignal::derive(move || title.clone())))
         });
-    });
+
+        Owner::on_cleanup(move || {
+            write_abbrs.update(move |abbrs| {
+                if let Some((index, _)) = abbrs.iter().enumerate().find(|(_, (id, _))| *id == uid) {
+                    abbrs.remove(index);
+                }
+            });
+        });
+    }
 
     let first_of_abbr = {
         let title = title.clone();

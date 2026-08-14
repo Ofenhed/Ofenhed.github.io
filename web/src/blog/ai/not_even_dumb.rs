@@ -21,6 +21,16 @@ impl BlogEntry for NotEvenDumb {
     const TITLE: &'static str = "LLMs are not even stupid";
 
     const TAGS: &'static [Tag] = &[Tag::Ai, Tag::Tech];
+    fn title() -> Option<AnyView> {
+        view! {
+            <Abbr title="Large Language Model" suffix="s" no_expand=true>
+                "LLM"
+            </Abbr>
+            " are not even stupid"
+        }
+        .into_any()
+        .into()
+    }
 }
 
 #[lazy_route]

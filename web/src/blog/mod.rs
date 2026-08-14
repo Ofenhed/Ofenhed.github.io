@@ -501,7 +501,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
                 view! { <Meta property="og:article:tag" content=into_static_str(tag) /> }
             }
         />
-        <h1>{B::TITLE}</h1>
+        <h1>{B::title().unwrap_or_else(|| B::TITLE.into_any())}</h1>
         <section class="article-info">{publish}" "{last_update}</section>
     }
 }

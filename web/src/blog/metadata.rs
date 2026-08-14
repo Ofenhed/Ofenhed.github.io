@@ -2,6 +2,7 @@ use std::{borrow::Cow, marker::PhantomData, pin::Pin};
 
 use chrono::{DateTime, Utc};
 use futures::FutureExt as _;
+use leptos::tachys::view::any_view::AnyView;
 use leptos_router::{LazyRoute, PartialPathMatch, PathSegment, PossibleRouteMatch};
 use strum::{EnumString, IntoStaticStr, VariantArray};
 
@@ -97,6 +98,10 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
     const LAST_UPDATED: Option<DateTime<Utc>> = None;
 
     const PIN: Option<usize> = None;
+
+    fn title() -> Option<AnyView> {
+        None
+    }
 }
 
 pub trait BlogEntryHandler {

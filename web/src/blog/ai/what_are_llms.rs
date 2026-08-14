@@ -22,9 +22,21 @@ impl BlogEntry for WhatAreLLMs {
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
-    const TITLE: &'static str = "An intuitive understanding of LLM";
+    const TITLE: &'static str = "An intuitive understanding of LLMs";
 
     const TAGS: &'static [Tag] = &[Tag::Ai, Tag::Tech];
+
+    fn title() -> Option<AnyView> {
+        Some(
+            view! {
+                "An intuitive understanding of "
+                <Abbr title="Large Language Model" suffix="s" no_expand=true>
+                    "LLM"
+                </Abbr>
+            }
+            .into_any(),
+        )
+    }
 }
 
 #[lazy_route]
