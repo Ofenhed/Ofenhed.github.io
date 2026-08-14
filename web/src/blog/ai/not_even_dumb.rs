@@ -59,7 +59,7 @@ impl LazyRoute for NotEvenDumb {
         view! {
             <a href="https://www.youtube.com/@FatherPhi">"FatherPhi"</a>
             " is a great YouTube channel collecting examples of weird interactions with "
-            {ai}
+            <q>{ai}</q>
             ". I've cherry-picked a collection of videos that I feel demonstrate how "
             {llms}
             " aren't stupid, they're something else entirely."

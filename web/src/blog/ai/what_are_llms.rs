@@ -78,7 +78,7 @@ impl LazyRoute for WhatAreLLMs {
         let asi = || view! { <Abbr title="Artificial Super Intelligence">ASI</Abbr> }.into_inner();
         view! {
             <p>
-                "When we talk about " {ai} " today, we pretty much talk about " {llms}
+                "When we talk about " <q>{ai}</q> " today, we pretty much talk about " {llms}
                 ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
 
                 "To be able to understand what an " {llm}
@@ -169,7 +169,7 @@ impl LazyRoute for WhatAreLLMs {
                         {ai}" companies keep telling us about how dangerous "{ai}
                         " can be, they even ask for new laws. Anthropic claims that "
                         <a href="https://www.ynetnews.com/tech-and-digital/article/hkftl9ibmg">
-                            "Claude Mythos "{ai}" is too dangerous for the public"
+                            "Claude Mythos "{llm}" is too dangerous for the public"
                         </a>
                         ". They warn that the models might at any time start improving themselves without human help, become super intelligent, and take over the world. "
                         <em>
@@ -187,8 +187,8 @@ impl LazyRoute for WhatAreLLMs {
                         </a>
                     </b>
                     ": If you're lucky enough to have an expertise, I'm sure you've noticed that "
-                    {ai}
-                    " is really good at most things except the thing you know a lot about."
+                    {llms}
+                    " are really good at most things except the thing you know a lot about."
                 </li>
                 <li>
                     <b>
@@ -196,8 +196,8 @@ impl LazyRoute for WhatAreLLMs {
                             "Anthropomorphism"
                         </a>
                     </b>
-                    ": This is the big one for me. The used terminology in "
-                    {ai}
+                    ": This is the big one for me. The used terminology around "
+                    <q>{ai}</q>
                     " is built to uphold the illusion of intelligence."
                 </li>
             </ul>
@@ -208,14 +208,14 @@ impl LazyRoute for WhatAreLLMs {
             </blockquote>
             <p>
                 "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling them "
-                <span title="This word means something completely different to people outside of computer science">
+                <q title="This word means something completely different to people outside of computer science">
                     {ai} " agents"
-                </span>
+                </q>
                 " or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
             </p>
             <ul class:pink-marker=true>
                 <li>
-                    "You don't "<mark>"train"</mark>" an "{ai}
+                    "You don't "<mark>"train"</mark>" an "{llm}
                     " model. You optimize a model to be able to generate an approximation of specific data. This interpretation would be "
                     <a href="https://openai.com/new-york-times/#ai-training-is-fair-use">
                         "legally problematic"
