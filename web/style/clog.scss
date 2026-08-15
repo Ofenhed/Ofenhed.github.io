@@ -74,16 +74,26 @@ ul#blog-entries {
       }
     }
   }
-  main div.pagination {
+  main > div.pagination {
     margin: 0 auto;
     text-align: center;
-    a {
+    &.single-page {
+      display: none;
+    }
+    &:not(.has-previous-page) > .previous-page {
+      visibility: hidden;
+    }
+    &:not(.has-next-page) > .next-page {
+      visibility: hidden;
+    }
+    > a {
       display: inline-block;
       margin: 0.5ex 1ex;
       text-decoration: none;
       color: var(--font-color);
       &[aria-current] {
         opacity: 0.5;
+        pointer-events: none;
       }
     }
   }

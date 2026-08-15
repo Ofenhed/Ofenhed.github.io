@@ -145,9 +145,9 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
     let previous_page = move || {
         let CurrentPage(p) = use_context().expect("Current page always defined here");
         if p != 0 {
-            Some(
-                view! { <a href=current_url_with(move || provide_context(CurrentPage(p - 1)))>"<"</a> },
-            )
+            Some(current_url_with(move || {
+                provide_context(CurrentPage(p - 1))
+            }))
         } else {
             None
         }
@@ -155,36 +155,43 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
     let next_page = move || {
         let CurrentPage(p) = use_context().expect("Current page always defined here");
         if p + 1 < num_pages() {
-            Some(
-                view! { <a href=current_url_with(move || provide_context(CurrentPage(p + 1)))>">"</a> },
-            )
+            Some(current_url_with(move || {
+                provide_context(CurrentPage(p + 1))
+            }))
         } else {
             None
         }
     };
-    let pagination = move || {
-        let num_pages = num_pages();
+    let pagination = {
         let is_current = move |p| {
             move || {
                 let CurrentPage(c) = use_context().expect("Current page always defined here");
                 if p == c { Some("page") } else { None }
             }
         };
-        if num_pages > 1 {
-            Some(view! {
-                <div class="pagination">
-                    {previous_page} <For each=move || 0..num_pages key=|x| *x let(page)>
-                        <a
-                            aria-current=is_current(page)
-                            href=current_url_with(|| provide_context(CurrentPage(page)))
-                        >
-                            {page + 1}
-                        </a>
-                    </For> {next_page}
-                </div>
-            })
-        } else {
-            None
+        let single_page = move || num_pages() <= 1;
+        view! {
+            <div
+                class:pagination=true
+                class:single-page=single_page
+                class:has-next-page=move || next_page().is_some()
+                class:has-previous-page=move || previous_page().is_some()
+            >
+                <a class:previous-page=true href=previous_page>
+                    "<"
+                </a>
+                <For each=move || 0..num_pages() key=|x| *x let(page)>
+                    <a
+                        aria-current=is_current(page)
+                        href=current_url_with(|| provide_context(CurrentPage(page)))
+                    >
+                        {page + 1}
+                    </a>
+                </For>
+                <a class:next-page=true href=next_page>
+                    ">"
+                </a>
+            </div>
         }
     };
     #[cfg(not(feature = "statics"))]
@@ -358,7 +365,7 @@ impl LazyRoute for BlogListing {
                 let FilteredEntities(blogs) = use_context().unwrap();
                 let mut blogs = blogs.into_owned();
                 blogs.sort_unstable_by(|a, b| {
-                    use std::cmp::Ordering::{Less, Greater};
+                    use std::cmp::Ordering::{Greater, Less};
                     let (a, b) = if invert_sort { (b, a) } else { (a, b) };
                     match sort_by {
                         SortBy::Default => match (&a.pin, &b.pin) {
@@ -366,8 +373,20 @@ impl LazyRoute for BlogListing {
                                 b.publish_date.partial_cmp(&a.publish_date).unwrap()
                             }
                             (None, None) => unreachable!("None == None"),
-                            (Some(_), None) => if !invert_sort { Less } else { Greater },
-                            (None, Some(_)) => if !invert_sort { Greater } else { Less },
+                            (Some(_), None) => {
+                                if !invert_sort {
+                                    Less
+                                } else {
+                                    Greater
+                                }
+                            }
+                            (None, Some(_)) => {
+                                if !invert_sort {
+                                    Greater
+                                } else {
+                                    Less
+                                }
+                            }
                             (Some(x), Some(y)) => x.cmp(y),
                         },
                         SortBy::Title => a.title.partial_cmp(b.title).unwrap(),
