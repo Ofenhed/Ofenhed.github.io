@@ -329,6 +329,17 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
     .into_inner()
 }
 
+#[inline(always)]
+#[component]
+fn BlogListFoot() -> impl IntoView {
+    view! {
+        <footer>
+            <span class:blog-disclaimer=true>"These are personal thoughts and opinions."</span>
+        </footer>
+    }
+    .into_inner()
+}
+
 #[derive(Clone)]
 pub(crate) struct BlogListing;
 
@@ -419,6 +430,7 @@ impl LazyRoute for BlogListing {
         view! {
             <BlogEntryList entries=blogs />
             <BlogPagingLinks />
+            <BlogListFoot />
         }
         .into_any()
     }
@@ -436,7 +448,7 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
     .into_inner()
 }
 
-#[derive(PartialEq, Eq, Clone)]
+#[derive(Clone)]
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[slot]
 pub struct BlogEntryMeta {

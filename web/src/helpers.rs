@@ -530,18 +530,16 @@ pub(crate) fn Footnotes() -> impl IntoView {
     let (active, footnotes) = footnotes();
     let current_hash = use_location().hash;
     let is_current = move |name: ArcSignal<Oco<'static, str>>| {
-        move || {
-            #[cfg(feature = "client-side")]
-            {
+        cfg_select! {
+            feature = "client-side" => move || {
                 name.with(|name| {
                     active.with(|x| x.as_ref().map(|x| *x == *name).unwrap_or(false))
                         || current_hash.with(|hash| hash.strip_prefix('#').unwrap_or(hash) == *name)
                 })
-            }
-            #[cfg(not(feature = "client-side"))]
-            {
-                let _ = (current_hash, name.clone());
-                false
+            },
+            _ => {
+                let _ = (current_hash, name);
+                || false
             }
         }
     };
