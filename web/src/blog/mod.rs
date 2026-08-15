@@ -154,8 +154,7 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
     };
     let next_page = move || {
         let CurrentPage(p) = use_context().expect("Current page always defined here");
-        let num_pages = num_pages();
-        if p < num_pages {
+        if p + 1 < num_pages() {
             Some(
                 view! { <a href=current_url_with(move || provide_context(CurrentPage(p + 1)))>">"</a> },
             )
@@ -359,6 +358,7 @@ impl LazyRoute for BlogListing {
                 let FilteredEntities(blogs) = use_context().unwrap();
                 let mut blogs = blogs.into_owned();
                 blogs.sort_unstable_by(|a, b| {
+                    use std::cmp::Ordering::{Less, Greater};
                     let (a, b) = if invert_sort { (b, a) } else { (a, b) };
                     match sort_by {
                         SortBy::Default => match (&a.pin, &b.pin) {
@@ -366,8 +366,8 @@ impl LazyRoute for BlogListing {
                                 b.publish_date.partial_cmp(&a.publish_date).unwrap()
                             }
                             (None, None) => unreachable!("None == None"),
-                            (Some(_), None) => std::cmp::Ordering::Less,
-                            (None, Some(_)) => std::cmp::Ordering::Greater,
+                            (Some(_), None) => if !invert_sort { Less } else { Greater },
+                            (None, Some(_)) => if !invert_sort { Greater } else { Less },
                             (Some(x), Some(y)) => x.cmp(y),
                         },
                         SortBy::Title => a.title.partial_cmp(b.title).unwrap(),
@@ -382,7 +382,7 @@ impl LazyRoute for BlogListing {
                 let (chunks, tail) = blogs.as_chunks::<ENTRIES_PER_PAGE>();
                 match chunks.len() {
                     x if current_page == x => tail,
-                    x if current_page > x => &blogs[..],
+                    x if current_page > x => &[],
                     _ => &chunks[current_page],
                 }
                 .to_vec()
