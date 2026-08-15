@@ -15,7 +15,7 @@ use crate::{
         },
         path::format_path,
     },
-    helpers::{ForRoute, ZWNJ, idle_preload, into_static_str, reset_footnote},
+    helpers::{ForRoute, ZWNJ, into_static_str, reset_footnote},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
