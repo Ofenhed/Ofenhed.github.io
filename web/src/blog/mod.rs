@@ -427,13 +427,10 @@ impl LazyRoute for BlogListing {
 #[component(transparent)]
 pub fn Blog() -> impl MatchNestedRoutes + Clone {
     let blogs = with_blogs_simple::<AnyNestedRoute>().collect::<Vec<_>>();
-    idle_preload::<BlogListing>();
     view! {
-        <ParentRoute path=path!("") view=Outlet ssr=SsrMode::OutOfOrder>
-            <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
-                <ForRoute each=blogs children=|b| b />
-                <BlogSorting />
-            </ParentRoute>
+        <ParentRoute path=path!("/clog") view=Outlet ssr=SsrMode::OutOfOrder>
+            <ForRoute each=blogs children=|b| b />
+            <BlogSorting />
         </ParentRoute>
     }
     .into_inner()
