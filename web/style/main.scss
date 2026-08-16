@@ -308,10 +308,12 @@ body {
   abbr {
     text-decoration: none;
     &.first-of-abbr {
-      &::before {
+      &:before {
+        user-select: text;
         content: attr(title) " (";
       }
-      &::after {
+      &:after {
+        user-select: text;
         content: ")";
       }
     }
