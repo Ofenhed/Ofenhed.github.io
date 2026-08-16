@@ -235,7 +235,7 @@ impl LazyRoute for WhatAreLLMs {
                     " are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as "
                     <q>"the singularity"</q>", " {agi} ", or "{asi} ", through the magic of "
                     <q>"recursive self-improvement"</q>
-                    ". That makes the water into wine routine look like child's play in comparison, and any description on how "
+                    ". This is akin to a stage magician suddenly being able to perform real telekinesis, and any description on how "
                     <q>"recursive self-improvement"</q>
                     " would actually work sounds like what's already known as "
                     <a href="https://www.ibm.com/think/topics/model-collapse">"model collapse"</a>
