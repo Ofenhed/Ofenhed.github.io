@@ -152,7 +152,7 @@ impl LazyRoute for WhatAreLLMs {
                 </li>
                 <li>
                     <b>"Authority"</b>
-                    ": These techniques are developed by the richest people in the world. They can't all be lying, right? "
+                    ": This technology is developed by the richest people in the world. They can't all be lying, right? "
                     <i>
                         "(This is obviously written from my Tesla Roadster while autonomously riding along the open roads on Mars)"
                     </i>
