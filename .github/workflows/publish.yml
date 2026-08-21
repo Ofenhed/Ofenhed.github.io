@@ -152,7 +152,7 @@ jobs:
         retention-days: 1
 
     - name: Log compiled sizes
-      run: find target/site/ -exec du -sh {} \;
+      run: find target/site/ -exec du -sh {} \; | sort -h
 
   check:
     name: Check source code rules
