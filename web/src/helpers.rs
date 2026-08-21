@@ -348,7 +348,7 @@ pub(crate) fn register_interested_owner<T: Clone + Sync + Send + 'static>() {
 /// is done to circumvent a bug where <noscript><style></style></noscript> changes the style of the
 /// document when scripts are available.
 #[component]
-pub(crate) fn NoScript(children: ChildrenFn) -> impl IntoView {
+pub(crate) fn NoScript(children: TypedChildrenFn<impl IntoView>) -> impl IntoView {
     let noscript_ref = NodeRef::<html::Noscript>::new();
     Effect::new(move || {
         let Some(node) = noscript_ref.get() else {
@@ -359,13 +359,13 @@ pub(crate) fn NoScript(children: ChildrenFn) -> impl IntoView {
         };
         _ = parent.remove_child(&node);
     });
-    view! { <noscript node_ref=noscript_ref>{(children)()}</noscript> }.into_inner()
+    view! { <noscript node_ref=noscript_ref>{(children.into_inner())()}</noscript> }.into_inner()
 }
 
 /// This element will be replaced in runtime by the children of this type. Note that these children
 /// obviously cannot use Leptos interative features.
 #[component]
-pub(crate) fn NoWasm(children: ChildrenFn) -> impl IntoView {
+pub(crate) fn NoWasm(children: TypedChildrenFn<impl IntoView + 'static>) -> impl IntoView {
     #[derive(Clone, Copy)]
     struct NoWasmScriptLoaded;
     let init_script = once_by_type(
@@ -405,7 +405,7 @@ pub(crate) fn NoWasm(children: ChildrenFn) -> impl IntoView {
 
     let template_elem = Suspend::new(async move {
         let inner_html = if cfg!(feature = "ssr") {
-            let children = (children)().resolve().await;
+            let children = (children.into_inner())().resolve().await;
             Oco::Owned(children.to_html())
         } else {
             Oco::Borrowed("")
@@ -595,7 +595,7 @@ pub(crate) fn Footnotes() -> impl IntoView {
 #[component]
 pub(crate) fn Footnote(
     #[prop(into, optional)] id: Option<Oco<'static, str>>,
-    children: ChildrenFn,
+    children: TypedChildrenFn<impl IntoView + 'static>,
 ) -> impl IntoView {
     let (active, footnotes) = footnotes();
     static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
@@ -618,10 +618,11 @@ pub(crate) fn Footnote(
         }
     };
 
+    let children = children.into_inner();
     let my_footnote = FootnoteInner {
         uid,
         name: ArcSignal::derive(footnote_name.clone()),
-        children,
+        children: ChildrenFn::to_children(move || (children.clone())()),
     };
 
     let current_hash = use_location().hash;
@@ -697,11 +698,11 @@ pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
 }
 
 #[component]
-pub(crate) fn Abbr<T: IntoView + 'static>(
+pub(crate) fn Abbr(
     #[prop(into)] mut title: Oco<'static, str>,
     #[prop(into, optional)] suffix: Option<Oco<'static, str>>,
     #[prop(optional, default = false)] no_expand: bool,
-    children: TypedChildrenMut<T>,
+    children: TypedChildrenMut<impl IntoView + 'static>,
 ) -> impl IntoView {
     let (read_abbrs, write_abbrs) = abbrs();
     static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
