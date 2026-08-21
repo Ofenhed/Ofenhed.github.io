@@ -118,8 +118,10 @@ impl LazyRoute for WhatAreLLMs {
                 " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. This doesn't prove lack of intelligence, but it proves that the data is there."
             </p>
 
-            <h2>"Where does the intelligence come from?"</h2>
-            "I have identified the following sources:"
+            <h2>"Intelligence"</h2>
+            "If you think of "{llms}" as "
+            <em>"just lossy compression"</em>
+            ", then where does the intelligence come from? I have identified the following sources:"
             <ul>
                 <li>
                     <b>"Volume"</b>
