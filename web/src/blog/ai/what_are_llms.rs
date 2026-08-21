@@ -119,7 +119,9 @@ impl LazyRoute for WhatAreLLMs {
             </p>
 
             <h2>"Intelligence"</h2>
-            "If you think of "{llms}" as "
+            "If you think of "
+            {llms}
+            " as "
             <em>"just lossy compression"</em>
             ", then where does the intelligence come from? I have identified the following sources:"
             <ul>
