@@ -35,31 +35,25 @@ pub struct YoutubeVideo {
 macro_rules! youtube {
     ($id:literal) => {
         const {
-            let oembed::OembedData {
-                title,
-                author_url,
-                author_name,
-                #[cfg(feature = "ssr")]
-                thumbnail_url,
-                content,
-                ..
-            } = oembed::oembed! {
+            const DATA: oembed::OembedData = oembed::oembed! {
                     "https://www.youtube.com/oembed",
                     "https://www.youtube.com/watch?v=" + $id
             };
-            let (width, height) = match content {
+            const SIZE: (usize, usize) = match DATA.content {
                 oembed::OembedType::Video { width, height, .. } => (width, height),
             };
-            $crate::third_party::YoutubeVideo {
+            #[allow(unused)]
+            const VIDEO: $crate::third_party::YoutubeVideo = $crate::third_party::YoutubeVideo {
                 id: $id,
-                title,
-                author_url,
-                author_name,
+                title: DATA.title,
+                author_url: DATA.author_url,
+                author_name: DATA.author_name,
                 #[cfg(feature = "ssr")]
-                thumbnail_url,
-                width,
-                height,
-            }
+                thumbnail_url: DATA.thumbnail_url,
+                width: SIZE.0,
+                height: SIZE.1,
+            };
+            VIDEO
         }
     };
     ($id:literal ($width:literal : $height:literal)) => {
