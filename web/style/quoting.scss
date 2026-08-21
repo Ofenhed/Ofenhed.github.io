@@ -18,6 +18,7 @@ blockquote {
       display: block;
       padding-top: 1ex;
       padding-left: 1ex;
+      user-select: text;
       content: "- " attr(cite);
       font-size: 75%;
       font-style: revert;
@@ -32,39 +33,43 @@ blockquote {
 }
 q {
   &:before {
-    content: "‘";
+    content: "“";
+    user-select: text;
   }
   font-style: oblique 3deg;
   &:after {
-    content: "’";
+    content: "”";
+    user-select: text;
   }
   q &, blockquote & {
     &:before {
-      content: "“";
+      content: "‘";
     }
     &:after {
-      content: "”";
+      content: "’";
     }
     &.para {
       &:before {
-        content: "“[";
+        content: "‘[";
       }
       &:after {
-        content: "]”";
+        content: "]’";
       }
     }
   }
   .para {
     &:before {
+      user-select: text;
       content: "[";
     }
     &:after {
+      user-select: text;
       content: "]";
     }
   }
   &.para {
     &:before {
-      content: "‘[";
+      content: "“[";
     }
     &:after {
       content: "]’";
