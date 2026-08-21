@@ -500,18 +500,16 @@ fn abbrs() -> (ReadSignal<AbbrList>, WriteSignal<AbbrList>) {
 
 macro_rules! scroll_into_view {
     ($element:ident) => {
-        #[cfg(feature = "client-side")]
-        {
-            $element.scroll_into_view_with_scroll_into_view_options(&{
+        cfg_select! {
+            feature = "client-side" => $element.scroll_into_view_with_scroll_into_view_options(&{
                 let opts = web_sys::ScrollIntoViewOptions::new();
                 opts.set_behavior(web_sys::ScrollBehavior::Smooth);
                 opts.set_block(web_sys::ScrollLogicalPosition::Center);
                 opts
-            })
-        }
-        #[cfg(not(feature = "client-side"))]
-        {
-            _ = $element;
+            }),
+            _ => {
+                _ = $element;
+            }
         }
     };
 }
