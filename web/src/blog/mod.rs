@@ -42,7 +42,11 @@ impl BlogEntryMeta {
     pub(crate) fn gen_href(&self) -> Oco<'static, str> {
         let mut path = vec![PathSegment::Static(Cow::Borrowed("clog"))];
         self.generate_path(&mut path);
-        Oco::Owned(format!("{}#{}", format_path(path), to_title(self.title)))
+        Oco::Owned(format!(
+            "{}#{}",
+            format_path(path),
+            to_anchor_title(self.title)
+        ))
     }
 }
 
@@ -517,6 +521,19 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
     let locale = B::LOCALE.map(|x| {
         view! { <Meta property="og:locale" content=into_static_str(x) /> }
     });
+
+    #[cfg(feature = "client-side")]
+    if let Some(context) = Owner::current_shared_context()
+        && context.during_hydration()
+    {
+        Effect::new(|| {
+            let location = location();
+            let Ok(hash) = location.hash() else { return };
+            if hash.strip_prefix('#').unwrap_or(&hash).is_empty() {
+                _ = location.replace(&format!("#{}", to_anchor_title(B::TITLE)));
+            }
+        });
+    }
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
         {locale}
@@ -534,13 +551,12 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
     }
 }
 
-fn to_title<'a>(input: impl Into<Oco<'a, str>>) -> Oco<'a, str> {
-    let output = input.into();
-    if !output.chars().any(|x| !x.is_alphanumeric()) {
-        output
+fn to_anchor_title<'a>(input: &'a str) -> Oco<'a, str> {
+    if !input.chars().any(|x| !x.is_alphanumeric()) {
+        Oco::Borrowed(input)
     } else {
         Oco::Owned(
-            output
+            input
                 .chars()
                 .filter_map(|x| match x {
                     x if x.is_alphanumeric() => Some(x),
