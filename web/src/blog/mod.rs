@@ -538,6 +538,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
         {locale}
         <Meta property="og:title" content=B::TITLE />
+        <Meta property="og:type" content="article" />
         <Meta property="og:article:author" content=B::AUTHOR />
         <For
             each=move || B::TAGS.iter()
