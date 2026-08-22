@@ -80,7 +80,8 @@ impl LazyRoute for WhatAreLLMs {
             <p>
                 "When we talk about " <q>{ai}</q> " today, we pretty much talk about " {llms}
                 ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
-
+            </p>
+            <p>
                 "To be able to understand what an " {llm}
                 " is, we'll take a detour to compression algorithms."
             </p>
