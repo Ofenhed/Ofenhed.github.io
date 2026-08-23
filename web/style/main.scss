@@ -105,6 +105,9 @@ body {
       display: block;
     }
   }
+  .cookie-consent fieldset > legend {
+    font-weight: bold;
+  }
   dialog fieldset label:not(:has(input[type="radio"][checked])) {
     border-width: 2px;
     border-style: ridge;
