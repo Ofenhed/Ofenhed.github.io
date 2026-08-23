@@ -60,7 +60,7 @@ impl LazyRoute for WhatAreLLMs {
         let jpeg = || {
             view! {
                 <Abbr no_expand=true title="Joint Photographic Experts Group">
-                    JPEG
+                    "JPEG"
                 </Abbr>
             }
             .into_inner()
