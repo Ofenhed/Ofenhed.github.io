@@ -498,17 +498,19 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
 ) -> impl IntoView {
     use leptos_meta::Title;
     use_head();
-    let last_update = B::LAST_UPDATED.map(|x| {
-        let mut date: Oco<'static, str> = Oco::Owned(x.date_naive().to_string());
-        date.upgrade_inplace();
-        view! {
-            <Meta property="article:modified_time" content=x.to_rfc3339() />
-            <time class="update" datetime=date.clone()>
-                {date.clone()}
-            </time>
-        }
-    });
-    let publish = {
+    let last_update = || {
+        B::LAST_UPDATED.map(|x| {
+            let mut date: Oco<'static, str> = Oco::Owned(x.date_naive().to_string());
+            date.upgrade_inplace();
+            view! {
+                <Meta property="article:modified_time" content=x.to_rfc3339() />
+                <time class="update" datetime=date.clone()>
+                    {date.clone()}
+                </time>
+            }
+        })
+    };
+    let publish = || {
         let mut date: Oco<'static, str> = Oco::Owned(B::PUBLISH_DATE.date_naive().to_string());
         date.upgrade_inplace();
         view! {
@@ -519,9 +521,11 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
             </time>
         }
     };
-    let locale = B::LOCALE.map(|x| {
-        view! { <Meta property="og:locale" content=into_static_str(x) /> }
-    });
+    let locale = || {
+        B::LOCALE.map(|x| {
+            view! { <Meta property="og:locale" content=into_static_str(x) /> }
+        })
+    };
 
     #[cfg(feature = "client-side")]
     if let Some(context) = Owner::current_shared_context()
@@ -543,7 +547,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
     };
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
-        {locale}
+        {locale()}
         <Meta property="og:title" content=B::TITLE />
         {description()}
         <Meta
@@ -564,7 +568,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
             }
         />
         <h1>{B::title().unwrap_or_else(|| B::TITLE.into_any())}</h1>
-        <section class="article-info">{publish}" "{last_update}</section>
+        <section class="article-info">{publish()}" "{last_update()}</section>
     }
 }
 
