@@ -538,16 +538,21 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
     let pathname = use_location().pathname;
     let description = || {
         (!B::DESCRIPTION.is_empty()).then(|| {
-            view! {
-                <Meta property="og:description" content=B::DESCRIPTION />
-            }
+            view! { <Meta property="og:description" content=B::DESCRIPTION /> }
         })
     };
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
         {locale}
         <Meta property="og:title" content=B::TITLE />
-        <Meta property="og:url" content=format!("https://conditionraise.se{}#{}", pathname.get_untracked(), to_anchor_title(B::TITLE))  />
+        <Meta
+            property="og:url"
+            content=format!(
+                "https://conditionraise.se{}#{}",
+                pathname.get_untracked(),
+                to_anchor_title(B::TITLE),
+            )
+        />
         <Meta property="og:type" content="article" />
         <Meta property="article:author" content=B::AUTHOR />
         {description()}
