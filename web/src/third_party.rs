@@ -151,7 +151,7 @@ pub(crate) fn YouTube(
             };
             let author = video.author_name.clone().map(|author_name| {
                 view! {
-                    <a class:author href=author_url>
+                    <a class:author=true href=author_url>
                         {author_name}
                     </a>
                 }
@@ -160,16 +160,16 @@ pub(crate) fn YouTube(
                 Oco::Counted(format!("https://youtube.com/watch?v={}", video.id).into());
             view! {
                 <div
-                    class:simple-embed
-                    class:youtube-embed
+                    class:simple-embed=true
+                    class:youtube-embed=true
                     style:aspect-ratio=ratio.clone()
                     style:max-width=max_width
                     style:max-height=max_height
                 >
-                    <span class:meta>
+                    <span class:meta=true>
                         <a
                             href=href.clone()
-                            class:no-shinies
+                            class:no-shinies=true
                             class:title=true
                             on:click=show_consent.clone()
                         >
@@ -178,15 +178,15 @@ pub(crate) fn YouTube(
                         {author}
                     </span>
                     <a
-                        class:logo
-                        class:no-shinies
+                        class:logo=true
+                        class:no-shinies=true
                         href=href
                         title="YouTube"
                         on:click=show_consent
                     ></a>
                     <img
                         alt
-                        class:thumbnail
+                        class:thumbnail=true
                         src=format!("/youtube/{}.jpg", video.id)
                         {..img_def()}
                     />
@@ -202,7 +202,7 @@ pub(crate) fn YouTube(
         embed_src.map_left(move |url_suffix| {
             view! {
                 <iframe
-                    class:youtube-embed
+                    class:youtube-embed=true
                     style:aspect-ratio=ratio.clone()
                     style:max-width=max_width
                     style:max-height=max_height

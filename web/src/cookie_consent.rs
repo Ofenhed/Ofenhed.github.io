@@ -76,7 +76,7 @@ impl LazyRoute for CookieConsent {
             <h1>Cookies and tracking consent</h1>
             <NoScript>{no_script}</NoScript>
             <NoWasm>{no_script}</NoWasm>
-            <form class:cookie-consent>
+            <form class:cookie-consent=true>
                 <p>
                     "This is the third party tracking and cookies used by this web page. All cookies and tracking are opt in, meaning that no choice means no tracking (possibly excluding tracking functionality out of my control by the hosting provider)."
                 </p>
