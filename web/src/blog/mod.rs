@@ -28,6 +28,7 @@ use leptos_router::{
     Lazy, LazyRoute, PathSegment, PossibleRouteMatch, SsrMode,
     any_nested_route::{AnyNestedRoute, IntoAnyNestedRoute},
     components::{A, ParentRoute, Route},
+    hooks::use_location,
     lazy_route,
     nested_router::Outlet,
     path,
@@ -501,7 +502,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
         let mut date: Oco<'static, str> = Oco::Owned(x.date_naive().to_string());
         date.upgrade_inplace();
         view! {
-            <Meta property="og:modified_time" content=x.to_rfc3339() />
+            <Meta property="article:modified_time" content=x.to_rfc3339() />
             <time class="update" datetime=date.clone()>
                 {date.clone()}
             </time>
@@ -511,7 +512,7 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
         let mut date: Oco<'static, str> = Oco::Owned(B::PUBLISH_DATE.date_naive().to_string());
         date.upgrade_inplace();
         view! {
-            <Meta property="og:article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
+            <Meta property="article:published_time" content=B::PUBLISH_DATE.to_rfc3339() />
             <time class="publish" datetime=date.clone()>
                 {date.clone()}
                 {ZWNJ}
@@ -534,17 +535,27 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
             }
         });
     }
+    let pathname = use_location().pathname;
+    let description = || {
+        (!B::DESCRIPTION.is_empty()).then(|| {
+            view! {
+                <Meta property="og:description" content=B::DESCRIPTION />
+            }
+        })
+    };
     view! {
         <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
         {locale}
         <Meta property="og:title" content=B::TITLE />
+        <Meta property="og:url" content=format!("https://conditionraise.se{}#{}", pathname.get_untracked(), to_anchor_title(B::TITLE))  />
         <Meta property="og:type" content="article" />
-        <Meta property="og:article:author" content=B::AUTHOR />
+        <Meta property="article:author" content=B::AUTHOR />
+        {description()}
         <For
             each=move || B::TAGS.iter()
             key=|x| x.to_owned()
             children=|tag| {
-                view! { <Meta property="og:article:tag" content=into_static_str(tag) /> }
+                view! { <Meta property="article:tag" content=into_static_str(tag) /> }
             }
         />
         <h1>{B::title().unwrap_or_else(|| B::TITLE.into_any())}</h1>

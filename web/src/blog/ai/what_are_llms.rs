@@ -23,6 +23,7 @@ impl BlogEntry for WhatAreLLMs {
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "An intuitive understanding of LLMs";
+    const DESCRIPTION: &'static str = "A way to look at LLMs to understand their potential and limitations, and my take on why that understanding is so hard";
 
     const TAGS: &'static [Tag] = &[Tag::Ai, Tag::Tech];
 
