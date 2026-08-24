@@ -59,7 +59,7 @@ impl LazyRoute for BuildInfo {
         use std::option_env;
         let now = cfg_select! {
             feature = "statics" => Some(Oco::Owned(chrono::offset::Utc::now().to_string())),
-            _ => None,
+            _ => Some(Oco::Borrowed("")),
         };
         let data: [(&str, Option<Oco<'static, str>>); _] = [
             ("Commit", option_env!("GITHUB_SHA").map(Oco::Borrowed)),
