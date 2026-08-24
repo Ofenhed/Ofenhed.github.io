@@ -58,14 +58,14 @@ impl LazyRoute for BuildInfo {
     fn view(_this: Self) -> AnyView {
         use std::option_env;
         let now = cfg_select! {
-            feature = "statics" => Some(Oco::Owned(chrono::offset::Utc::now().to_string())),
-            _ => Some(Oco::Borrowed("")),
+            feature = "statics" => Oco::Owned(chrono::offset::Utc::now().to_string()),
+            _ => Oco::Borrowed("Dynamically generated"),
         };
         let data: [(&str, Option<Oco<'static, str>>); _] = [
             ("Commit", option_env!("GITHUB_SHA").map(Oco::Borrowed)),
             ("Run number", build_number().map(Oco::Borrowed)),
             ("Build OS", option_env!("RUNNER_OS").map(Oco::Borrowed)),
-            ("Build timestamp", now),
+            ("Build timestamp", Some(now)),
         ];
         view! {
             <For each=move || data.clone() key=|x| x.clone() let:(d)>
