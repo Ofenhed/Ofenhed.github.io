@@ -14,7 +14,7 @@ use crate::{
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
-    helpers::{Footnotes, build_number, idle_preload, img_def},
+    helpers::{Footnotes, build_number, idle_preload},
     local_storage::provide_local_storage_context,
     third_party::ThirdPartyConsentDialogs,
 };
@@ -67,22 +67,6 @@ impl LazyRoute for BuildInfo {
             ("Build OS", option_env!("RUNNER_OS").map(Oco::Borrowed)),
             ("Build timestamp", now),
         ];
-        let server_url = if let (Some(url), Some(repo), Some(run_id)) = (
-            option_env!("GITHUB_SERVER_URL"),
-            option_env!("GITHUB_REPOSITORY"),
-            option_env!("GITHUB_RUN_ID"),
-        ) {
-            Some(view! {
-                <a href=format!("{url}/{repo}/actions/runs/{run_id}")>
-                    <img
-                        {..img_def()}
-                        src=format!("{url}/{repo}/actions/workflows/publish.yml/badge.svg")
-                    />
-                </a>
-            })
-        } else {
-            None
-        };
         view! {
             <For each=move || data.clone() key=|x| x.clone() let:(d)>
                 <fieldset>
@@ -90,7 +74,6 @@ impl LazyRoute for BuildInfo {
                     {d.1}
                 </fieldset>
             </For>
-            {server_url}
         }
         .into_any()
     }
