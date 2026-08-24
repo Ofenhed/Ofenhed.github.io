@@ -121,7 +121,7 @@ impl LazyRoute for WhatAreLLMs {
                     <br />
                     <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
                 </Footnote> " where researchers could get " {llm}
-                " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. While OpenAI claims that this is "
+                " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. While OpenAI claims that this doesn't count, because it's "
                 <a href="https://www.culawreview.org/ddc-x-culr-1/nyt-v-openai-and-microsoft">
                     "tricking their model"
                 </a>", it still proves that the data is there."
