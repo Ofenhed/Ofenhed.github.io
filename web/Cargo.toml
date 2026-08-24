@@ -66,7 +66,7 @@ ssr = [
   "leptos_router/ssr",
 ]
 statics = [
-  "ssr", "dep:leptos_static_files",
+  "ssr", "dep:leptos_static_files", "chrono/now",
 ]
 dev = ["ssr", "dep:axum", "dep:leptos_axum"]
 
