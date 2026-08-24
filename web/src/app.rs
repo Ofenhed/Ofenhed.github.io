@@ -58,7 +58,7 @@ impl LazyRoute for BuildInfo {
     fn view(_this: Self) -> AnyView {
         use std::option_env;
         let now = cfg_select! {
-            feature = "statics" => Some(chrono::offset::Utc::now().to_string()),
+            feature = "statics" => Some(Oco::Owned(chrono::offset::Utc::now().to_string())),
             _ => None,
         };
         let data: [(&str, Option<Oco<'static, str>>); _] = [

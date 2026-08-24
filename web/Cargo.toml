@@ -53,7 +53,7 @@ cargo-leptos.workspace = true
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-client-side = ["dep:web-sys", "dep:base64"]
+client-side = ["dep:web-sys", "dep:base64", "chrono/wasmbind"]
 static-qr = ["dep:base64", "ssr"]
 debug-reload-panics = []
 ssr = [
@@ -66,7 +66,7 @@ ssr = [
   "leptos_router/ssr",
 ]
 statics = [
-  "ssr", "dep:leptos_static_files", "chrono/now",
+  "ssr", "dep:leptos_static_files", "chrono/now"
 ]
 dev = ["ssr", "dep:axum", "dep:leptos_axum"]
 

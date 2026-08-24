@@ -7,7 +7,7 @@ anyhow = "1.0"
 any_spawner = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
 axum = { version = "0.8.1", default-features = false }
 base64 = "0.22.1"
-chrono = { version = "0.4.44", default-features = false, features = ["std", "wasmbind", "alloc"] }
+chrono = { version = "0.4.44", default-features = false, features = ["std", "alloc"] }
 cargo-leptos = "0.3.7"
 conditionraise.path = "./web"
 console_error_panic_hook = "0.1.7"
