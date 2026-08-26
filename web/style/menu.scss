@@ -1,0 +1,82 @@
+@use 'nav.scss';
+
+:root {
+  --body-rows: [menu-start] calc(var(--hamburger-size) + var(--menu-margin) * 2) [main-start] auto [main-end footer-start] 0 [footer-end menu-end];
+  --menu-width: 0px;
+  --menu-item-padding: 1em;
+  --menu-item-margin: 1ex;
+  --open-menu-width: calc(var(--menu-widest-word) + (var(--menu-item-padding) + var(--menu-item-margin)) * 2);
+  --main-width: 100%;
+  --menu-longest-word: 7;
+  --menu-widest-word: calc((var(--menu-longest-word) + 1) * 1ch);
+  --body-cols: [menu-start] var(--menu-width) [menu-end] 1fr [main-start footer-start] var(--main-width) [footer-end main-end] 1fr;
+  --default-menu-cols: [menu-start] 1fr [label-start] auto [label-end] 1fr [menu-end];
+  --default-menu-rows: [menu-start] 1fr [label-start] auto [label-end] 1fr [menu-end];
+  --menu-cols: var(--default-menu-cols);
+  --menu-rows: var(--default-menu-rows);
+  --menu-link-transform: none;
+
+  @media print {
+    --body-cols: 0px 0px [main-start] auto [main-end] 0px !important;
+    --body-rows: 0px [main-start] max-content [main-end] 0px !important;
+  }
+
+  @include nav.open() {
+    --menu-width: calc(var(--open-menu-width));
+  }
+  @media screen and (min-width: 60ch) {
+    --main-width: calc(100svw - var(--open-menu-width));
+  }
+  --lcar-menu-cols: [menu-start] 1fr [label-start] auto [label-end menu-end];
+  --lcar-menu-rows: [menu-start] 1fr [label-start] auto [label-end menu-end];
+}
+
+#menu {
+  visibility: hidden;
+
+  top: 0;
+  left: 0;
+  padding-left: 0;
+  height: fit-content;
+  z-index: 100;
+  margin: 0;
+  margin-top: calc(var(--open-burger-leak-down) - var(--menu-margin));
+
+  transform-origin: top left;
+  transform: translateX(-100%);
+  opacity: 0.3;
+  @include nav.open() {
+    visibility: visible;
+    transform: none;
+    opacity: 1;
+  }
+  width: var(--open-menu-width);
+  display: grid;
+  grid-template-columns: var(--menu-cols);
+  grid-auto-rows: max-content;
+  gap: var(--menu-margin);
+
+  > li {
+    grid-area: auto / menu-start / auto / menu-end;
+    height: 3em;
+    margin: 0 var(--menu-margin);
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: var(--menu-rows);
+    list-style: none;
+    > a {
+      text-transform: var(--menu-link-transform);
+      grid-area: menu-start / menu-start / menu-end / menu-end;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      > span {
+        display: block;
+        grid-area: label-start / label-start / label-end / label-end;
+        @include nav.in-clogs() {
+          direction: rtl;
+        }
+      }
+    }
+  }
+}

@@ -3,11 +3,12 @@
 @use 'hamburger-easter-egg.scss';
 
 @media (prefers-reduced-motion: no-preference) {
-  #navigation {
-    #menu {
-      transition: 150ms all 100ms ease-out;
-    }
+  #menu {
+    transition: 150ms all 100ms ease-out;
   }
+}
+:root {
+  --hamburger-size: clamp(1em, 10vmin, 32px);
 }
 
 #navigation {
@@ -15,104 +16,82 @@
   padding: 0;
   margin: 0;
   width: fit-content;
-  @include nav.open(&) {
-    grid-area: menu-start / menu-start / menu-end / menu-end;
-    background: #badbad;
-  }
-  @include nav.closed($selector: &) {
-    pointer-events: none;
-    min-height: 100vh;
-    #hamburger {
-      pointer-events: auto;
+  @include nav.open() {
+    & {
+      grid-area: menu-start / menu-start / menu-end / menu-end;
+      background: var(--menu-background);
     }
   }
-  #menu {
-    visibility: hidden;
+  @include nav.closed() {
+    & {
+      pointer-events: none;
+      min-height: 100vh;
+      #hamburger {
+        pointer-events: auto;
+      }
+    }
+  }
+}
+@include nav.closed() {
+  #hamburger .slice:nth-child(2) {
+    transform: rotate(180deg);
+  }
+}
+@include nav.open() {
+  #hamburger .slice {
+    background: #fff;
+    --border-size: 2px;
+    &:nth-child(1) {
+      z-index: 0;
+      top: calc(50% - 25%);
+      transform: rotate(45deg);
+    }
+    &:nth-child(3) {
+      z-index: 0;
+      top: calc(-50% + 25% - var(--hamburger-size) - var(--border-size) * 4 + var(--slice-height));
+      transform: rotate(-45deg);
+    }
+    &:nth-child(2) {
+      z-index: -1;
+      border: var(--border-size) solid #aacb9d;
+      border-radius: var(--hamburger-size);
+      background-color: rgba(0, 0, 0, 0);
+      top: calc(-50% - var(--border-size) - var(--slice-height) / 2);
+      left: calc(0px - var(--border-size));
+      transform: rotate(0deg);
+      height: var(--hamburger-size);
+    }
+  }
+}
 
-    top: 0;
-    left: 0;
-    padding-left: 0;
-    height: fit-content;
-    z-index: 100;
-    margin: 0;
-    margin-top: var(--open-burger-leak-down);
+#hamburger-toggle {
+  opacity: 0;
+  margin: 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  cursor: pointer;
+  position: absolute;
+}
 
-    transform-origin: top left;
-    transform: translateX(-100%);
-    opacity: 0.3;
-    li {
-      list-style: none;
-      a {
-        display: block;
-        padding: 1rem;
-        text-decoration: none;
-      }
-    }
-  }
-  #hamburger-toggle {
-    opacity: 0;
-    margin: 0;
-    width: 0;
-    height: 0;
-    overflow: visible;
-    cursor: pointer;
-    position: absolute;
-    &:not(:checked) {
-      & ~ #hamburger .slice:nth-child(2) {
-        transform: rotate(180deg);
-      }
-    }
-    &:checked {
-      & ~ #menu {
-        visibility: visible;
-        transform: none;
-        opacity: 1;
-      }
-      & ~ #hamburger .slice {
-        background-color: #fff;
-        --border-size: 2px;
-        &:nth-child(1) {
-          z-index: 0;
-          top: calc(50% - 25%);
-          transform: rotate(45deg);
-        }
-        &:nth-child(3) {
-          z-index: 0;
-          top: calc(-50% + 25% - var(--hamburger-size) - var(--border-size) * 4 + var(--slice-height));
-          transform: rotate(-45deg);
-        }
-        &:nth-child(2) {
-          z-index: -1;
-          border: var(--border-size) solid #aacb9d;
-          border-radius: var(--hamburger-size);
-          background-color: rgba(0, 0, 0, 0);
-          top: calc(-50% - var(--border-size) - var(--slice-height) / 2);
-          left: calc(0px - var(--border-size));
-          transform: rotate(0deg);
-          height: var(--hamburger-size);
-        }
-      }
-    }
-  }
-  #hamburger {
-    z-index: 1100;
+#hamburger {
+  z-index: 1100;
+  display: block;
+  padding: var(--hamburger-padding);
+  cursor: pointer;
+  width: var(--hamburger-size);
+  height: var(--hamburger-size);
+  margin-bottom: calc(-var(--hamburger-size) - var(--hamburger-padding));
+  .slice {
     display: block;
-    padding: var(--hamburger-padding);
-    cursor: pointer;
-    width: var(--hamburger-size);
-    height: var(--hamburger-size);
-    margin-bottom: calc(-var(--hamburger-size) - var(--hamburger-padding));
-    .slice {
-      display: block;
-      position: relative;
-      background: light-dark(#000, #888);
-      width: 100%;
-      --slice-height: 2px;
-      margin-top: calc(33% - var(--slice-height));
-      top: calc((33% - var(--slice-height))/-2);
-      height: var(--slice-height, 2px);
-      border-radius: var(--slice-height);
-      opacity: 90%;
-    }
+    background: light-dark(#000, #888);
+    position: relative;
+    width: 100%;
+    --slice-height: 2px;
+    margin-top: calc(var(--hamburger-size) / 3 - var(--slice-height));
+    top: calc((33% - var(--slice-height))/-2);
+    height: var(--slice-height, 2px);
+    border-radius: var(--slice-height);
+    opacity: 90%;
   }
 }

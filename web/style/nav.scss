@@ -3,34 +3,42 @@
 @use 'sass:selector';
 @use 'sass:string';
 
-@mixin with-navigation($selector: (), $path: null, $invert-path: false, $path-match: null, $base: null, $navigator: null) {
-  @if $base == null {
-    $base: body;
+@mixin with-navigation($path: null, $invert-path: false, $path-match: null, $navigator: null) {
+  $base: body;
+  $has-prefix: "";
+  @if & {
+    @if list.length(&) > 0 and selector.is-superselector(":root", list.nth(&, 1)) {
+      $base: list.nth(&, 1);
+      $has-prefix: "body";
+    }
   }
   $s: #{$base};
   @if $navigator != null {
-    $nav: ":has(> nav#navigation > #hamburger-toggle:checked)";
+    $nav: ":has(#{$has-prefix} > #navigation > #hamburger-toggle:checked)";
     @if not $navigator {
       $nav: ":not(#{$nav})"
     }
+
     $s: selector.append($s, $nav);
   }
   @if $path != null {
     $p: string.quote(#{$path});
-    $p-sel: ":has(main[data-path#{$path-match}=\"#{$p}\"])";
+    $p-sel: ":has(#{$has-prefix} > main[data-path#{$path-match}=\"#{$p}\"])";
     @if $invert-path {
       $p-sel: ":not(#{$p-sel})";
     }
     $s: selector.append($s, $p-sel);
   }
 
-  @if list.length($selector) > 0 {
-    $new: selector.replace($selector, $base, $s);
-    @if $new != $selector {
-      $s: $new;
-    }
-    @else {
-      $s: selector.nest($s, #{$selector});
+  @if & {
+    @if list.length(&) > 0 {
+      $new: selector.replace(&, $base, $s);
+      @if $new != & {
+        $s: $new;
+      }
+      @else {
+        $s: selector.nest($s, #{&});
+      }
     }
   }
   @at-root #{$s} {
@@ -50,13 +58,45 @@
   }
 }
 
+@mixin in-clogs($args...) {
+  @include with-path-prefix($path: "clog", $args...) {
+    @content
+  }
+}
+
+@mixin not-in-clogs($args...) {
+  @include in-clogs($invert-path: true) {
+    @content
+  }
+}
+
 @mixin open($args...) {
+  //@container style(--menu-open: 1) {
+  //  @if & {
+  //    :scope & {
+  //      @content
+  //    }
+  //  }
+  //  @else {
+  //    @content
+  //  }
+  //}
   @include with-navigation($navigator: true, $args...) {
     @content
   }
 }
 
 @mixin closed($args...) {
+  //@container style(--menu-open: 0) {
+  //  @if & {
+  //    :scope & {
+  //      @content
+  //    }
+  //  }
+  //  @else {
+  //    @content
+  //  }
+  //}
   @include with-navigation($navigator: false, $args...) {
     @content
   }

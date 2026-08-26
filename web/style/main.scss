@@ -3,6 +3,7 @@
 @use 'hamburger.scss';
 @use 'clog.scss';
 @use 'nav.scss';
+@use 'menu.scss';
 @use 'contact.scss';
 @use 'third-party.scss';
 @use 'sass:string';
@@ -15,250 +16,244 @@ nav {
   a {
     color: #000;
     text-decoration: none;
-    margin: 1ex;
+    transition: none;
     &[aria-current="page"] {
       font-weight: bold;
     }
   }
 }
 
-body[data-activate-transitions] {
-  &, & * {
-    transition: var(--default-transition);
-  }
+* {
+  transition: var(--default-transition);
 }
 
 body {
   display: grid;
   margin: 0px;
   color: var(--font-color);
-  grid-template-columns: [menu-start] 0px [menu-end main-start footer-start] 0px 100% 0px [footer-end main-end];
   interpolate-size: allow-keywords;
+  overflow-x: hidden;
   > * {
     interpolate-size: unset;
   }
-  *[data-prefix-symbol]:before {
-    content: attr(data-prefix-symbol) " ";
-  }
-  main {
-    position: relative;
-    > footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-  }
-  &:has(> footer) {
-    grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] min-content [footer-end menu-end];
-  }
-  &:not(:has(> footer)) {
-    grid-template-rows: [menu-start] calc(var(--hamburger-size) + var(--button-margin) * 2) [main-start] auto [main-end footer-start] 0 [footer-end menu-end];
-  }
-  mark {
-    @include highlighter.base;
-    @include highlighter.marker-color(#ffff00);
-    @at-root .pink-marker mark, &.pink {
-      @include highlighter.marker-color(#ff00bb, #900020);
-    }
-  }
-  time {
-    &:before {
-      content: "";
-      display: inline-block;
-      white-space: revert;
-    }
-  }
-  footer {
-    border-top: 1px solid light-dark(#000, #fff);
-    padding: 1ex;
-    > div {
-      margin-top: 0.5em;
-    }
-  }
-  overflow-x: hidden;
-  .nobrplz {
-    break-inside: avoid;
-    word-break: keep-all;
-  }
-
-  @include nav.open($selector: &) {
-    grid-template-columns: [menu-start] max-content [menu-end] 0px [main-start footer-start] 100% [footer-end main-end] 0px;
-  }
-
   min-height: 100vh;
   box-sizing: content-box;
   counter-reset: footnote-link footnote-text;
-  abbr:not(.first-of-abbr) {
-    text-decoration: none;
+  background: var(--body-background);
+  grid-template-rows: var(--body-rows);
+  grid-template-columns: var(--body-cols);
+  &:has(> footer) {
+    --body-rows: [menu-start] calc(var(--hamburger-size) + var(--menu-margin) * 2) [main-start] auto [main-end footer-start] min-content [footer-end menu-end];
   }
-  fieldset {
-    border-radius:5mm;
-    margin-bottom:1em;
-    label:has(input[type="radio"]) {
-      input[type="radio"] {
-        margin-right: 1em;
-      }
-      font-weight: bold;
-      padding: 0.5em;
-      margin: 0.5em;
-      display: block;
+}
+*[data-prefix-symbol]:before {
+  content: attr(data-prefix-symbol) " ";
+}
+main {
+  background: var(--main-background);
+  position: relative;
+  > footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    @at-root body > footer, & {
+      background: var(--footer-background);
     }
   }
-  .cookie-consent fieldset > legend {
-    font-weight: bold;
+}
+mark {
+  @include highlighter.base;
+  @include highlighter.marker-color(#ffff00);
+  @at-root .pink-marker mark, &.pink {
+    @include highlighter.marker-color(#ff00bb, #900020);
   }
-  dialog fieldset label:not(:has(input[type="radio"][checked])) {
-    border-width: 2px;
-    border-style: ridge;
-    border-radius: 1em;
-    background-color: light-dark(#00000028, #ffffff28);
-    cursor: pointer;
-    width: fit-content;
-    &:hover {
-      background-color: light-dark(#00000010, #ffffff10);
-    }
-    &:focus {
-      border-style: dotted;
-    }
+}
+time {
+  &:before {
+    content: "";
+    display: inline-block;
+    white-space: revert;
+  }
+}
+footer {
+  border-top: 1px solid light-dark(#000, #fff);
+  padding: 1ex;
+  > div {
+    margin-top: 0.5em;
+  }
+}
+.nobrplz {
+  break-inside: avoid;
+  word-break: keep-all;
+}
+
+abbr:not(.first-of-abbr) {
+  text-decoration: none;
+}
+fieldset {
+  border-radius:5mm;
+  margin-bottom:1em;
+  label:has(input[type="radio"]) {
     input[type="radio"] {
-      display: none;
+      margin-right: 1em;
     }
-  }
-
-  img {
-    max-width: 100%;
-  }
-
-  del {
-    background: rgba(255, 0, 0, 0.2);
-  }
-  ins {
-    background: rgba(0, 255, 0, 0.2);
-    text-decoration: none;
-  }
-
-  & > main {
-    h1:first-of-type {
-      margin-top: 0;
-    }
-    grid-area: main-start / main-start / main-end / main-end;
-    padding: var(--main-padding);
-    span:has(> a.footnote-link:only-child) {
-      & {
-        break-before: avoid;
-        break-inside: avoid;
-        white-space: nowrap;
-      }
-      &:before {
-        content: "\200D"
-      }
-      display: inline;
-    }
-    a.footnote-link {
-      &:before {
-        display: inline-block;
-        counter-increment: footnote-link;
-        content: "\200D[" counter(footnote-link) "]";
-      }
-    }
-    section {
-      margin-bottom: 1em;
-    }
-  }
-  main a.footnote-link::before, & > footer > div::before {
-    vertical-align: super;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 67%;
-  }
-  main a.footnote-link {
-    @keyframes scale-footnote-number {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      25% {
-        transform: scale(10);
-        opacity: 0.5;
-      }
-      50% {
-        transform: scale(2);
-        opacity: 1;
-      }
-      75% {
-        transform: scale(10);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-    &:target, &[aria-current] {
-      &:before {
-        padding: revert;
-        margin: revert;
-        animation-name: scale-footnote-number;
-        animation-timing-function: ease-in-out;
-        animation-duration: 2s;
-      }
-    }
-  }
-  & > footer {
-    display: grid;
-    grid-area: footer-start / footer-start / footer-end / footer-end;
-    grid-auto-flow: row;
-    & > div {
-      &[aria-current], &:target {
-        background: rgba(255, 255, 0, 0.25);
-      }
-      @media not print {
-        > div {
-          overflow: hidden;
-        }
-      }
-      display: grid;
-      grid-auto-columns: max-content auto max-content;
-      grid-auto-flow: column;
-      &::before {
-        display: block;
-        grid-column: 1;
-        counter-increment: footnote-text;
-        content: counter(footnote-text);
-      }
-      & > a.footnote-return-link {
-        grid-column: 3;
-        text-decoration: none;
-        display: grid;
-        grid-template-rows: 1fr [start] auto [end] 1fr;
-        grid-template-columns: [start] auto [end];
-        &::after {
-          grid-area: start / start / end / end;
-          content: "\1F519";
-        }
-      }
-    }
-  }
-  &, main {
-    background: light-dark(#ffffff, #222222);
-  }
-  kbd {
-    background-color: #eeeeee;
-    border-radius: 3px;
-    border: 1px solid #b4b4b4;
-    box-shadow:
-      0 1px 1px rgb(0 0 0 / 0.2),
-      0 2px 0 0 rgb(255 255 255 / 0.7) inset;
-    color: #333333;
-    display: inline-block;
-    font-size: 0.85em;
     font-weight: bold;
-    line-height: 1;
-    padding: 2px 4px;
-    white-space: nowrap;
-    text-transform: capitalize;
+    padding: 0.5em;
+    margin: 0.5em;
+    display: block;
   }
+}
+.cookie-consent fieldset > legend {
+  font-weight: bold;
+}
+dialog fieldset label:not(:has(input[type="radio"][checked])) {
+  border-width: 2px;
+  border-style: ridge;
+  border-radius: 1em;
+  background-color: light-dark(#00000028, #ffffff28);
+  cursor: pointer;
+  width: fit-content;
+  &:hover {
+    background-color: light-dark(#00000010, #ffffff10);
+  }
+  &:focus {
+    border-style: dotted;
+  }
+  input[type="radio"] {
+    display: none;
+  }
+}
+
+img {
+  max-width: 100%;
+}
+
+del {
+  background: rgba(255, 0, 0, 0.2);
+}
+ins {
+  background: rgba(0, 255, 0, 0.2);
+  text-decoration: none;
+}
+
+body > main {
+  h1:first-of-type {
+    margin-top: 0;
+  }
+  grid-area: main-start / main-start / main-end / main-end;
+  padding: var(--main-padding);
+  span:has(> a.footnote-link:only-child) {
+    & {
+      break-before: avoid;
+      break-inside: avoid;
+      white-space: nowrap;
+    }
+    &:before {
+      content: "\200D"
+    }
+    display: inline;
+  }
+  a.footnote-link {
+    &:before {
+      display: inline-block;
+      counter-increment: footnote-link;
+      content: "\200D[" counter(footnote-link) "]";
+    }
+  }
+  section {
+    margin-bottom: 1em;
+  }
+}
+main a.footnote-link::before, body > footer > div::before {
+  vertical-align: super;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 67%;
+}
+main a.footnote-link {
+  @keyframes scale-footnote-number {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    25% {
+      transform: scale(10);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(2);
+      opacity: 1;
+    }
+    75% {
+      transform: scale(10);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  &:target, &[aria-current] {
+    &:before {
+      padding: revert;
+      margin: revert;
+      animation-name: scale-footnote-number;
+      animation-timing-function: ease-in-out;
+      animation-duration: 2s;
+    }
+  }
+}
+body > footer {
+  display: grid;
+  grid-area: footer-start / footer-start / footer-end / footer-end;
+  grid-auto-flow: row;
+  & > div {
+    &[aria-current], &:target {
+      background: rgba(255, 255, 0, 0.25);
+    }
+    @media not print {
+      > div {
+        overflow: hidden;
+      }
+    }
+    display: grid;
+    grid-auto-columns: max-content auto max-content;
+    grid-auto-flow: column;
+    &::before {
+      display: block;
+      grid-column: 1;
+      counter-increment: footnote-text;
+      content: counter(footnote-text);
+    }
+    & > a.footnote-return-link {
+      grid-column: 3;
+      text-decoration: none;
+      display: grid;
+      grid-template-rows: 1fr [start] auto [end] 1fr;
+      grid-template-columns: [start] auto [end];
+      &::after {
+        grid-area: start / start / end / end;
+        content: "\1F519";
+      }
+    }
+  }
+}
+kbd {
+  background-color: #eeeeee;
+  border-radius: 3px;
+  border: 1px solid #b4b4b4;
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 0.2),
+    0 2px 0 0 rgb(255 255 255 / 0.7) inset;
+  color: #333333;
+  display: inline-block;
+  font-size: 0.85em;
+  font-weight: bold;
+  line-height: 1;
+  padding: 2px 4px;
+  white-space: nowrap;
+  text-transform: capitalize;
 }
 
 @media print {
@@ -268,8 +263,6 @@ body {
   }
   body {
     display: inline;
-    grid-template-columns: 0px 0px [main-start] auto [main-end] 0px !important;
-    grid-template-rows: 0px [main-start] max-content [main-end] 0px !important;
 
     nav { display: none };
     main {

@@ -44,7 +44,7 @@ div {
     align-items: center;
     display: block flex;
     flex-flow: row nowrap;
-    max-height: calc(100vh - 1em);
+    max-height: calc(100svh - 1em);
     box-sizing: content-box;
     justify-content: space-around;
     overflow-x: auto;

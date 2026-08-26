@@ -9,15 +9,24 @@
 }
 
 :root {
-  --button-margin: 3px;
+  --menu-margin: 3px;
   --open-burger-leak-down: 1cm;
   --open-burger-leak-right: 5cm;
   --top-left-rounding: 1cm;
   --burger-background: #c9f;
   --space-main-background: light-dark(#ffffff, #000000);
   --space-body-background: light-dark(#000000, #222222);
+  @media print {
+    --space-main-background: #fff;
+    --space-body-background: #fff;
+  }
   @include no-mask-support {
     --open-burger-leak-down: 0cm;
+  }
+  @include nav.in-clogs() {
+    --menu-background: none;
+    --body-background: var(--space-body-background);
+    --main-background: var(--space-main-background);
   }
 }
 
@@ -49,9 +58,12 @@ ul#blog-entries {
           display: inline;
           margin-left: 1ex;
           a {
-            color: light-dark(#555, bbb);
+            color: light-dark(#555, #bbb);
             &::before {
               content: '#';
+            }
+            &::after {
+              content: none;
             }
           }
         }
@@ -60,7 +72,19 @@ ul#blog-entries {
   }
 }
 
-@include nav.with-path-prefix("/clog", $base: body) {
+:root {
+  @include nav.in-clogs() {
+    @media screen {
+      --main-width: var(--space-width);
+      --main-background: var(--space-main-background);
+      --menu-cols: var(--lcar-menu-cols);
+      --menu-rows: var(--lcar-menu-rows);
+      --menu-link-transform: uppercase;
+    }
+  }
+}
+
+@include nav.in-clogs() {
   main {
     .article-info {
       font-size: 60%;
@@ -100,137 +124,132 @@ ul#blog-entries {
     }
   }
   @media screen {
-    background: var(--space-body-background);
-    grid-template-columns: [menu-start] 0px [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;
-    footer {
-      background: var(--space-main-background);
-    }
     main {
-      background: var(--space-main-background);
       border-radius: var(--top-left-rounding) var(--top-left-rounding) 0 0;
       padding: 1em;
       z-index: 5;
     }
-    @include nav.open($selector: &) {
-      grid-template-columns: [menu-start] max-content [menu-end] 1fr [main-start footer-start] var(--space-width) [footer-end main-end] 1fr;
-    }
     nav#navigation {
-      text-transform: uppercase;
+      background: none;
 
-      @include nav.closed($selector: &) {
+      @include nav.closed() {
         pointer-events: none;
         #hamburger {
           pointer-events: all;
         }
       }
 
-      & > #hamburger, & > #menu > li {
-        transition: none !important;
+
+      & > #menu > li {
+        > a > span {
+          padding-right: 0.5ex;
+        }
         &:hover {
           filter: brightness(115%);
         }
       }
 
-      @include nav.open($selector: &) {
-        background: none;
-      }
       #hamburger {
+        transition: width 0.3 ease-in-out, height ease-in;
         .slice {
           background: var(--burger-background);
-          &:nth-child(1), &:nth-child(3) {
-              transition: none !important;
-          }
-          &:nth-child(2) {
-            $top_height: var(--hamburger-size);
-            clip-path: shape(
-              from 100% 0px,
-              curve to calc(100% - var(--top-left-rounding)) $top_height with 100% $top_height,
-              line to calc(100% - var(--open-burger-leak-right) + var(--top-left-rounding)) calc(100% - var(--open-burger-leak-down)),
-              curve to calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down) + var(--top-left-rounding)) with calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down)),
-              line to calc(100% - var(--open-burger-leak-right)) 100%,
-              line to 0 100%,
-              line to 0 0,
-              );
+        }
+        @include nav.open() {
+          width: calc(var(--hamburger-size) + var(--open-burger-leak-right));
+          height: calc(var(--hamburger-size) + var(--open-burger-leak-down));
+          .slice {
+            &:nth-child(1), &:nth-child(3) {
+              opacity: 0 !important;
+              margin: 0 !important;
+              transform: none !important;
+              pointer-events: none;
             }
+            &:nth-child(2) {
+              $top_height: var(--hamburger-size);
+              clip-path: shape(
+                from 100% 0px,
+                curve to calc(100% - var(--top-left-rounding)) $top_height with 100% $top_height,
+                line to calc(100% - var(--open-burger-leak-right) + var(--top-left-rounding)) calc(100% - var(--open-burger-leak-down)),
+                curve to calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down) + var(--top-left-rounding)) with calc(100% - var(--open-burger-leak-right)) calc(100% - var(--open-burger-leak-down)),
+                line to calc(100% - var(--open-burger-leak-right)) 100%,
+                line to 0 100%,
+                line to 0 0,
+                );
+            }
+          }
         }
         .slice {
-          &:nth-child(1), &:nth-child(2), &:nth-child(3) {
-            transform: none;
-          }
-          @include nav.closed($selector: &) {
+          @include nav.closed() {
             &:nth-child(2) {
               transform: none;
             }
           }
         }
-        @include nav.open($selector: &) {
-          width: 3cm;
-          position: relative;
-          width: calc(100% + var(--open-burger-leak-right) - var(--button-margin)*2);
-          padding: 0;
-          margin: var(--button-margin);
-          .slice {
-            position: absolute;
-            background: #000;
-            --button-width: calc(100% - var(--open-burger-leak-right) - var(--button-margin) * 2);
-            &:nth-child(1), &:nth-child(3) {
-              top: calc(100% + var(--hamburger-size));
-              left: calc(100% - var(--open-burger-leak-right) - 0.5cm);
-              @include no-mask-support {
-                top: 0.25cm;
-                left: 1em;
+        @include nav.open() {
+          & {
+            width: 3cm;
+            position: relative;
+            width: calc(100% + var(--open-burger-leak-right) - var(--menu-margin)*2);
+            padding: 0;
+            margin: var(--menu-margin);
+            .slice {
+              position: absolute;
+              background: #000;
+              --button-width: calc(100% - var(--open-burger-leak-right) - var(--menu-margin) * 2);
+              &:nth-child(1), &:nth-child(3) {
+                top: calc(100% + var(--hamburger-size));
+                left: calc(100% - var(--open-burger-leak-right) - 0.5cm);
+                @include no-mask-support {
+                  top: 0.25cm;
+                  left: 1em;
+                }
+                pointer-events: none;
+                padding: 0;
+                height: 2px;
+                margin: 0px;
+                opacity: 0.2;
+                width: 0.5cm;
               }
-              pointer-events: none;
-              padding: 0;
-              height: 2px;
-              margin: 0px;
-              opacity: 0.2;
-              width: 0.5cm;
-            }
-            &:nth-child(2) {
-              transform: none;
-              background: var(--burger-background);
-              border-radius: 0;
-              margin: 0;
-              opacity: 1;
-              border-radius: 2cm 0 0 0;
-              @include no-mask-support {
-                border-radius: 2cm 0 2cm 0;
-              }
-              top: 0;
-              left: 0;
-              border: 0px solid;
-              $width: calc(100% + var(--open-burger-leak-right) - var(--button-margin) * 2);
-              $height: calc(var(--hamburger-size) + var(--open-burger-leak-down));
-              height: $height;
-              margin: 0;
-              background: var(--burger-background);
-              $top_height: var(--hamburger-size);
-              &::after {
-                content: 'Captains log';
-                color: #000;
-                width: 100%;
-                height: 100%;
-                margin-top: calc(((var(--hamburger-size)) - 1em) / 2);
-                display: block;
-                text-align: center;
-                vertical-align: center;
+              &:nth-child(2) {
+                transform: none;
+                background: var(--burger-background);
+                border-radius: 0;
+                margin: 0;
+                opacity: 1;
+                border-radius: 2cm 0 0 0;
+                @include no-mask-support {
+                  border-radius: 2cm 0 2cm 0;
+                }
+                top: 0;
+                left: 0;
+                border: 0px solid;
+                $width: calc(100% + var(--open-burger-leak-right) - var(--menu-margin) * 2);
+                $height: calc(var(--hamburger-size) + var(--open-burger-leak-down));
+                height: $height;
+                margin: 0;
+                background: var(--burger-background);
+                $top_height: var(--hamburger-size);
+                &::after {
+                  content: 'Captains log';
+                  color: #000;
+                  width: 100%;
+                  height: 100%;
+                  margin-top: calc(((var(--hamburger-size)) - 1em) / 2);
+                  display: block;
+                  text-align: center;
+                  vertical-align: center;
+                }
               }
             }
           }
         }
       }
       #menu {
-        margin-top: calc(var(--open-burger-leak-down) + var(--button-margin));
-        li {
-          margin: var(--button-margin);
-          text-align: right;
-          vertical-align: bottom;
-          a {
+        margin-top: var(--menu-margin);
+        > li {
+          > a {
+            text-align: right;
             margin: 0;
-            $small: 0.5ex;
-            $big: calc(2rem - $small);
-            padding: $big $small $small $big;
           }
           $colors: (1: lcars.$bluey, 2: lcars.$red, 3: lcars.$lima-bean);
           @each $index, $color in $colors {
@@ -242,9 +261,9 @@ ul#blog-entries {
         &::after {
           content: '';
           background: lcars.$orange;
-          margin: var(--button-margin);
           display: block;
-          width: calc(100% - var(--button-margin) * 2);
+          margin: 0 var(--menu-margin);
+          grid-area: auto / menu-start / auto / menu-end;
           height: 3cm;
           border-radius: 0 0 2cm 0;
         }
