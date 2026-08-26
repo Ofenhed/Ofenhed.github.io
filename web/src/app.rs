@@ -165,6 +165,15 @@ pub(crate) fn App() -> impl IntoView {
     let build_info = Lazy::<BuildInfo>::new();
     let should_show_cookie_consent_link = should_show_cookie_consent_link();
     idle_preload::<Contact>();
+    let data_path = || {
+        let path_name = use_location().pathname;
+        custom_attribute("data-path", move || {
+            let path = path_name.get();
+            path.strip_prefix("/")
+                .map(ToOwned::to_owned)
+                .unwrap_or(path)
+        })
+    };
     view! {
         <Title text="Condition Raise" />
         <Meta name="color-scheme" content="dark light" />
@@ -199,11 +208,13 @@ pub(crate) fn App() -> impl IntoView {
                 <menu id="menu" aria-hidden=aria_hidden>
                     <li>
                         <A on:mouseenter=|_| task::spawn(Contact::preload()) href="/">
-                            "Contact"
+                            <span>"Contact"</span>
                         </A>
                     </li>
                     <li>
-                        <A href="/clog">"Clog"</A>
+                        <A href="/clog">
+                            <span>"Clog"</span>
+                        </A>
                     </li>
                     <Show when=move || should_show_cookie_consent_link.get()>
                         <li>
@@ -211,13 +222,13 @@ pub(crate) fn App() -> impl IntoView {
                                 on:mouseenter=|_| task::spawn(CookieConsent::preload())
                                 href="/cookies"
                             >
-                                "Cookies"
+                                <span>"Cookies"</span>
                             </A>
                         </li>
                     </Show>
                 </menu>
             </nav>
-            <main {..custom_attribute("data-path", use_location().pathname)}>
+            <main {..data_path()}>
                 <Routes fallback>
                     <Route path=path!("/") view=contact ssr=SsrMode::Static(StaticRoute::new()) />
                     <Route
