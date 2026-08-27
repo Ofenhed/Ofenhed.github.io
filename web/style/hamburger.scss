@@ -15,10 +15,9 @@
   z-index: 1000;
   padding: 0;
   margin: 0;
-  width: fit-content;
+  grid-area: menu-start / menu-start / menu-end / menu-end;
   @include nav.open() {
     & {
-      grid-area: menu-start / menu-start / menu-end / menu-end;
       background: var(--menu-background);
     }
   }
