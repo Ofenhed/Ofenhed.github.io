@@ -83,6 +83,13 @@ pub const fn date(year: i32, month: u32, day: u32) -> DateTime<Utc> {
     )
 }
 
+#[derive(Clone, Copy, Debug)]
+pub enum Visibility {
+    Hidden,
+    VisibleViaTags,
+    Visible,
+}
+
 pub trait BlogEntry: LazyRoute + Clone + Sync {
     const UID: u32;
     const PUBLISH_DATE: DateTime<Utc>;
@@ -94,7 +101,7 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
     const LOCALE: Option<Locale> = None;
 
     const PATH_LOCALE: bool = false;
-    const HIDDEN: bool = false;
+    const VISIBILITY: Visibility = Visibility::Visible;
 
     const LAST_UPDATED: Option<DateTime<Utc>> = None;
 

@@ -1,7 +1,7 @@
 use crate::{
     blog::{
         chat_control::ChatControl,
-        metadata::{BlogEntry, Locale, Tag, date},
+        metadata::{BlogEntry, Locale, Tag, Visibility, date},
     },
     helpers::{BoxType, idle_preload},
 };
@@ -21,7 +21,7 @@ impl BlogEntry for ChatControlReplyV {
 
     const TITLE: &'static str = "RE: Chat Control";
     const AUTHOR: &'static str = "Hanna Gedin & Jonas Sjöstedt (Charlotta Tjärdahl)";
-    const HIDDEN: bool = true;
+    const VISIBILITY: Visibility = Visibility::Hidden;
 
     const TAGS: &'static [Tag] = &[];
 

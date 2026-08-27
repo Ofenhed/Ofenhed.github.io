@@ -10,7 +10,7 @@ use crate::{
     app::HamburgerMenu,
     blog::{
         metadata::{
-            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag,
+            BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag, Visibility,
             with_blog_simple,
         },
         path::format_path,
@@ -364,12 +364,13 @@ impl LazyRoute for BlogListing {
             let filtered_entities = FilteredEntities(
                 blogs
                     .iter()
-                    .filter(|x| !x.hidden)
+                    .filter(|x| !matches!(x.visibility, Visibility::Hidden))
                     .filter(|x| {
                         if let Some(TagFilter(filter)) = tags {
                             x.tags.contains(&filter)
                         } else {
-                            x.tags.iter().find(|x| !x.listed()).is_none()
+                            matches!(x.visibility, Visibility::Visible)
+                                && x.tags.iter().find(|x| !x.listed()).is_none()
                         }
                     })
                     .cloned()
@@ -462,7 +463,7 @@ pub struct BlogEntryMeta {
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
     path_locale: bool,
-    hidden: bool,
+    visibility: Visibility,
     title: &'static str,
     tags: &'static [Tag],
     pin: Option<usize>,
@@ -484,7 +485,7 @@ impl BlogEntryMeta {
             last_updated: T::LAST_UPDATED,
             locale: T::LOCALE,
             path_locale: T::PATH_LOCALE,
-            hidden: T::HIDDEN,
+            visibility: T::VISIBILITY,
             title: T::TITLE,
             tags: T::TAGS,
             pin: T::PIN,

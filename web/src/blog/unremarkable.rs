@@ -1,4 +1,4 @@
-use crate::blog::metadata::{BlogEntry, Locale, Tag, date};
+use crate::blog::metadata::{BlogEntry, Locale, Tag, Visibility, date};
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
@@ -12,7 +12,7 @@ impl BlogEntry for Unremarkable {
     const PUBLISH_DATE: DateTime<Utc> = date(2022, 1, 20);
 
     const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 8));
-    const HIDDEN: bool = true;
+    const VISIBILITY: Visibility = Visibility::Hidden;
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 

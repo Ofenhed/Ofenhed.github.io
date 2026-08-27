@@ -1,5 +1,5 @@
 use crate::{
-    blog::metadata::{BlogEntry, Locale, Tag, date},
+    blog::metadata::{BlogEntry, Locale, Tag, Visibility, date},
     helpers::Abbr,
     third_party::{YouTube, youtube},
 };
@@ -14,14 +14,15 @@ impl BlogEntry for NotEvenDumb {
     const UID: u32 = 7;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 7, 13);
-    const HIDDEN: bool = true;
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 8, 9));
+    const VISIBILITY: Visibility = Visibility::VisibleViaTags;
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "LLMs are not even stupid";
     const DESCRIPTION: &'static str = "They're something else entirely";
 
-    const TAGS: &'static [Tag] = &[Tag::Ai, Tag::Tech];
+    const TAGS: &'static [Tag] = &[Tag::Ai];
     fn title() -> Option<AnyView> {
         view! {
             <Abbr title="Large Language Model" suffix="s" no_expand=true>
