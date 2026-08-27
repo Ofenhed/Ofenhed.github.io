@@ -136,6 +136,7 @@ pub(crate) fn YouTube(
     let consent_mode =
         get_local_storage_value::<YoutubeConsentType>().unwrap_or_else(|_| Signal::from(None));
     let ratio = Oco::<str>::Counted(format!("{}/{}", video.width, video.height).into());
+    let href: Oco<str> = Oco::Counted(format!("https://youtube.com/watch?v={}", video.id).into());
     move || {
         let do_show = show_youtube_consent_dialog();
         let regular_link = || {
@@ -156,8 +157,7 @@ pub(crate) fn YouTube(
                     </a>
                 }
             });
-            let href: Oco<str> =
-                Oco::Counted(format!("https://youtube.com/watch?v={}", video.id).into());
+            let href = href.clone();
             view! {
                 <div
                     class:simple-embed=true
@@ -181,6 +181,7 @@ pub(crate) fn YouTube(
                         class:logo=true
                         class:no-shinies=true
                         href=href
+                        aria-label="Play on YouTube"
                         title="YouTube"
                         on:click=show_consent
                     ></a>
