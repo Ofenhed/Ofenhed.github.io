@@ -11,6 +11,15 @@ $youtube-logo-aspect-ratio: 29/20;
   print-color-adjust: exact;
 }
 
+@mixin inline-youtube-logo {
+  @include youtube-logo;
+  padding-left: calc(1lh * ($youtube-logo-aspect-ratio) + 0.4ch);
+}
+
+.with-youtube-logo {
+  @include inline-youtube-logo;
+}
+
 a:not(.no-shinies) {
   &[href^="https://linkedin.com"], &[href="https://www.linkedin.com"] {
     font-weight: bold;
@@ -28,12 +37,13 @@ a:not(.no-shinies) {
     }
   }
 
-  @at-root .with-youtube-logo, &[href^="https://youtube.com/"], &[href^="https://www.youtube.com/"], &[href^="https://youtu.be/"] {
+  &[href^="https://youtube.com/"], &[href^="https://www.youtube.com/"], &[href^="https://youtu.be/"] {
+    color: var(--font-color);
     font-weight: bold;
     text-decoration: none;
-    color: light-dark(#000000, #ffffff);
-    padding-left: calc(1lh * ($youtube-logo-aspect-ratio) + 0.4ch);
-    @include youtube-logo;
+    @media not print {
+      @include inline-youtube-logo;
+    }
   }
 }
 
@@ -130,7 +140,7 @@ div.simple-embed {
       background-blend-mode: lighten;
       @media print {
         &:after {
-          content: "";
+          content: unset;
         }
       }
     }
