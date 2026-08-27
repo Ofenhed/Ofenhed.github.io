@@ -31,48 +31,27 @@ blockquote {
     }
   }
 }
-q {
-  &:before {
-    content: "“";
-    user-select: text;
-  }
-  font-style: oblique 3deg;
-  &:after {
-    content: "”";
-    user-select: text;
-  }
-  q &, blockquote & {
-    &:before {
-      content: "‘";
-    }
-    &:after {
-      content: "’";
-    }
-    &.para {
-      &:before {
-        content: "‘[";
-      }
-      &:after {
-        content: "]’";
-      }
-    }
-  }
-  .para {
-    &:before {
-      user-select: text;
-      content: "[";
-    }
-    &:after {
-      user-select: text;
-      content: "]";
-    }
-  }
+q, blockquote {
+  quotes: "“" "”" "‘" "’";
   &.para {
     &:before {
-      content: "“[";
+      user-select: text;
+      content: open-quote "[";
     }
     &:after {
-      content: "]’";
+      user-select: text;
+      content: "]" close-quote;
     }
+  }
+}
+q {
+  font-style: oblique 3deg;
+}
+.para {
+  &:before {
+    content: "[";
+  }
+  &:after {
+    content: "]";
   }
 }
