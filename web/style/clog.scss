@@ -1,6 +1,7 @@
 @use 'root.scss';
 @use 'nav.scss';
 @use 'lcars.scss';
+@use 'sass:color';
 
 @mixin no-mask-support {
   @supports not (offset-path: shape(from 0 0, move to 0 0)) {
@@ -8,12 +9,14 @@
   }
 }
 
+$burger-background: lcars.$african-violet;
+
 :root {
   --menu-margin: 3px;
   --open-burger-leak-down: 1cm;
   --open-burger-leak-right: 5cm;
   --top-left-rounding: 1cm;
-  --burger-background: #{lcars.$african-violet};
+  --burger-background: #{$burger-background};
   --space-main-background: light-dark(#ffffff, #000000);
   --space-body-background: light-dark(#000000, #222222);
   @media print {
@@ -156,7 +159,7 @@ ul#blog-entries {
         > a > span {
           padding-right: 0.5ex;
         }
-        @at-root #hamburger:hover > .slice, &:hover {
+        &:hover {
           filter: brightness(115%);
         }
       }
@@ -240,14 +243,20 @@ ul#blog-entries {
                 margin: 0;
                 background: var(--burger-background);
                 $top_height: var(--hamburger-size);
-                &:hover:after {
-                  @include lcar-close-button;
+              }
+            }
+            &:hover > .slice:nth-child(2){
+              background: color.adjust($burger-background, $lightness: 5%);
+              &:after {
+                @include lcar-close-button;
+                @media (any-hover: hover) {
+                  color: $burger-background;
                 }
-                @media (any-hover: none) {
-                  &:after {
-                    @include lcar-close-button;
-                  }
-                }
+              }
+            }
+            @media (any-hover: none) {
+              > .slice:nth-child(2):after {
+                @include lcar-close-button;
               }
             }
           }
