@@ -157,7 +157,7 @@ pub(crate) fn YouTube(
             };
             let author = video.author_name.clone().map(|author_name| {
                 view! {
-                    <a class:author=true href=author_url>
+                    <a class:author=true class:no-shinies=true href=author_url>
                         {author_name}
                     </a>
                 }
