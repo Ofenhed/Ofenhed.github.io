@@ -137,8 +137,13 @@ pub(crate) fn YouTube(
         get_local_storage_value::<YoutubeConsentType>().unwrap_or_else(|_| Signal::from(None));
     let ratio = Oco::<str>::Counted(format!("{}/{}", video.width, video.height).into());
     let href: Oco<str> = Oco::Counted(format!("https://youtube.com/watch?v={}", video.id).into());
+    let youtube_id: (&str, Oco<str>) = (
+        "--youtube-id",
+        Oco::Counted(format!("\"{}\"", video.id).into()),
+    );
     move || {
         let do_show = show_youtube_consent_dialog();
+        let youtube_id = youtube_id.clone();
         let regular_link = || {
             let ratio = ratio.clone();
             let author_url = video
@@ -163,6 +168,7 @@ pub(crate) fn YouTube(
                     class:simple-embed=true
                     class:youtube-embed=true
                     style:aspect-ratio=ratio.clone()
+                    style=youtube_id.clone()
                     style:max-width=max_width
                     style:max-height=max_height
                 >
@@ -205,6 +211,7 @@ pub(crate) fn YouTube(
                 <iframe
                     class:youtube-embed=true
                     style:aspect-ratio=ratio.clone()
+                    style=youtube_id.clone()
                     style:max-width=max_width
                     style:max-height=max_height
                     src=format!("https://www.youtube{url_suffix}.com/embed/{}", video.id)

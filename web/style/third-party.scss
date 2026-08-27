@@ -53,8 +53,7 @@ div.simple-embed {
   grid-template-columns: [thumb-start meta-start] 1fr [logo-start] minmax(5%, math.div(3em, 20) * 29) [logo-end] 1fr [meta-end thumb-end];
   print-color-adjust: exact !important;
   @media print {
-    max-width: 25%;
-    max-height: 25%;
+    max-height: 25vh !important;
   }
   a {
     text-decoration: none;
@@ -127,7 +126,12 @@ div.simple-embed {
       }
     }
 
-    & > .meta > .author::before {
+    & > .meta > .title:after {
+      @media print {
+        content: " (youtu.be/\200B" var(--youtube-id) ")"
+      }
+    }
+    & > .meta > .author:before {
       content: "@";
     }
     & > .logo {
