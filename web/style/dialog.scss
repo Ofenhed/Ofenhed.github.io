@@ -2,6 +2,17 @@ body > dialog {
   box-sizing: content-box;
   border-radius: 2em;
   width: clamp(80ex, min(120ex, 80vw), 100vw);
+  > form > input[type="submit"] {
+    display: none;
+    padding: 0 0.5ex 1ex 1ex;
+    border: none;
+    background: none;
+    font-size: 200%;
+    @media screen and (not (pointer: fine)) and (width < 90ex) {
+      float: right;
+      display: block;
+    }
+  }
   &[open] {
     @keyframes show-dialog {
       0% {

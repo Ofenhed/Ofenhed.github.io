@@ -261,6 +261,9 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
     view! {
         <Show when=wants_youtube>
             <dialog node_ref=node closedby="any" class:cookie-consent=true>
+                <form method="dialog">
+                    <input type="submit" value="\u{2bbe}" />
+                </form>
                 <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
                 <span>"How do you want to interact with YouTube on this web page?"</span>
                 <YoutubeConsent />
