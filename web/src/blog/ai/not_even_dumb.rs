@@ -65,27 +65,33 @@ impl LazyRoute for NotEvenDumb {
             ". I've cherry-picked a collection of videos that I feel demonstrate how "
             {llms}
             " aren't stupid, they're something else entirely."
-            <h2>"General intelligence"</h2>
-            <div class:videos=true class:carousel-or-grid=true>
-                <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
-                <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
-                <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
-                <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
-                <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
-            </div>
-            <h2>"Spelling issues"</h2>
-            "These are somewhat dismissable as the model using tokens instead of words."
-            <div class:videos=true class:carousel-or-grid=true>
-                <YouTube video=youtube!("7lRbNbwuczQ" (9:16)) />
-                <YouTube video=youtube!("C5Gy6D-hC1g" (9:16)) />
-                <YouTube video=youtube!("m_shkDLGWEQ" (9:16)) />
-            </div>
-            <h2>"Vision issues"</h2>
-            "These will surprise literally nobody who understands how the technology works. Might also not surprise anyone else, I don’t know... but at least they’re entertaining."
-            <div class:videos=true class:carousel-or-grid=true>
-                <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
-                <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
-            </div>
+            <section>
+                <h2>"General intelligence"</h2>
+                <div class:videos=true class:carousel-or-grid=true>
+                    <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
+                    <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
+                    <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
+                    <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
+                    <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
+                </div>
+            </section>
+            <section>
+                <h2>"Spelling issues"</h2>
+                "These are somewhat dismissable as the model using tokens instead of words."
+                <div class:videos=true class:carousel-or-grid=true>
+                    <YouTube video=youtube!("7lRbNbwuczQ" (9:16)) />
+                    <YouTube video=youtube!("C5Gy6D-hC1g" (9:16)) />
+                    <YouTube video=youtube!("m_shkDLGWEQ" (9:16)) />
+                </div>
+            </section>
+            <section>
+                <h2>"Vision issues"</h2>
+                "These will surprise literally nobody who understands how the technology works. Might also not surprise anyone else, I don’t know... but at least they’re entertaining."
+                <div class:videos=true class:carousel-or-grid=true>
+                    <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
+                    <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
+                </div>
+            </section>
         }
         .into_any()
     }

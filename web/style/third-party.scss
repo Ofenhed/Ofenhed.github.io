@@ -54,6 +54,11 @@ div.simple-embed {
   print-color-adjust: exact !important;
   @media print {
     max-height: 25vh !important;
+    grid-template-rows: [thumb-start meta-start] auto [meta-end logo-start] 1.5em [logo-end] 1ch [thumb-end];
+    grid-template-columns: [thumb-start meta-start] auto [logo-start] calc(0.4ch + 1.5em * ($youtube-logo-aspect-ratio)) [logo-end] 1ch [meta-end thumb-end];
+    > .logo {
+      opacity: 0.5;
+    }
   }
   a {
     text-decoration: none;
