@@ -264,7 +264,8 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
                         path=*key
                         view=move || {
                             provide_context(key.to_owned());
-                            view! { <Outlet /> }
+                            view! { <h1>Captains Log</h1>
+                                <Outlet /> }
                         }
                         ssr=SsrMode::OutOfOrder
                     >

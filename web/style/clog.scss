@@ -13,7 +13,7 @@
   --open-burger-leak-down: 1cm;
   --open-burger-leak-right: 5cm;
   --top-left-rounding: 1cm;
-  --burger-background: #c9f;
+  --burger-background: #{lcars.$african-violet};
   --space-main-background: light-dark(#ffffff, #000000);
   --space-body-background: light-dark(#000000, #222222);
   @media print {
@@ -144,7 +144,7 @@ ul#blog-entries {
         > a > span {
           padding-right: 0.5ex;
         }
-        &:hover {
+        @at-root #hamburger:hover > .slice, &:hover {
           filter: brightness(115%);
         }
       }
@@ -229,15 +229,15 @@ ul#blog-entries {
                 margin: 0;
                 background: var(--burger-background);
                 $top_height: var(--hamburger-size);
-                &::after {
-                  content: 'Captains log';
+                &:hover:after {
+                  content: 'Close';
+                  direction: rtl;
                   color: #000;
-                  width: 100%;
-                  height: 100%;
-                  margin-top: calc(((var(--hamburger-size)) - 1em) / 2);
-                  display: block;
-                  text-align: center;
-                  vertical-align: center;
+                  position: absolute;
+                  bottom: var(--menu-margin);
+                  width: calc(var(--menu-width) - var(--menu-margin) * 2);
+                  margin-top: calc(((var(--hamburger-size) + var(--open-burger-leak-down)) - 1em) / 2);
+                  display: inline-block;
                   text-transform: var(--menu-link-transform);
                 }
               }
