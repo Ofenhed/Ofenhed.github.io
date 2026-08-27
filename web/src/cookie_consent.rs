@@ -172,14 +172,13 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                         }
                     }
                 />
-                "Embedded without any cookie or tracking reduction"
+                "Embedded (no reduction of cookies or other tracking)"
             </label>
             <div {..BoxType::Info
                 .attr()}>
                 "These options will send data to YouTube each time you visit a page "
-                <i>"with an embedded video"</i> ", "
-                <b>"even without you even playing any videos"</b>
-                ". It could allow YouTube to track which pages you are reading (even thoug the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
+                <i>"with an embedded video"</i> ", " <b>"even without you playing any videos"</b>
+                ". It could allow YouTube to track which pages you are reading (even though the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
                 <a
                     href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode"
                     tabindex="-1"
