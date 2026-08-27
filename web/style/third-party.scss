@@ -8,6 +8,7 @@ $youtube-logo-aspect-ratio: 29/20;
   background-repeat: no-repeat;
   background-position: center left 0.2ch;
   background-size: auto 100%;
+  print-color-adjust: exact;
 }
 
 a:not(.no-shinies) {
@@ -31,7 +32,7 @@ a:not(.no-shinies) {
     font-weight: bold;
     text-decoration: none;
     color: light-dark(#000000, #ffffff);
-    padding-left: calc(1lh * ($youtube-logo-aspect-ratio) + 1ch);
+    padding-left: calc(1lh * ($youtube-logo-aspect-ratio) + 0.4ch);
     @include youtube-logo;
   }
 }
