@@ -84,6 +84,18 @@ ul#blog-entries {
   }
 }
 
+@mixin lcar-close-button {
+  content: 'Close';
+  direction: rtl;
+  color: #000;
+  position: absolute;
+  bottom: var(--menu-margin);
+  width: calc(var(--menu-width) - var(--menu-margin) * 2);
+  margin-top: calc(((var(--hamburger-size) + var(--open-burger-leak-down)) - 1em) / 2);
+  display: inline-block;
+  text-transform: var(--menu-link-transform);
+}
+
 @include nav.in-clogs() {
   main {
     .article-info {
@@ -230,15 +242,12 @@ ul#blog-entries {
                 background: var(--burger-background);
                 $top_height: var(--hamburger-size);
                 &:hover:after {
-                  content: 'Close';
-                  direction: rtl;
-                  color: #000;
-                  position: absolute;
-                  bottom: var(--menu-margin);
-                  width: calc(var(--menu-width) - var(--menu-margin) * 2);
-                  margin-top: calc(((var(--hamburger-size) + var(--open-burger-leak-down)) - 1em) / 2);
-                  display: inline-block;
-                  text-transform: var(--menu-link-transform);
+                  @include lcar-close-button;
+                }
+                @media (any-hover: none) {
+                  &:after {
+                    @include lcar-close-button;
+                  }
                 }
               }
             }
