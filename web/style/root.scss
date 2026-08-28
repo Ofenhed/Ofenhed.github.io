@@ -9,6 +9,7 @@
   --space-max-width: 120ex;
   --space-width: min(100%, var(--space-max-width));
   --font-color: light-dark(#000, #fff);
+  --faded-font-color: light-dark(#00000080, #fffffff80);
   --main-padding: 1em;
   @media print {
     --font-color: #000;

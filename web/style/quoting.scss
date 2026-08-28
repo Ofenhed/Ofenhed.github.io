@@ -1,13 +1,24 @@
 footer {
   blockquote {
-    margin: 0 0 1mm 0;
+    margin: 0;
+    margin-bottom: 0.5em;
   }
 }
 blockquote {
   display: block;
-  border-left: 2px solid light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
-  padding-left: 1em;
-  margin-left: 1em;
+  margin-left: 0;
+  padding-left: calc(1em + 1ch);
+  position: relative;
+  &:before {
+    content: open-quote;
+    font-size: 200%;
+    position: absolute;
+    left: 0;
+    padding-right: 0.1ch;
+    color: var(--faded-font-color);
+    height: 100%;
+    border-right: 2px solid var(--faded-font-color);
+  }
   &[cite]:not(:has(cite)) {
     &[cite^="http://"], &[cite^="https://"] {
       &:after {

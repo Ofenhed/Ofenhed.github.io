@@ -222,6 +222,7 @@ body > footer {
     display: grid;
     grid-auto-columns: max-content auto max-content;
     grid-auto-flow: column;
+    gap: 0.25ch;
     &::before {
       display: block;
       grid-column: 1;
