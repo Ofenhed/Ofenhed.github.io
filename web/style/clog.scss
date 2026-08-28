@@ -38,13 +38,14 @@ $burger-background: lcars.$african-violet;
 
 ul#blog-entries {
   padding-left: 0;
-  & > li {
+  padding-bottom: 1lh;
+  > li {
     &:not(:first-of-type) {
       border-top: 1px solid light-dark(#000, #fff);
       margin-top: 0.5em;
       padding-top: 0.5em;
     }
-    & > article {
+    > article {
       > p {
         font-style: italic;
         margin: 0.5ch 1em 1ch 1em;
@@ -61,7 +62,7 @@ ul#blog-entries {
       content: "\1F4CC";
       display: inline;
     }
-    & a {
+    a {
       text-decoration: none;
     }
     &, & li {
