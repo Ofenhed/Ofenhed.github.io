@@ -143,11 +143,6 @@ pub(crate) fn idle_preload<T: LazyRoute>() {
     }
 }
 
-#[inline(always)]
-pub(crate) fn scoped_style() -> CustomAttr<&'static str, bool> {
-    custom_attribute("scoped", true)
-}
-
 #[cfg_attr(not(feature = "client-side"), expect(unused))]
 pub(crate) fn document_visible() -> Signal<bool> {
     #[derive(Clone)]

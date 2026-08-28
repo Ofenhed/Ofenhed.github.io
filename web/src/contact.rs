@@ -1,7 +1,7 @@
 use leptos::{html, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{NoScript, NoWasm, img_def, scoped_style};
+use crate::helpers::{NoScript, NoWasm, img_def};
 
 #[cfg(feature = "client-side")]
 mod qr_settings {
@@ -446,7 +446,7 @@ impl LazyRoute for Contact {
                 <p>Senior IT Security Consultant</p>
                 <Email />
             </div>
-            <style {..scoped_style()} media="print" nonce=use_nonce()>
+            <style media="print" nonce=use_nonce()>
                 "div#canvasHolder>canvas:last-of-type{display:none}"
             </style>
         }
