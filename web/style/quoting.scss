@@ -10,7 +10,7 @@ blockquote {
   padding-left: calc(1em + 1ch);
   position: relative;
   &:before {
-    content: open-quote;
+    content: "”";
     font-size: 200%;
     position: absolute;
     left: 0;
@@ -43,7 +43,7 @@ blockquote {
   }
 }
 q, blockquote {
-  quotes: "“" "”" "‘" "’";
+  quotes: "‘" "’" "“" "”";
   &.para {
     &:before {
       user-select: text;
