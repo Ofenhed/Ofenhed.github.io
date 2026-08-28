@@ -23,7 +23,7 @@ impl BlogEntry for ChatControl {
 
     const TITLE: &'static str = "In opposition of ChatControl (Open letter)";
 
-    const TAGS: &'static [Tag] = &[Tag::Tech, Tag::Integrity];
+    const TAGS: &'static [Tag] = &[Tag::Integrity, Tag::Tech];
 
     const PIN: Option<usize> = None;
 }
