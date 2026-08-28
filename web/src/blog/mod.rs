@@ -78,25 +78,15 @@ fn current_url_with(f: impl Fn()) -> String {
 
 #[inline(always)]
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
-    let published = [
+    [
         b.with_blog::<ai::NotEvenDumb>(),
         b.with_blog::<ai::WhatAreLLMs>(),
         b.with_blog::<chat_control::ChatControl>(),
         b.with_blog::<emails::ChatControlReplyV>(),
         b.with_blog::<unremarkable::Unremarkable>(),
         b.with_blog::<why::WhyBlog>(),
-    ];
-    let unpublished = {
-        #[cfg(not(debug_assertions))]
-        {
-            []
-        }
-        #[cfg(debug_assertions)]
-        {
-            []
-        }
-    };
-    published.into_iter().chain(unpublished)
+    ]
+    .into_iter()
 }
 
 pub fn with_blogs_simple<B>()
