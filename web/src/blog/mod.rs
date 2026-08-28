@@ -452,6 +452,7 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
 #[slot]
 pub struct BlogEntryMeta {
     uid: u32,
+    description: Option<&'static str>,
     publish_date: DateTime<Utc>,
     last_updated: Option<DateTime<Utc>>,
     locale: Option<Locale>,
@@ -472,8 +473,14 @@ impl BlogEntryHandler for BlogEntryHandlerFor<BlogEntryMeta> {
 
 impl BlogEntryMeta {
     pub(crate) const fn for_entry<T: BlogEntry>() -> Self {
+        let description: Option<&str> = if T::DESCRIPTION.is_empty() {
+            None
+        } else {
+            Some(T::DESCRIPTION)
+        };
         BlogEntryMeta {
             uid: T::UID,
+            description,
             publish_date: T::PUBLISH_DATE,
             last_updated: T::LAST_UPDATED,
             locale: T::LOCALE,
@@ -700,6 +707,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                                 </li>
                             </For>
                         </ul>
+                        {entry.description.map(|d| view! { <p>{d}</p> })}
                     </article>
                 </li>
             </For>

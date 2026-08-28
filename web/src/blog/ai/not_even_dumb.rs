@@ -19,8 +19,8 @@ impl BlogEntry for NotEvenDumb {
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
-    const TITLE: &'static str = "LLMs are not even stupid";
-    const DESCRIPTION: &'static str = "They're something else entirely";
+    const TITLE: &'static str = "LLMs are not even stupid...";
+    const DESCRIPTION: &'static str = "...they're something else entirely.";
 
     const TAGS: &'static [Tag] = &[Tag::Ai];
     fn title() -> Option<AnyView> {

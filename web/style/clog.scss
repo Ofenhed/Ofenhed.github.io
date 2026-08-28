@@ -31,6 +31,9 @@ $burger-background: lcars.$african-violet;
     --body-background: var(--space-body-background);
     --main-background: var(--space-main-background);
   }
+  &:has(body > main > ul#blog-entries) {
+    --space-max-width: 80ch;
+  }
 }
 
 ul#blog-entries {
@@ -41,11 +44,17 @@ ul#blog-entries {
       margin-top: 0.5em;
       padding-top: 0.5em;
     }
-    & > article > time {
-      margin-left: 1em;
-      opacity: 50%;
-      &:empty::after {
-        content: attr(datetime);
+    & > article {
+      > p {
+        font-style: italic;
+        margin: 0.5ch 1em 1ch 1em;
+      }
+      > time {
+        margin-left: 1em;
+        opacity: 50%;
+        &:empty::after {
+          content: attr(datetime);
+        }
       }
     }
     &[pinned] > article > a::before {
