@@ -105,15 +105,23 @@ pub(crate) fn NoInitTransition() -> impl IntoView {
         use leptos::nonce::use_nonce;
         let script = js_macro::minify_js! {
             addEventListener("DOMContentLoaded", (event) => {
-                const job = () => {
-                    document.body.setAttribute("data-activate-transitions", "");
+                var testReady = null,
+                    newTimer = () => {
+                    if (window.requestIdleCallback) {
+                        window.requestIdleCallback(testReady, {timeout: 1000});
+                    } else {
+                        setTimeout(testReady, 200);
+                    }
                 };
-                if (window.requestIdleCallback) {
-                    window.requestIdleCallback(job);
-                } else {
-                    setTimeout(job, 1000);
-                }
-            });
+                testReady = () => {
+                    if (window.getComputedStyle(document.body).getPropertyValue("--css-loaded") == "") {
+                        newTimer()
+                    } else {
+                        document.body.setAttribute("data-activate-transitions", "");
+                    }
+                };
+                testReady();
+            }, {once: true, passive: true});
         };
         view! { <script nonce=use_nonce()>{script}</script> }
     }
