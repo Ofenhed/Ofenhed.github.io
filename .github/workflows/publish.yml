@@ -22,7 +22,7 @@ env:
   cargo_leptos_version: ./.cargo-leptos-version
   rust_version: ./.rust-version
   gh_action_fmt_branch: github-actions-automatic-formatting-${{ github.ref_name }}
-  LEPTOS_SITE_PKG_DIR: pkg-${{ github.run_number }}
+  LEPTOS_SITE_PKG_DIR: pk${{ github.run_number }}
 
 jobs:
   build:
