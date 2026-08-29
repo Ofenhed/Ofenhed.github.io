@@ -368,7 +368,7 @@ impl LazyRoute for BlogListing {
                     .into(),
             );
             provide_context(filtered_entities.clone());
-            let entries = Signal::derive(move || {
+            Signal::derive(move || {
                 let FilteredEntities(blogs) = use_context().unwrap();
                 let mut blogs = blogs.into_owned();
                 blogs.sort_unstable_by(|a, b| {
@@ -412,8 +412,7 @@ impl LazyRoute for BlogListing {
                     _ => &chunks[current_page],
                 }
                 .to_vec()
-            });
-            entries
+            })
         };
         Effect::new(move || {
             let blogs = blogs.with(|entries| entries.iter().map(|x| x.uid).collect());
