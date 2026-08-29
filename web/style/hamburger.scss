@@ -76,18 +76,21 @@
 #hamburger {
   z-index: 1100;
   display: block;
-  padding: var(--hamburger-padding);
   cursor: pointer;
+  --slice-height: 2px;
   width: var(--hamburger-size);
   height: var(--hamburger-size);
   margin-bottom: calc(-var(--hamburger-size) - var(--hamburger-padding));
+  padding: var(--hamburger-padding);
+  padding-top: calc(var(--hamburger-padding) + var(--hamburger-size) / 3 - var(--slice-height));
   .slice {
     display: block;
     background: light-dark(#000, #888);
     position: relative;
     width: 100%;
-    --slice-height: 2px;
-    margin-top: calc(var(--hamburger-size) / 3 - var(--slice-height));
+    &:not(:first-of-type) {
+      margin-top: calc(var(--hamburger-size) / 3 - var(--slice-height));
+    }
     top: calc((33% - var(--slice-height))/-2);
     height: var(--slice-height, 2px);
     border-radius: var(--slice-height);
