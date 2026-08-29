@@ -1,7 +1,7 @@
 use leptos::{logging::error, prelude::*, task};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{BoxType, NoScript, NoWasm, prefix_symbol};
+use crate::helpers::{Abbr, BoxType, NoScript, NoWasm, prefix_symbol};
 use crate::local_storage::{
     LocalStorageAccessor, LocalStorageKey, get_local_storage_value, set_local_storage_value,
 };
@@ -67,7 +67,10 @@ impl LazyRoute for CookieConsent {
         let no_script = || {
             view! {
                 <p>
-                    "Cookies and tracking can not be configured (and are not used) if you don't have WASM support enabled."
+                    "Cookies and tracking can not be configured (and are not used) if you don't have "
+                    <Abbr no_expand=true title=Oco::Borrowed("WebAssembly")>
+                        "Wasm"
+                    </Abbr>" support enabled."
                 </p>
                 <style nonce=use_nonce>"form.cookie-consent{display:none}"</style>
             }
