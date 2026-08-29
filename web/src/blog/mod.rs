@@ -225,7 +225,7 @@ pub fn BlogPaging() -> impl MatchNestedRoutes + Clone + 'static {
                         path=CurrentPage(key)
                         view=move || {
                             provide_context(CurrentPage(key));
-                            view! { <Outlet /> }
+                            Outlet()
                         }
                         ssr=SsrMode::OutOfOrder
                     >
@@ -254,10 +254,7 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
                         path=*key
                         view=move || {
                             provide_context(key.to_owned());
-                            view! {
-                                <h1>Captains Log</h1>
-                                <Outlet />
-                            }
+                            Outlet()
                         }
                         ssr=SsrMode::OutOfOrder
                     >
@@ -265,7 +262,7 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
                             path=SortInvert(true)
                             view=|| {
                                 provide_context(SortInvert(true));
-                                view! { <Outlet /> }
+                                Outlet()
                             }
                             ssr=SsrMode::OutOfOrder
                         >
@@ -275,7 +272,7 @@ pub fn BlogSorting() -> impl MatchNestedRoutes + Clone + 'static {
                             path=SortInvert(false)
                             view=|| {
                                 provide_context(SortInvert(false));
-                                view! { <Outlet /> }
+                                Outlet()
                             }
                             ssr=SsrMode::OutOfOrder
                         >
@@ -302,7 +299,7 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
                             path=key
                             view=move || {
                                 provide_context(Some(key));
-                                view! { <Outlet /> }
+                                Outlet()
                             }
                             ssr=SsrMode::OutOfOrder
                         >
@@ -316,7 +313,7 @@ pub fn BlogTagFilter() -> impl MatchNestedRoutes + Clone + 'static {
                 path=path!("")
                 view=move || {
                     provide_context(None::<TagFilter>);
-                    view! { <Outlet /> }
+                    Outlet()
                 }
                 ssr=SsrMode::OutOfOrder
             >
@@ -688,7 +685,23 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             </span>
         }
     };
+    let title_tag = || {
+        let filter = use_context();
+        filter.flatten().map(|TagFilter(x)| {
+            view! {
+                " "
+                <span>"#"{into_static_str(x)}</span>
+            }
+        })
+    };
+    let entry_tags = |meta: &'static [Tag]| {
+        move || match use_context().unwrap() {
+            Some(TagFilter(filter)) => Either::Right(meta.iter().filter(move |x| &filter != *x)),
+            _ => Either::Left(meta.iter()),
+        }
+    };
     view! {
+        <h1>"Captains Log"{title_tag}</h1>
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li {..article_pinned(&entry)}>
@@ -698,7 +711,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
                         </A>
                         {info(&entry)}
                         <ul class="tags">
-                            <For each=move || entry.tags key=|x| x.to_owned() let(tag)>
+                            <For each=entry_tags(entry.tags) key=|x| x.to_owned() let(tag)>
                                 <li>
                                     <A href=current_url_with(|| {
                                         provide_context(Some(TagFilter(*tag)));

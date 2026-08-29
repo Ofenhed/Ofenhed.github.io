@@ -36,6 +36,12 @@ $burger-background: lcars.$african-violet;
   }
 }
 
+body > main:has(> ul#blog-entries) {
+  & > h1:first-of-type > span {
+    opacity: 0.5;
+  }
+}
+
 ul#blog-entries {
   padding-left: 0;
   padding-bottom: 1lh;
