@@ -218,7 +218,10 @@ ul#blog-entries {
             }
             > .slice {
               --button-width: calc(100% - var(--open-burger-leak-right) - var(--menu-margin) * 2);
-              height: 33%;
+              height: 0;
+              &:nth-child(2) {
+                height: 100%;
+              }
               margin: 0;
               top: 0;
               left: 0;
@@ -231,12 +234,14 @@ ul#blog-entries {
                 background: color.adjust($burger-background, $lightness: 5%);
               }
             }
-            > .slice:last-of-type:after {
-              @include lcar-close-button;
-              @media (any-hover: hover) {
-                color: $burger-background;
+            > .slice:nth-child(2) {
+              &:after {
+                @include lcar-close-button;
+                @media (any-hover: hover) {
+                  color: $burger-background;
+                }
               }
-              overflow: visible;
+              overflow: hidden;
             }
           }
         }
