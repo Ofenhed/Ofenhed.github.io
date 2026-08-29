@@ -223,7 +223,7 @@ ul#blog-entries {
             width: calc(100% + var(--open-burger-leak-right) - var(--menu-margin)*2);
             padding: 0;
             margin: var(--menu-margin);
-            .slice:nth-child(2) {
+            &, > .slice:nth-child(2) {
               border-radius: 2cm 0;
             }
             > .slice {
