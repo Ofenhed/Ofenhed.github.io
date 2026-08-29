@@ -8,6 +8,7 @@ use leptos::{
     ev, html, logging,
     prelude::*,
     tachys::view::iterators::StaticVec,
+    task,
 };
 use leptos_router::{
     LazyRoute, MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
@@ -688,6 +689,11 @@ pub(crate) fn Url(children: TypedChildrenFn<&'static str>) -> impl IntoView {
             {url}
         </a>
     }
+}
+
+pub(crate) fn preload_mouse_enter<T: LazyRoute>()
+-> ev::On<ev::mouseenter, impl 'static + FnMut(ev::MouseEvent)> {
+    ev::on(ev::mouseenter, |_| task::spawn_local_scoped(T::preload()))
 }
 
 #[component]

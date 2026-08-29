@@ -1,4 +1,4 @@
-use leptos::{attr::custom::custom_attribute, html, prelude::*, task};
+use leptos::{attr::custom::custom_attribute, html, prelude::*};
 use leptos_meta::{Meta, MetaTags, Title, provide_meta_context};
 use leptos_router::{
     Lazy, LazyRoute, SsrMode,
@@ -14,7 +14,7 @@ use crate::{
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
-    helpers::{Footnotes, build_number, idle_preload},
+    helpers::{Footnotes, build_number, idle_preload, preload_mouse_enter},
     local_storage::provide_local_storage_context,
     third_party::ThirdPartyConsentDialogs,
 };
@@ -215,7 +215,7 @@ pub(crate) fn App() -> impl IntoView {
                 </label>
                 <menu id="menu" aria-hidden=aria_hidden>
                     <li>
-                        <A on:mouseenter=|_| task::spawn(Contact::preload()) href="/">
+                        <A href="/">
                             <span>"Contact"</span>
                         </A>
                     </li>
@@ -226,10 +226,7 @@ pub(crate) fn App() -> impl IntoView {
                     </li>
                     <Show when=move || should_show_cookie_consent_link.get()>
                         <li>
-                            <A
-                                on:mouseenter=|_| task::spawn(CookieConsent::preload())
-                                href="/cookies"
-                            >
+                            <A {..preload_mouse_enter::<CookieConsent>()} href="/cookies">
                                 <span>"Cookies"</span>
                             </A>
                         </li>

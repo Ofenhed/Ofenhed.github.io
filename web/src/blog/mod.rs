@@ -413,12 +413,11 @@ impl LazyRoute for BlogListing {
                 }
                 .to_vec()
             });
-            provide_context(CurrentPageEntries(entries.get()));
             entries
         };
-        Effect::new(|| {
-            let FilteredEntities(blogs) = use_context().unwrap();
-            for b in with_blogs(PreloadUids(blogs.iter().map(|x| x.uid).collect())).flatten() {
+        Effect::new(move || {
+            let blogs = blogs.with(|entries| entries.iter().map(|x| x.uid).collect());
+            for b in with_blogs(PreloadUids(blogs)).flatten() {
                 spawn_local_scoped(b);
             }
         });
@@ -590,9 +589,6 @@ fn to_anchor_title<'a>(input: &'a str) -> Oco<'a, str> {
 #[derive(Clone)]
 #[allow(unused)]
 struct FilteredEntities(Oco<'static, [BlogEntryMeta]>);
-
-#[allow(unused)]
-struct CurrentPageEntries(Vec<BlogEntryMeta>);
 
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[derive(Clone, Copy, Default, PartialEq, Eq, Hash, IntoStaticStr, VariantArray, EnumString)]
