@@ -9,6 +9,12 @@
   }
 }
 
+@mixin mask-support {
+  @supports (offset-path: shape(from 0 0, move to 0 0)) {
+    @content
+  }
+}
+
 $burger-background: lcars.$african-violet;
 
 :root {
@@ -217,10 +223,7 @@ ul#blog-entries {
             width: calc(100% + var(--open-burger-leak-right) - var(--menu-margin)*2);
             padding: 0;
             margin: var(--menu-margin);
-            border-radius: 2cm 0 0 0;
-            @include no-mask-support {
-              overflow: hidden;
-              border: 0px #000 solid;
+            .slice:nth-child(2) {
               border-radius: 2cm 0;
             }
             > .slice {
