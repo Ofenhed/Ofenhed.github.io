@@ -9,7 +9,7 @@ use leptos_router::{
 };
 
 use crate::{
-    blog::Blog,
+    blog::{Blog, BlogListing},
     contact::{Contact, PersistentQrLogo},
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
@@ -173,6 +173,7 @@ pub(crate) fn App() -> impl IntoView {
     let build_info = Lazy::<BuildInfo>::new();
     let should_show_cookie_consent_link = should_show_cookie_consent_link();
     idle_preload::<Contact>();
+    idle_preload::<BlogListing>();
     let data_path = || {
         let path_name = use_location().pathname;
         custom_attribute("data-path", move || {
