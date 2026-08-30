@@ -21,6 +21,7 @@ use crate::{
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     let css_path = options.css_path();
+    let split_path = format!("/{}/__wasm_split.______________________.js", options.site_pkg_dir);
     provide_context(options.clone());
     view! {
         <!DOCTYPE html>
@@ -36,6 +37,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 />
                 <AutoReload options=options.clone() />
                 <HydrationScripts options />
+                <link rel="modulepreload" href=split_path />
                 <MetaTags />
                 <link rel="stylesheet" href=css_path />
             </head>
