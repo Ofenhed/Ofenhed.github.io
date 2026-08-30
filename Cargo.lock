@@ -1012,6 +1012,7 @@ dependencies = [
  "futures",
  "image",
  "js-macro",
+ "js-sys",
  "leptos",
  "leptos_axum",
  "leptos_meta",

@@ -207,14 +207,97 @@ pub(crate) fn YouTube(
         };
         let ratio = ratio.clone();
         embed_src.map_left(move |url_suffix| {
+            let iframe = NodeRef::<html::Iframe>::new();
+            #[allow(clippy::let_unit_value)]
+            let notify_listening = {
+                cfg_select! {
+                    feature = "client-side" => {
+                        use js_sys::{Function, JSON, Object};
+                        use leptos::ev::EventDescriptor;
+                        use wasm_bindgen::{closure::Closure, convert::TryFromJsValue, prelude::*};
+                        use web_sys::{EventListener, console};
+                        let listener = EventListener::new();
+                        fn callback(
+                            iframe: NodeRef<html::Iframe>,
+                        ) -> impl FnMut(<ev::message as EventDescriptor>::EventType)
+                        {
+                            move |msg| {
+                                let Some(content_window) =
+                                    iframe.get_untracked().and_then(|x| x.content_window())
+                                else {
+                                    return;
+                                };
+                                if msg.source().as_ref() != Some(content_window.as_ref()) {
+                                    return;
+                                }
+                                if let Some(data) = msg.data().as_string() {
+                                    match JSON::parse(&data)
+                                        .and_then(|x| Object::<JsValue>::try_from_js_value(x))
+                                    {
+                                        // TODO: values can be fetched with js_sys::Reflect
+                                        Ok(data) => console::log_1(&data),
+                                        Err(e) => console::error_1(&e),
+                                    }
+                                }
+                            }
+                        }
+                        let callback = Closure::new(callback(iframe));
+                        let callback =
+                            Function::try_from_js_value(callback.into_js_value()).unwrap();
+                        listener.set_handle_event(&callback);
+                        let event = ev::message.name();
+                        if let Err(e) =
+                            window().add_event_listener_with_event_listener(&event, &listener)
+                        {
+                            leptos::logging::error!(
+                                "Failed to add event listener: {}",
+                                e.as_string()
+                                    .map(Oco::Owned)
+                                    .unwrap_or(Oco::Borrowed("<unknown>"))
+                            );
+                        }
+                        Owner::on_cleanup(move || {
+                            if let Err(e) = window()
+                                .remove_event_listener_with_event_listener(&event, &listener)
+                            {
+                                leptos::logging::error!(
+                                    "Failed to remove event listener: {}",
+                                    e.as_string()
+                                        .map(Oco::Owned)
+                                        .unwrap_or(Oco::Borrowed("<unknown>"))
+                                );
+                            }
+                        });
+                        ev::on(ev::load, move |_| {
+                            use js_sys::JsString;
+                            use web_sys::console;
+                            let Some(window) =
+                                iframe.get_untracked().and_then(|x| x.content_window())
+                            else {
+                                return;
+                            };
+                            let object = JsString::from("{\"event\": \"listening\"}");
+                            if let Err(e) = window.post_message(&object, "*") {
+                                console::error_1(&e);
+                            }
+                        })
+                    }
+                    _ => {}
+                }
+            };
             view! {
                 <iframe
+                    {..notify_listening}
+                    node_ref=iframe
                     class:youtube-embed=true
                     style:aspect-ratio=ratio.clone()
                     style=youtube_id.clone()
                     style:max-width=max_width
                     style:max-height=max_height
-                    src=format!("https://www.youtube{url_suffix}.com/embed/{}", video.id)
+                    src=format!(
+                        "https://www.youtube{url_suffix}.com/embed/{}?enablejsapi=1",
+                        video.id,
+                    )
                     allow="fullscreen; encrypted-media; picture-in-picture"
                     referrerpolicy="origin"
                     {..custom_attribute("frameBorder", 0)}

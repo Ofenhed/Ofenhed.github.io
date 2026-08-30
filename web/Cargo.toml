@@ -36,6 +36,7 @@ wasm-bindgen.workspace = true
 web-sys = { workspace = true, optional = true, features = [
     "CanvasRenderingContext2d",
     "Element",
+    "EventListener",
     "HtmlCanvasElement",
     "HtmlImageElement",
     "Location",
@@ -46,6 +47,7 @@ web-sys = { workspace = true, optional = true, features = [
     "VisibilityState",
     "Window",
 ] }
+js-sys = { workspace = true, optional = true, features = ["std"] }
 
 [build-dependencies]
 cargo-leptos.workspace = true
@@ -53,7 +55,12 @@ cargo-leptos.workspace = true
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-client-side = ["dep:web-sys", "dep:base64", "chrono/wasmbind"]
+client-side = [
+  "chrono/wasmbind",
+  "dep:base64",
+  "dep:js-sys",
+  "dep:web-sys",
+]
 static-qr = ["dep:base64", "ssr"]
 debug-reload-panics = []
 ssr = [

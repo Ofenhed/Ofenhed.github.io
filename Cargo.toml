@@ -16,6 +16,7 @@ futures = { version = "0.3", default-features = false }
 hydration_context = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
 image = { version = "0.25", default-features = false, features = ["png"] }
 js-macro.path = "./js-macro"
+js-sys = { version = "0.3", default-features = false }
 leptos = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug", default-features = false }
 leptos_axum = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
 leptos_integration_utils = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
