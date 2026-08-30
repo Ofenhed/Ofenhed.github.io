@@ -14,7 +14,7 @@ impl BlogEntry for NotEvenDumb {
     const UID: u32 = 7;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 7, 13);
-    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 8, 9));
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 8, 30));
     const VISIBILITY: Visibility = Visibility::VisibleViaTags;
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
@@ -59,12 +59,13 @@ impl LazyRoute for NotEvenDumb {
             .into_inner()
         };
         view! {
-            <a href="https://www.youtube.com/@FatherPhi">"FatherPhi"</a>
-            " is a great YouTube channel collecting examples of weird interactions with "
-            <q>{ai}</q>
-            ". I've cherry-picked a collection of videos that I feel demonstrate how "
+            "I've cherry-picked a collection of videos that I feel demonstrate how "
             {llms}
-            " aren't stupid, they're something else entirely."
+            " aren't stupid, they're something else entirely. Most are from "
+            <a href="https://www.youtube.com/@FatherPhi">"FatherPhi"</a>
+            ", which is a great YouTube channel collecting examples of weird interactions with "
+            <q>{ai}</q>
+            "."
             <section>
                 <h2>"General intelligence"</h2>
                 <div class:videos=true class:carousel-or-grid=true>
@@ -73,6 +74,7 @@ impl LazyRoute for NotEvenDumb {
                     <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
                     <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
                     <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
+                    <YouTube video=youtube!("88qei5nctA0" (9:16)) />
                 </div>
             </section>
             <section>
