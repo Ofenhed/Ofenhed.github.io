@@ -5,7 +5,7 @@ use std::{
 };
 
 use any_spawner::PinnedFuture;
-use futures::StreamExt as _;
+use futures::{StreamExt as _, join};
 use leptos::{config::LeptosOptions, prelude::*};
 use leptos_integration_utils::{BoxedFnOnce, PinnedStream};
 use leptos_router::{
@@ -94,13 +94,17 @@ struct NoGenerateStaticReader(ReadSignal<bool>);
 fn async_stream_builder<IV>(
     app: IV,
     chunks: BoxedFnOnce<PinnedStream<String>>,
-    _supports_ooo: bool,
+    supports_ooo: bool,
 ) -> PinnedFuture<PinnedStream<String>>
 where
     IV: IntoView + 'static,
 {
     Box::pin(async move {
-        let app = app.to_html_stream_in_order();
+        let app = if supports_ooo {
+            app.to_html_stream_out_of_order()
+        } else {
+            app.to_html_stream_in_order()
+        };
         let app = app.collect::<String>().await;
         let chunks = chunks();
         Box::pin(futures::stream::once(async move { app }).chain(chunks)) as PinnedStream<String>
@@ -135,10 +139,12 @@ impl StaticRouteGenerator {
         let sc = owner.shared_context().unwrap();
 
         async move {
-            let stream = stream.await;
-            while let Some(pending) = sc.await_deferred() {
-                pending.await;
-            }
+            let await_pending = async move {
+                while let Some(pending) = sc.await_deferred() {
+                    pending.await;
+                }
+            };
+            let (stream, _) = join!(stream, await_pending);
 
             #[cfg(feature = "meta")]
             let stream = meta_output.inject_meta_context(stream).await;
