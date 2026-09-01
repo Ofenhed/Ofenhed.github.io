@@ -34,6 +34,10 @@ jobs:
       wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
 
     steps:
+
+    - name: Install lld
+      run: sudo apt-get install -y lld
+
     - uses: actions/checkout@v6
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
@@ -114,9 +118,6 @@ jobs:
 
     - name: Save successful contact card
       run: mv target/.new_contact_card target/qr/.contact_card
-
-    - name: Install lld
-      run: apt-get install -y lld
 
     - name: Recompile targets
       id: recompile
