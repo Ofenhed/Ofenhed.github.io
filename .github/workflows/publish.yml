@@ -115,6 +115,9 @@ jobs:
     - name: Save successful contact card
       run: mv target/.new_contact_card target/qr/.contact_card
 
+    - name: Install lld
+      run: apt-get install -y lld
+
     - name: Recompile targets
       id: recompile
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
