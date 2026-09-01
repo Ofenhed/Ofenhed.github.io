@@ -18,6 +18,9 @@ thiserror.workspace = true
 tokio = { workspace = true, features = ["fs", "io-util", "sync"], optional = true }
 wasm-bindgen.workspace = true
 
+[build-dependencies]
+cargo-leptos.workspace = true
+
 [features]
 default = ["tokio", "meta"]
 islands = ["leptos/islands"]
