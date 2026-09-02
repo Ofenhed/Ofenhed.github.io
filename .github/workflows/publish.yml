@@ -35,9 +35,6 @@ jobs:
 
     steps:
 
-    - name: Install lld
-      run: sudo apt-get install -y lld
-
     - uses: actions/checkout@v6
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
