@@ -410,11 +410,18 @@ impl LazyRoute for Contact {
                 _ => None::<&str>,
             }
         };
+        let vcard_aria_label = move || {
+            if vcard_href.with(|x| x.is_some()) {
+                Some("Download contact card")
+            } else {
+                None
+            }
+        };
 
         view! {
             <div class="contact">
                 <div class:qr-code=true>
-                    <a download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
+                    <a aria-label=vcard_aria_label download=format!("{}.vcf", crate::AUTHOR) href=vcard_href>
                         <img alt="Contact Card QR" node_ref=static_qr src=original_qr_src />
                         <NoScript>
                             <img
