@@ -19,9 +19,13 @@ pub use app::shell;
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
     use app::*;
-    console_error_panic_hook::set_once();
 
-    #[cfg(any(feature = "debug-reload-panics", not(debug_assertions)))]
+    #[cfg(feature = "console-panic")]
+    {
+        console_error_panic_hook::set_once();
+    }
+
+    #[cfg(any(not(debug_assertions), feature = "debug-reload-panics"))]
     {
         use crate::{
             helpers,

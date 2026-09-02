@@ -12,8 +12,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 axum = { workspace = true, optional = true, features = ["tokio", "http1"] }
 base64 = { workspace = true, optional = true }
-console_error_panic_hook.workspace = true
-console_log.workspace = true
+console_error_panic_hook = { workspace = true, optional = true }
 chrono.workspace = true
 futures = { workspace = true, features = ["alloc"] }
 image = { workspace = true, optional = true }
@@ -23,7 +22,6 @@ leptos_axum = { workspace = true, optional = true }
 leptos_meta.workspace = true
 leptos_router.workspace = true
 leptos_static_files = { workspace = true, optional = true }
-log.workspace = true
 oembed = { workspace = true, features = ["macro"] }
 qr.workspace = true
 qr-macro.workspace = true
@@ -52,6 +50,7 @@ default = []
 hydrate = ["leptos/hydrate", "client-side"]
 client-side = ["dep:web-sys", "dep:base64", "chrono/wasmbind"]
 static-qr = ["dep:base64", "ssr"]
+console-panic = ["dep:console_error_panic_hook"]
 debug-reload-panics = []
 ssr = [
   "dep:image",

@@ -11,7 +11,6 @@ chrono = { version = "0.4.44", default-features = false, features = ["std", "all
 cargo-leptos = "0.3.7"
 conditionraise.path = "./web"
 console_error_panic_hook = "0.1.7"
-console_log = "1.0"
 futures = { version = "0.3", default-features = false }
 hydration_context = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug" }
 image = { version = "0.25", default-features = false, features = ["png"] }
@@ -23,7 +22,6 @@ leptos_meta = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug",
 leptos_static_files.path = "./leptos_static_files"
  leptos_router = { git = "https://github.com/Ofenhed/leptos", branch = "nonce-bug", default-features = false }
 libc = "0.2"
-log = "0.4.22"
 oembed.path = "./oembed"
 oembed-macro.path = "./oembed-macro"
 oembed-type.path = "./oembed-type"
