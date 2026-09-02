@@ -1,5 +1,6 @@
 use crate::{
     blog::{
+        BlogHolder,
         ai::not_even_dumb::NotEvenDumb,
         blog_entry_href,
         metadata::{BlogEntry, Locale, Tag, date},
@@ -46,7 +47,7 @@ impl LazyRoute for WhatAreLLMs {
         Self
     }
 
-    fn view(_this: Self) -> AnyView {
+    fn view(this: Self) -> AnyView {
         idle_preload::<NotEvenDumb>();
         let not_even_dumb_link = || blog_entry_href::<NotEvenDumb>();
         let ai = || {
@@ -82,241 +83,244 @@ impl LazyRoute for WhatAreLLMs {
                 .into_inner()
         };
         view! {
-            <p>
-                "When we talk about " <q>{ai}</q> " today, we pretty much talk about " {llms}
-                ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
-            </p>
-            <p>
-                "To be able to understand what an " {llm}
-                " is, we'll take a detour to compression algorithms."
-            </p>
-            <span {..BoxType::ExtraInfo
-                .attr()}>
-                "There are two categories of compression: lossless compression and lossy compression."
-                <dl>
-                    <dt>"Lossless compression"</dt>
-                    <dd>
-                        "This will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."
-                    </dd>
-                    <dt>"Lossy compression"</dt>
-                    <dd>
-                        "In this case you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
-                        {jpeg} " images sometimes being blocky."
-                    </dd>
-                </dl>
-            </span>
-            <p>
-                "Historically, text has almost exclusively been used with lossless compression. "
-                {llms} " are a genuinely a revolutionary change to that. " {llms}
-                " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
+            <BlogHolder blog=&this>
+                <p>
+                    "When we talk about " <q>{ai}</q> " today, we pretty much talk about " {llms}
+                    ". We're being told that they are able to (or very soon able to) fully replace some human workers. I'm writing this to help put some context to that statement. I'm trying to be concise; my priority with this text is for it to be accessible."
+                </p>
+                <p>
+                    "To be able to understand what an " {llm}
+                    " is, we'll take a detour to compression algorithms."
+                </p>
+                <span {..BoxType::ExtraInfo
+                    .attr()}>
+                    "There are two categories of compression: lossless compression and lossy compression."
+                    <dl>
+                        <dt>"Lossless compression"</dt>
+                        <dd>
+                            "This will always get back the exact data you had before compression. You're using this right now, in your browser. It's most often done by applying known predefined algorithms designed to find and efficiently describe patterns. The compression ratio is decided by the effectiveness of the algorithm and how much computing power and memory you provide."
+                        </dd>
+                        <dt>"Lossy compression"</dt>
+                        <dd>
+                            "In this case you lose data when you compress. This is often done by looking for things that can be removed without us noticing, such as high pitch sounds and dark colors, in combination with approximations of patterns. The compression ratio here is decided by the same as lossless compression, but also by how much quality degradation you can accept. This is what's used in most photographs and videos, and is what's responsible for "
+                            {jpeg} " images sometimes being blocky."
+                        </dd>
+                    </dl>
+                </span>
+                <p>
+                    "Historically, text has almost exclusively been used with lossless compression. "
+                    {llms} " are a genuinely a revolutionary change to that. " {llms}
+                    " are not compression in the traditional sense, where you'd expect the compressed file to grow when you give it more data, compressed by a predefined set of algorithms. With "
+                    {llms}
+                    " you create the output file from the start, then you take an arbitrary amount of data and optimize the parameters in that existing output file to be able to approximate the data you provide."
+                </p>
+                <p>
+                    "I get that some of you will have an instant reaction of this comparison being ridiculous. If you're one of those people, I would like to direct you to a study"
+                    <Footnote id=Oco::Borrowed("extracting-books-from-llm")>
+                        <b>Extracting books from production language models</b>
+                        <br />
+                        <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
+                        <br />
+                        <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
+                    </Footnote> " where researchers could get " {llm}
+                    " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. While OpenAI claims that this doesn't count, because it's "
+                    <a href="https://www.culawreview.org/ddc-x-culr-1/nyt-v-openai-and-microsoft">
+                        "tricking their model"
+                    </a>", it still proves that the data is there."
+                </p>
+
+                <h2>"Intelligence"</h2>
+                "If you think of "
                 {llms}
-                " you create the output file from the start, then you take an arbitrary amount of data and optimize the parameters in that existing output file to be able to approximate the data you provide."
-            </p>
-            <p>
-                "I get that some of you will have an instant reaction of this comparison being ridiculous. If you're one of those people, I would like to direct you to a study"
-                <Footnote id=Oco::Borrowed("extracting-books-from-llm")>
-                    <b>Extracting books from production language models</b>
-                    <br />
-                    <i>"Ahmed Ahmed, A. Feder Cooper, Sanmi Koyejo, Percy Liang"</i>
-                    <br />
-                    <Url>"https://arxiv.org/pdf/2601.02671v1"</Url>
-                </Footnote> " where researchers could get " {llm}
-                " models to recall (near-verbatim) 95.8% of the first Harry Potter book and 95.5% of 1984. While OpenAI claims that this doesn't count, because it's "
-                <a href="https://www.culawreview.org/ddc-x-culr-1/nyt-v-openai-and-microsoft">
-                    "tricking their model"
-                </a>", it still proves that the data is there."
-            </p>
+                " as "
+                <em title="I know that there is also a lot of tooling going on. I'm just talking about a simplified view of the models.">
+                    "just lossy compression"
+                </em>
+                ", then where does the intelligence come from? I have identified the following sources:"
+                <ul>
+                    <li>
+                        <b>"Volume"</b>
+                        ": Pretty much all text humanity has ever written has been used to optimize these models. Your query may not be as unique as you think."
+                    </li>
+                    <li>
+                        <b>"Huge context windows"</b>
+                        ": The generated text is put together based on a ridiculous number of parameters. In combination with the volume of data, it will mostly output coherent text, even when the text is completely nonsensical."
+                    </li>
+                    <li>
+                        <b>"Complexity"</b>
+                        ": It's difficult (probably not possible) to imagine the amount of data that has been used to optimize these models, or the amount of parameters that a model uses. It's a lot easier to just assume that there is some kind of intelligence."
+                    </li>
+                    <li>
+                        <b>
+                            "Idealization/"
+                            <a href="https://en.wikipedia.org/wiki/Apophenia">Apophenia</a>
+                        </b>
+                        ": "
+                        {llms}
+                        " are really good at making you feel listened to. If you talk to "
+                        {llms}
+                        " as you would a friend, then I would expect that you want there to be a meaning to those conversations."
+                    </li>
+                    <li>
+                        <b>"Generous interpretation"</b>
+                        ": If you read the sentence "
+                        <q>"c u in 5 at bus stop"</q>
+                        ", you will likely assume what the author meant. We are good at this, and it usually serves us well as there's usually an intent behind words. When there isn't, we're still likely to fill that gap, and then assume that the meaning we found was intended."
+                    </li>
+                    <li>
+                        <b>"Authority"</b>
+                        ": This technology is developed by the richest people in the world. They can't all be lying, right? "
+                        <i>
+                            "(This is obviously written from my Tesla Roadster while autonomously riding along the open roads on Mars)"
+                        </i>
+                    </li>
+                    <li>
+                        <b>"Trojan horses"</b>
+                        ": There is a lot of propaganda that sounds like criticism against "
+                        {ai}
+                        ", which in actuality sneakily promote "
+                        {ai}
+                        <Footnote id=Oco::Borrowed(
+                            "ai-warning-trojan",
+                        )>
+                            {ai}" companies keep telling us about how dangerous "{ai}
+                            " can be, they even ask for new laws. Anthropic claims that "
+                            <a href="https://www.ynetnews.com/tech-and-digital/article/hkftl9ibmg">
+                                "Claude Mythos "{llm}" is too dangerous for the public"
+                            </a>
+                            ". They warn that the models might at any time start improving themselves without human help, become super intelligent, and take over the world. "
+                            <em>
+                                "All of these claims strengthens the confidence in "{llm}
+                                " as a road to intelligence. It also keeps lawmakers focused on sci-fi threats, instead of the damage the "
+                                {ai}" hype is already responsible for."
+                            </em>
+                        </Footnote>
+                        "."
+                    </li>
+                    <li>
+                        <b>
+                            <a href="https://en.wiktionary.org/wiki/Gell-Mann_Amnesia_effect">
+                                "Gell-Mann amnesia"
+                            </a>
+                        </b>
+                        ": If you're lucky enough to have an expertise, I'm sure you've noticed that "
+                        {llms}
+                        " are really good at most things except the thing you know a lot about."
+                    </li>
+                    <li>
+                        <b>
+                            <a href="https://en.wikipedia.org/wiki/Anthropomorphism">
+                                "Anthropomorphism"
+                            </a>
+                        </b>
+                        ": This is the big one for me. The used terminology around "
+                        <q>{ai}</q>
+                        " is built to uphold the illusion of intelligence."
+                    </li>
+                </ul>
+                "As you may have noticed, this list is kind of problematic in the sense where it quickly deteriorated from sources of intelligence to pillars upholding the illusion of intelligence."
+                <h2>"Anthropomorphism"</h2>
+                <blockquote cite="Oxford English Dictionary, 1st ed. \"anthropomorphism, n.\" Oxford University Press (Oxford), 1885">
+                    "Anthropomorphism is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
+                </blockquote>
+                <p>
+                    "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling them "
+                    <q title="This word means something completely different to people outside of computer science">
+                        {ai} " agents"
+                    </q>
+                    " or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
+                </p>
+                <ul class:pink-marker=true>
+                    <li>
+                        "You don't "<mark>"train"</mark>" an "{llm}
+                        " model. You optimize a model to be able to generate an approximation of specific data. This interpretation would be "
+                        <a href="https://openai.com/new-york-times/#ai-training-is-fair-use">
+                            "legally problematic"
+                        </a>"."
+                    </li>
+                    <li>
+                        {llms}" don't "<mark>"make mistakes"</mark>
+                        ". Mistakes require intention. For the same reason, they don't "
+                        <mark>"lie"</mark>
+                        ", but they are optimized to be able to recreate every single Sci-Fi story ever written that contains an "
+                        {ai}". I don't really know which is worse."
+                    </li>
+                    <li>
+                        {llms}" are not "<mark>"intelligent"</mark>
+                        ". Most know this on some level, and even those that design them are somewhat open about this, albeit not in such clear phrasing. The point where we don't agree is that they think that "
+                        {llms}
+                        " are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as "
+                        <q>"the singularity"</q>", " {agi} ", or "{asi} ", through the magic of "
+                        <q>"recursive self-improvement"</q>
+                        ". This is akin to a stage magician suddenly being able to perform real telekinesis, and any description on how "
+                        <q>"recursive self-improvement"</q>
+                        " would actually work sounds like what's already known as " {model_collapse}
+                        " in the industry. The problem here is that even if you know that " {llms}
+                        " aren't intelligent, it's really easy to get tricked into doubt. Note that there is intelligence in text generated by "
+                        {llms}", but that doesn't mean that the "{llm}
+                        " is the source of that intelligence, no more than your fax machine is the source of the intelligence it prints. Interestingly, on the same note, they aren't even "
+                        <mark>"stupid"</mark>"; they're something else"
+                        <Footnote id=Oco::Borrowed(
+                            "not-even-dumb",
+                        )>
+                            "I've collected " <a href=not_even_dumb_link>"a couple of videos"</a>
+                            " to demonstrate what I mean by this, but I would recommend reading the rest of this clog post first."
+                        </Footnote>"."
+                    </li>
+                    <li>
+                        "You "<i>"could"</i>" argue that "<q>"reasoning models"</q>" are "
+                        <mark>"reasoning"</mark>
+                        ", but it's really more about creating a separate context with a more predictable path in the massive branching tree that is "
+                        {llms}"."
+                    </li>
+                    <li>
+                        {llms}" do "<b>"not"</b>" "<mark>"hallucinate"</mark> ". "
+                        <b>"This one is really important"</b>
+                        ". The terminology suggests that this is a minor solvable issue, a quirk of the current stage of "
+                        {llms}", which ignores the truth; What they refer to as "
+                        <q>"hallucination"</q> " is in reality the "<i>"only"</i>" thing " {llms}
+                        " actually do. What's so cool about the technology is that the generated text often matches reality."
+                    </li>
+                </ul>
 
-            <h2>"Intelligence"</h2>
-            "If you think of "
-            {llms}
-            " as "
-            <em title="I know that there is also a lot of tooling going on. I'm just talking about a simplified view of the models.">
-                "just lossy compression"
-            </em>
-            ", then where does the intelligence come from? I have identified the following sources:"
-            <ul>
-                <li>
-                    <b>"Volume"</b>
-                    ": Pretty much all text humanity has ever written has been used to optimize these models. Your query may not be as unique as you think."
-                </li>
-                <li>
-                    <b>"Huge context windows"</b>
-                    ": The generated text is put together based on a ridiculous number of parameters. In combination with the volume of data, it will mostly output coherent text, even when the text is completely nonsensical."
-                </li>
-                <li>
-                    <b>"Complexity"</b>
-                    ": It's difficult (probably not possible) to imagine the amount of data that has been used to optimize these models, or the amount of parameters that a model uses. It's a lot easier to just assume that there is some kind of intelligence."
-                </li>
-                <li>
-                    <b>
-                        "Idealization/"
-                        <a href="https://en.wikipedia.org/wiki/Apophenia">Apophenia</a>
-                    </b>
-                    ": "
+                <h2>"Why does it matter?"</h2>
+                <p>
+                    "My point with this clog post is that we all perpetuate the illusion of intelligence. Terminology and framing matters, and accepting and using their terminology makes us participants. Thinking of "
+                    {llms} " as " {ai}
+                    " creates a abstract entity with hard to define properties, and it becomes very easy to fall into the anthropomorphism trap. On the other hand, if you think of "
+                    {llm} " models as lossy text compression, it will help you understand what "
                     {llms}
-                    " are really good at making you feel listened to. If you talk to "
-                    {llms}
-                    " as you would a friend, then I would expect that you want there to be a meaning to those conversations."
-                </li>
-                <li>
-                    <b>"Generous interpretation"</b>
-                    ": If you read the sentence "
-                    <q>"c u in 5 at bus stop"</q>
-                    ", you will likely assume what the author meant. We are good at this, and it usually serves us well as there's usually an intent behind words. When there isn't, we're still likely to fill that gap, and then assume that the meaning we found was intended."
-                </li>
-                <li>
-                    <b>"Authority"</b>
-                    ": This technology is developed by the richest people in the world. They can't all be lying, right? "
-                    <i>
-                        "(This is obviously written from my Tesla Roadster while autonomously riding along the open roads on Mars)"
-                    </i>
-                </li>
-                <li>
-                    <b>"Trojan horses"</b>
-                    ": There is a lot of propaganda that sounds like criticism against "
-                    {ai}
-                    ", which in actuality sneakily promote "
-                    {ai}
-                    <Footnote id=Oco::Borrowed(
-                        "ai-warning-trojan",
-                    )>
-                        {ai}" companies keep telling us about how dangerous "{ai}
-                        " can be, they even ask for new laws. Anthropic claims that "
-                        <a href="https://www.ynetnews.com/tech-and-digital/article/hkftl9ibmg">
-                            "Claude Mythos "{llm}" is too dangerous for the public"
-                        </a>
-                        ". They warn that the models might at any time start improving themselves without human help, become super intelligent, and take over the world. "
-                        <em>
-                            "All of these claims strengthens the confidence in "{llm}
-                            " as a road to intelligence. It also keeps lawmakers focused on sci-fi threats, instead of the damage the "
-                            {ai}" hype is already responsible for."
-                        </em>
+                    " are actually capable of, and even somewhat what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; It's not your friend; Any belief to the contrary is dangerous. We may some day create an actual "
+                    {ai} ", but it will not be an " {llm}
+                    ". You may rightfully argue that this is an oversimplification, but I find that it still matches the behaviors of "
+                    {llm} " models way closer than any other mental model."
+                </p>
+                <p>
+                    "The reason that I find this to be incredibly important is a problem that is given way too little attention: If our children believe the "
+                    {ai} " promise"
+                    <Footnote id="ai-promise">
+                        {ai} " tooling is getting better and better, and " {ai}
+                        " companies are literally "
+                        <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/ai-companies-are-reportedly-shredding-millions-of-books-to-train-models-tech-giants-outsource-to-middlemen-to-secretly-buy-up-books-for-training-material">
+                            "destroying books"
+                        </a>" to continue improving their models, but the " {ai}
+                        " promise has a problem: You can't improve " {ai} " models using " {ai}
+                        " generated data. As I already touched on above, this results in "
+                        {model_collapse} "."
                     </Footnote>
-                    "."
-                </li>
-                <li>
-                    <b>
-                        <a href="https://en.wiktionary.org/wiki/Gell-Mann_Amnesia_effect">
-                            "Gell-Mann amnesia"
-                        </a>
-                    </b>
-                    ": If you're lucky enough to have an expertise, I'm sure you've noticed that "
-                    {llms}
-                    " are really good at most things except the thing you know a lot about."
-                </li>
-                <li>
-                    <b>
-                        <a href="https://en.wikipedia.org/wiki/Anthropomorphism">
-                            "Anthropomorphism"
-                        </a>
-                    </b>
-                    ": This is the big one for me. The used terminology around "
-                    <q>{ai}</q>
-                    " is built to uphold the illusion of intelligence."
-                </li>
-            </ul>
-            "As you may have noticed, this list is kind of problematic in the sense where it quickly deteriorated from sources of intelligence to pillars upholding the illusion of intelligence."
-            <h2>"Anthropomorphism"</h2>
-            <blockquote cite="Oxford English Dictionary, 1st ed. \"anthropomorphism, n.\" Oxford University Press (Oxford), 1885">
-                "Anthropomorphism is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
-            </blockquote>
-            <p>
-                "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling them "
-                <q title="This word means something completely different to people outside of computer science">
-                    {ai} " agents"
-                </q>
-                " or voice models breathing and laughing, and focused on the ones that are a bit more subtle."
-            </p>
-            <ul class:pink-marker=true>
-                <li>
-                    "You don't "<mark>"train"</mark>" an "{llm}
-                    " model. You optimize a model to be able to generate an approximation of specific data. This interpretation would be "
-                    <a href="https://openai.com/new-york-times/#ai-training-is-fair-use">
-                        "legally problematic"
-                    </a>"."
-                </li>
-                <li>
-                    {llms}" don't "<mark>"make mistakes"</mark>
-                    ". Mistakes require intention. For the same reason, they don't "
-                    <mark>"lie"</mark>
-                    ", but they are optimized to be able to recreate every single Sci-Fi story ever written that contains an "
-                    {ai}". I don't really know which is worse."
-                </li>
-                <li>
-                    {llms}" are not "<mark>"intelligent"</mark>
-                    ". Most know this on some level, and even those that design them are somewhat open about this, albeit not in such clear phrasing. The point where we don't agree is that they think that "
-                    {llms}
-                    " are so close to intelligence that they might somehow suddenly turn intelligent; you may have heard of this as "
-                    <q>"the singularity"</q>", " {agi} ", or "{asi} ", through the magic of "
-                    <q>"recursive self-improvement"</q>
-                    ". This is akin to a stage magician suddenly being able to perform real telekinesis, and any description on how "
-                    <q>"recursive self-improvement"</q>
-                    " would actually work sounds like what's already known as " {model_collapse}
-                    " in the industry. The problem here is that even if you know that " {llms}
-                    " aren't intelligent, it's really easy to get tricked into doubt. Note that there is intelligence in text generated by "
-                    {llms}", but that doesn't mean that the "{llm}
-                    " is the source of that intelligence, no more than your fax machine is the source of the intelligence it prints. Interestingly, on the same note, they aren't even "
-                    <mark>"stupid"</mark>"; they're something else"
-                    <Footnote id=Oco::Borrowed(
-                        "not-even-dumb",
-                    )>
-                        "I've collected " <a href=not_even_dumb_link>"a couple of videos"</a>
-                        " to demonstrate what I mean by this, but I would recommend reading the rest of this clog post first."
-                    </Footnote>"."
-                </li>
-                <li>
-                    "You "<i>"could"</i>" argue that "<q>"reasoning models"</q>" are "
-                    <mark>"reasoning"</mark>
-                    ", but it's really more about creating a separate context with a more predictable path in the massive branching tree that is "
-                    {llms}"."
-                </li>
-                <li>
-                    {llms}" do "<b>"not"</b>" "<mark>"hallucinate"</mark> ". "
-                    <b>"This one is really important"</b>
-                    ". The terminology suggests that this is a minor solvable issue, a quirk of the current stage of "
-                    {llms}", which ignores the truth; What they refer to as " <q>"hallucination"</q>
-                    " is in reality the "<i>"only"</i>" thing " {llms}
-                    " actually do. What's so cool about the technology is that the generated text often matches reality."
-                </li>
-            </ul>
-
-            <h2>"Why does it matter?"</h2>
-            <p>
-                "My point with this clog post is that we all perpetuate the illusion of intelligence. Terminology and framing matters, and accepting and using their terminology makes us participants. Thinking of "
-                {llms} " as " {ai}
-                " creates a abstract entity with hard to define properties, and it becomes very easy to fall into the anthropomorphism trap. On the other hand, if you think of "
-                {llm} " models as lossy text compression, it will help you understand what " {llms}
-                " are actually capable of, and even somewhat what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; It's not your friend; Any belief to the contrary is dangerous. We may some day create an actual "
-                {ai} ", but it will not be an " {llm}
-                ". You may rightfully argue that this is an oversimplification, but I find that it still matches the behaviors of "
-                {llm} " models way closer than any other mental model."
-            </p>
-            <p>
-                "The reason that I find this to be incredibly important is a problem that is given way too little attention: If our children believe the "
-                {ai} " promise"
-                <Footnote id="ai-promise">
-                    {ai} " tooling is getting better and better, and " {ai}
-                    " companies are literally "
-                    <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/ai-companies-are-reportedly-shredding-millions-of-books-to-train-models-tech-giants-outsource-to-middlemen-to-secretly-buy-up-books-for-training-material">
-                        "destroying books"
-                    </a>" to continue improving their models, but the " {ai}
-                    " promise has a problem: You can't improve " {ai} " models using " {ai}
-                    " generated data. As I already touched on above, this results in "
-                    {model_collapse} "."
-                </Footnote>
-                ", then what incentive do they have to educate themselves? If they don't educate themselves and the "
-                {ai} " promise isn't fulfilled, what will happen to knowledge professions?"
-            </p>
-            <p>
-                "While I would like to believe that "{llms}
-                " are without value, that's not what I'm saying. I don't agree that they are important enough to displace global environmental sustainability, but they are useful. That said, when you hype the technology to people in power that don't understand what the technology really is, they're going to make sure to promote it to a "
-                <a href="https://en.wikipedia.org/wiki/Peter_principle">
-                    "level of respective incompetence"
-                </a>". I am very confident in my belief that "{llms}
-                " won't have an uprising and hack nuclear missile facilities, but my confidence in the leaders of the world to not try to pigeonhole "
-                {llms}" into surveillance or weapon systems is a lot lower."
-            </p>
+                    ", then what incentive do they have to educate themselves? If they don't educate themselves and the "
+                    {ai} " promise isn't fulfilled, what will happen to knowledge professions?"
+                </p>
+                <p>
+                    "While I would like to believe that "{llms}
+                    " are without value, that's not what I'm saying. I don't agree that they are important enough to displace global environmental sustainability, but they are useful. That said, when you hype the technology to people in power that don't understand what the technology really is, they're going to make sure to promote it to a "
+                    <a href="https://en.wikipedia.org/wiki/Peter_principle">
+                        "level of respective incompetence"
+                    </a>". I am very confident in my belief that "{llms}
+                    " won't have an uprising and hack nuclear missile facilities, but my confidence in the leaders of the world to not try to pigeonhole "
+                    {llms}" into surveillance or weapon systems is a lot lower."
+                </p>
+            </BlogHolder>
         }
         .into_any()
         //<section>

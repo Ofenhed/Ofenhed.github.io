@@ -1,5 +1,8 @@
 use crate::{
-    blog::metadata::{BlogEntry, Locale, Tag, Visibility, date},
+    blog::{
+        BlogHolder,
+        metadata::{BlogEntry, Locale, Tag, Visibility, date},
+    },
     helpers::Abbr,
     third_party::{YouTube, youtube},
 };
@@ -41,7 +44,7 @@ impl LazyRoute for NotEvenDumb {
         Self
     }
 
-    fn view(_this: Self) -> AnyView {
+    fn view(this: Self) -> AnyView {
         let ai = || {
             view! {
                 <Abbr no_expand=true title="Artificial Intelligence">
@@ -59,41 +62,38 @@ impl LazyRoute for NotEvenDumb {
             .into_inner()
         };
         view! {
-            "I've cherry-picked a collection of videos that I feel demonstrate how "
-            {llms}
-            " aren't stupid, they're something else entirely. Most are from "
-            <a href="https://www.youtube.com/@FatherPhi">"FatherPhi"</a>
-            ", which is a great YouTube channel collecting examples of weird interactions with "
-            <q>{ai}</q>
-            "."
-            <section>
-                <h2>"General intelligence"</h2>
-                <div class:videos=true class:carousel-or-grid=true>
-                    <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
-                    <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
-                    <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
-                    <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
-                    <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
-                    <YouTube video=youtube!("88qei5nctA0" (9:16)) />
-                </div>
-            </section>
-            <section>
-                <h2>"Spelling issues"</h2>
-                "These are somewhat dismissable as the model using tokens instead of words."
-                <div class:videos=true class:carousel-or-grid=true>
-                    <YouTube video=youtube!("7lRbNbwuczQ" (9:16)) />
-                    <YouTube video=youtube!("C5Gy6D-hC1g" (9:16)) />
-                    <YouTube video=youtube!("m_shkDLGWEQ" (9:16)) />
-                </div>
-            </section>
-            <section>
-                <h2>"Vision issues"</h2>
-                "These will surprise literally nobody who understands how the technology works. Might also not surprise anyone else, I don’t know... but at least they’re entertaining."
-                <div class:videos=true class:carousel-or-grid=true>
-                    <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
-                    <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
-                </div>
-            </section>
+            <BlogHolder blog=&this>
+                "I've cherry-picked a collection of videos that I feel demonstrate how " {llms}
+                " aren't stupid, they're something else entirely. Most are from "
+                <a href="https://www.youtube.com/@FatherPhi">"FatherPhi"</a>
+                ", which is a great YouTube channel collecting examples of weird interactions with "
+                <q>{ai}</q> "." <section>
+                    <h2>"General intelligence"</h2>
+                    <div class:videos=true class:carousel-or-grid=true>
+                        <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
+                        <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
+                        <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
+                        <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
+                        <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
+                        <YouTube video=youtube!("88qei5nctA0" (9:16)) />
+                    </div>
+                </section> <section>
+                    <h2>"Spelling issues"</h2>
+                    "These are somewhat dismissable as the model using tokens instead of words."
+                    <div class:videos=true class:carousel-or-grid=true>
+                        <YouTube video=youtube!("7lRbNbwuczQ" (9:16)) />
+                        <YouTube video=youtube!("C5Gy6D-hC1g" (9:16)) />
+                        <YouTube video=youtube!("m_shkDLGWEQ" (9:16)) />
+                    </div>
+                </section> <section>
+                    <h2>"Vision issues"</h2>
+                    "These will surprise literally nobody who understands how the technology works. Might also not surprise anyone else, I don’t know... but at least they’re entertaining."
+                    <div class:videos=true class:carousel-or-grid=true>
+                        <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
+                        <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
+                    </div>
+                </section>
+            </BlogHolder>
         }
         .into_any()
     }

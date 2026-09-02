@@ -1,5 +1,8 @@
 use crate::{
-    blog::metadata::{BlogEntry, Locale, Tag, date},
+    blog::{
+        BlogHolder,
+        metadata::{BlogEntry, Locale, Tag, date},
+    },
     helpers::Abbr,
 };
 use chrono::{DateTime, Utc};
@@ -29,12 +32,15 @@ impl LazyRoute for WhyBlog {
         Self
     }
 
-    fn view(_this: Self) -> AnyView {
+    fn view(this: Self) -> AnyView {
         let llm = || view! { <Abbr title="Large Language Model">LLM</Abbr> }.into_inner();
         view! {
-            "This is an experiment with this new concept I thought of, where someone could share their thoughts in some kind of captain's log on the web, like web captain's log, or a captain's web log. I wanted to put mine on a platform I control. With all "
-            {llm}
-            " generated text online, we clearly need more people sending text into the dark void that is the modern internet for... reasons."
-        }.into_any()
+            <BlogHolder blog=&this>
+                "This is an experiment with this new concept I thought of, where someone could share their thoughts in some kind of captain's log on the web, like web captain's log, or a captain's web log. I wanted to put mine on a platform I control. With all "
+                {llm}
+                " generated text online, we clearly need more people sending text into the dark void that is the modern internet for... reasons."
+            </BlogHolder>
+        }
+        .into_any()
     }
 }
