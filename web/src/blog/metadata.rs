@@ -131,13 +131,6 @@ where
     }
 }
 
-pub fn with_blog_simple<BE: BlogEntry, T>() -> T
-where
-    BlogEntryHandlerFor<T>: BlogEntryHandler<Result = T>,
-{
-    BlogEntryHandlerFor::<T>::new().with_blog::<BE>()
-}
-
 impl BlogEntryHandler for () {
     type Result = ();
     #[inline(always)]

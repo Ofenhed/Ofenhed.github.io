@@ -3,6 +3,7 @@ pub mod chat_control;
 pub mod emails;
 pub mod metadata;
 pub mod path;
+pub mod str_uid;
 pub mod unremarkable;
 pub mod why;
 
@@ -11,9 +12,9 @@ use crate::{
     blog::{
         metadata::{
             BlogEntry, BlogEntryHandler, BlogEntryHandlerFor, Locale, PreloadUids, Tag, Visibility,
-            with_blog_simple,
         },
         path::format_path,
+        str_uid::blog_entry_uid,
     },
     helpers::{ForRoute, ZWNJ, into_static_str, reset_footnote},
 };
@@ -25,7 +26,7 @@ use leptos_meta::{Meta, use_head};
 #[allow(unused)] // False positive
 use leptos_router::MatchNestedRoutes;
 use leptos_router::{
-    Lazy, LazyRoute, PathSegment, PossibleRouteMatch, SsrMode,
+    Lazy, LazyRoute, PathSegment, PossibleRouteMatch, SsrMode, StaticSegment,
     any_nested_route::{AnyNestedRoute, IntoAnyNestedRoute},
     components::{A, ParentRoute, Route},
     hooks::use_location,
@@ -101,19 +102,16 @@ impl BlogEntryHandler for BlogEntryHandlerFor<AnyNestedRoute> {
     type Result = AnyNestedRoute;
 
     fn with_blog<B: BlogEntry>(&mut self) -> Self::Result {
-        let metadata = with_blog_simple::<B, BlogEntryMeta>();
         let b = Lazy::<B>::new();
+
+        let uid = blog_entry_uid::<B>();
+        let path = (StaticSegment(uid),);
         view! {
             <ParentRoute
-                path=metadata
+                path=path
                 view=move || {
                     reset_footnote();
-                    view! {
-                        <article>
-                            <BlogHeading<B> />
-                            <Outlet />
-                        </article>
-                    }
+                    Outlet()
                 }
                 ssr=SsrMode::OutOfOrder
             >
@@ -446,6 +444,7 @@ pub fn Blog() -> impl MatchNestedRoutes + Clone {
 #[cfg_attr(debug_assertions, derive(Debug))]
 #[slot]
 pub struct BlogEntryMeta {
+    author: &'static str,
     uid: u32,
     description: Option<&'static str>,
     publish_date: DateTime<Utc>,
@@ -474,6 +473,7 @@ impl BlogEntryMeta {
             Some(T::DESCRIPTION)
         };
         BlogEntryMeta {
+            author: T::AUTHOR,
             uid: T::UID,
             description,
             publish_date: T::PUBLISH_DATE,
@@ -489,9 +489,12 @@ impl BlogEntryMeta {
 }
 
 #[component]
-pub(crate) fn BlogHeading<B: BlogEntry>(
-    #[prop(optional)] _phantom: PhantomData<B>,
+pub(crate) fn BlogHolder<'a, B: BlogEntry>(
+    #[prop(marker)] _ty: PhantomData<B>,
+    #[prop(optional)] blog: Option<&'a B>,
+    children: TypedChildrenFn<impl IntoView>,
 ) -> impl IntoView {
+    _ = blog;
     use leptos_meta::Title;
     use_head();
     let last_update = || {
@@ -536,35 +539,37 @@ pub(crate) fn BlogHeading<B: BlogEntry>(
         });
     }
     let pathname = use_location().pathname;
-    let description = || {
-        (!B::DESCRIPTION.is_empty()).then(|| {
-            view! { <Meta property="og:description" content=B::DESCRIPTION /> }
-        })
+    let description = || match B::DESCRIPTION {
+        "" => None,
+        description => Some(view! { <Meta property="og:description" content=description /> }),
     };
     view! {
-        <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
-        {locale()}
-        <Meta property="og:title" content=B::TITLE />
-        {description()}
-        <Meta
-            property="og:url"
-            content=format!(
-                "https://conditionraise.se{}#{}",
-                pathname.get_untracked(),
-                to_anchor_title(B::TITLE),
-            )
-        />
-        <Meta property="og:type" content="article" />
-        <Meta property="article:author" content=B::AUTHOR />
-        <For
-            each=move || B::TAGS.iter()
-            key=|x| x.to_owned()
-            children=|tag| {
-                view! { <Meta property="article:tag" content=into_static_str(tag) /> }
-            }
-        />
-        <h1>{B::title().unwrap_or_else(|| B::TITLE.into_any())}</h1>
-        <section class="article-info">{publish()}" "{last_update()}</section>
+        <article>
+            <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
+            {locale()}
+            <Meta property="og:title" content=B::TITLE />
+            {description()}
+            <Meta
+                property="og:url"
+                content=format!(
+                    "https://conditionraise.se{}#{}",
+                    pathname.get_untracked(),
+                    to_anchor_title(B::TITLE),
+                )
+            />
+            <Meta property="og:type" content="article" />
+            <Meta property="article:author" content=B::AUTHOR />
+            <For
+                each=move || B::TAGS.iter()
+                key=|x| x.to_owned()
+                children=|tag| {
+                    view! { <Meta property="article:tag" content=into_static_str(tag) /> }
+                }
+            />
+            <h1>{B::title().unwrap_or_else(|| B::TITLE.into_any())}</h1>
+            <section class="article-info">{publish()}" "{last_update()}</section>
+            {(children.into_inner())()}
+        </article>
     }
 }
 
