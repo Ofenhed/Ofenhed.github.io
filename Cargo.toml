@@ -1,5 +1,16 @@
 [workspace]
-members = ["web", "qr", "qr-macro", "js-macro", "leptos_static_files", "oembed", "oembed-macro", "oembed-type", "wasm-data-merger", "lock-cargo-leptos"]
+members = [
+ "js-macro",
+ "leptos_static_files",
+ "lock-cargo-leptos",
+ "oembed",
+ "oembed-macro",
+ "oembed-type",
+ "qr",
+ "qr-macro",
+ "wasm-data-merger",
+ "web",
+ ]
 resolver = "3"
 
 [workspace.dependencies]
