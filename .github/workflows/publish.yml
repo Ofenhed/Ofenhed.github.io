@@ -171,10 +171,11 @@ jobs:
       formatting: ${{ steps.automatic-formatting.outputs.artifact-id }}
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
         persist-credentials: false
+        submodules: recursive
 
     - name: Restore tool cache
       id: cache-tools-restore
@@ -333,9 +334,10 @@ jobs:
       cancel-in-progress: true
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         ref: ${{ github.ref }}
+        submodules: recursive
 
     - name: Download git format patch
       uses: actions/download-artifact@v8
