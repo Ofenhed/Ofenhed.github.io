@@ -7590,6 +7590,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "wasm-data-merger"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "thiserror 2.0.19",
+ "wasm-encoder",
+ "wasmparser",
+]
+
+[[package]]
 name = "wasm-encoder"
 version = "0.252.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
