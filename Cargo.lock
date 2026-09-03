@@ -3272,7 +3272,6 @@ name = "leptos_static_files"
 version = "0.1.1"
 dependencies = [
  "any_spawner",
- "cargo-leptos",
  "futures",
  "hydration_context",
  "leptos",
@@ -3469,6 +3468,13 @@ name = "litemap"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92daf443525c4cce67b150400bc2316076100ce0b3686209eb8cf3c31612e6f0"
+
+[[package]]
+name = "lock-cargo-leptos"
+version = "0.1.0"
+dependencies = [
+ "cargo-leptos",
+]
 
 [[package]]
 name = "lock_api"
