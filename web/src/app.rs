@@ -31,6 +31,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
         <html lang="sv">
             <head>
                 <link as="style" rel="preload" href=css_path.clone() />
+                <link rel="modulepreload" href=split_path />
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="referrer" content="no-referrer" />
@@ -40,7 +41,6 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 />
                 <AutoReload options=options.clone() />
                 <HydrationScripts options />
-                <link rel="modulepreload" href=split_path />
                 <MetaTags />
                 <link rel="stylesheet" href=css_path />
             </head>
