@@ -92,6 +92,9 @@ impl LazyRoute for NotEvenDumb {
                         <YouTube video=youtube!("pBLvzATPxv8" (9:16)) />
                         <YouTube video=youtube!("qIjOy-FBwec" (9:16)) />
                     </div>
+                </section> <section>
+                    <h2>"Bonus"</h2>
+                    <YouTube video=youtube!("l-GJrT6LhPM" (9:16)) />
                 </section>
             </BlogHolder>
         }
