@@ -454,7 +454,7 @@ impl LazyRoute for Contact {
                     </a>
                 </div>
                 <a href="https://linkedin.com/in/conditionraisemarcus">{crate::AUTHOR}</a>
-                <p>Senior IT Security Consultant</p>
+                <p>Senior IT Security Consultant based in Linköping</p>
                 <Email />
             </div>
             <style media="print" nonce=use_nonce()>
