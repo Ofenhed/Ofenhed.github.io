@@ -98,18 +98,30 @@ mod downloader {
             return Ok(());
         };
         let client = reqwest::Client::new();
+        let video_id = video.id;
 
-        let mut image = client
-            .get(&*video.thumbnail_url.clone().unwrap_or_else(|| Cow::Owned(format!("https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={}&format=json", video.id))))
-            .send()
-            .await?;
-        if !image.status().is_success() {
-            return Err(DownloadError::InvalidHttp(image.status()));
+        let image_source = [
+            Cow::Owned(format!(
+                "https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+            )),
+            video.thumbnail_url.clone().unwrap_or_else(|| {
+                Cow::Owned(format!("https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"))
+            }),
+        ];
+        let mut last_status = None;
+        for source in image_source {
+            eprintln!("Downloading thumbnail for youtube/{video_id}");
+            let mut image = client.get(&*source).send().await?;
+            if image.status().is_success() {
+                while let Some(chunk) = image.chunk().await? {
+                    image_file.write_all(&chunk).await?;
+                }
+                return Ok(());
+            } else {
+                last_status = Some(image.status())
+            }
         }
-        while let Some(chunk) = image.chunk().await? {
-            image_file.write_all(&chunk).await?;
-        }
-        Ok(())
+        Err(DownloadError::InvalidHttp(last_status.unwrap()))
     }
 }
 
