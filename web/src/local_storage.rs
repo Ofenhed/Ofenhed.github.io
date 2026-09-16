@@ -75,8 +75,7 @@ pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
     let (read, write) = signal(None);
     cfg_select! {
         feature = "client-side" => {
-            Effect::new(move || {
-                reader.track();
+            let assign_from_local = move || {
                 if let Some(value) = get_current_local_storage_value::<T>().ok().flatten() {
                     write.set(Some(value));
                 } else {
@@ -87,6 +86,15 @@ pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
                         w.untrack();
                     }
                 }
+            };
+            if let Some(context) = Owner::current_shared_context()
+                && !context.during_hydration()
+            {
+                assign_from_local();
+            }
+            Effect::new(move || {
+                reader.track();
+                assign_from_local();
             });
         }
         _ => {

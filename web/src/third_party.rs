@@ -154,6 +154,36 @@ pub(crate) fn YouTube(
         .into_future();
         context.defer_stream(Box::pin(future));
     }
+    let preload_meta = {
+        use leptos_meta::Link;
+        use std::sync::{
+            Arc,
+            atomic::{AtomicUsize, Ordering},
+        };
+        #[derive(Clone)]
+        struct ActiveYoutubeTags(Arc<AtomicUsize>);
+        let current_active = once_by_type(
+            true,
+            || (ActiveYoutubeTags(Arc::new(0.into())), None),
+            |ActiveYoutubeTags(count)| count.clone(),
+        );
+        let preload_url: Option<Oco<str>> = (current_active.fetch_add(1, Ordering::Relaxed) == 0)
+            .then(move || Oco::Counted(format!("/youtube/{}.jpg", video.id).into()));
+
+        Owner::on_cleanup(move || {
+            current_active.fetch_sub(1, Ordering::Relaxed);
+        });
+
+        move || {
+            preload_url.clone().and_then(|url| {
+                Some({
+                    view! {
+                        <Link rel="preload" as_="image" fetchpriority="low" href=url />
+                    }
+                })
+            })
+        }
+    };
 
     request_third_party_cookies();
     let consent_mode =
@@ -187,6 +217,7 @@ pub(crate) fn YouTube(
             });
             let href = href.clone();
             view! {
+                {preload_meta.clone()}
                 <div
                     class:simple-embed=true
                     class:youtube-embed=true
@@ -230,6 +261,13 @@ pub(crate) fn YouTube(
         };
         let ratio = ratio.clone();
         embed_src.map_left(move |url_suffix| {
+            let (url, set_url) = signal(None);
+            Effect::new(move || {
+                set_url.set(Some(format!(
+                    "https://www.youtube{url_suffix}.com/embed/{}",
+                    video.id
+                )))
+            });
             view! {
                 <iframe
                     class:youtube-embed=true
@@ -237,7 +275,7 @@ pub(crate) fn YouTube(
                     style=youtube_id.clone()
                     style:max-width=max_width
                     style:max-height=max_height
-                    src=format!("https://www.youtube{url_suffix}.com/embed/{}", video.id)
+                    src=url
                     allow="fullscreen; encrypted-media; picture-in-picture"
                     referrerpolicy="origin"
                     {..custom_attribute("frameBorder", 0)}
