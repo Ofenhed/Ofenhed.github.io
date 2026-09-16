@@ -13,7 +13,7 @@ details, *[data-box-type] {
   border: 1px solid #aaaaaa;
   border-radius: 5mm;
   padding: 0.5em 0.5em 0.5ex 0;
-  & > *:last-child {
+  > *:last-child {
     margin-bottom: 0;
   }
   display: block;
@@ -54,7 +54,7 @@ details, *[data-box-type] {
       margin-right: 0.5ex;
     }
   }
-  & > summary {
+  > summary {
     &::marker {
       display: block;
       font-size: 150%;

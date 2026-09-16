@@ -64,7 +64,7 @@ div.simple-embed {
     text-decoration: none;
     color: #ffffff;
   }
-  & > img.thumbnail {
+  > img.thumbnail {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
     object-fit: cover;
     width: 100%;
@@ -73,7 +73,7 @@ div.simple-embed {
     aspect-ratio: inherited;
     overflow: hidden;
   }
-  & > .logo {
+  > .logo {
     grid-area: logo-start / logo-start / logo-end / logo-end;
     height: 100%;
     width: 100%;
@@ -131,15 +131,15 @@ div.simple-embed {
       }
     }
 
-    & > .meta > .title:after {
+    > .meta > .title:after {
       @media print {
         content: " (youtu.be/\200B" var(--youtube-id) ")"
       }
     }
-    & > .meta > .author:before {
+    > .meta > .author:before {
       content: "@";
     }
-    & > .logo {
+    > .logo {
       z-index: 3;
       @include youtube-logo;
       background-blend-mode: lighten;

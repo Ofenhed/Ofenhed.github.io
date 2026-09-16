@@ -44,7 +44,7 @@ $burger-background: lcars.$african-violet;
 }
 
 body > main:has(> ul#blog-entries) {
-  & > h1:first-of-type > span {
+  > h1:first-of-type > span {
     opacity: 0.5;
   }
 }
@@ -132,7 +132,7 @@ ul#blog-entries {
         margin-left: 1ex;
       }
       &:has(> time.update) {
-        & > time.publish {
+        > time.publish {
           text-decoration: line-through;
           opacity: 0.5;
         }
@@ -179,7 +179,7 @@ ul#blog-entries {
       }
 
 
-      & > #menu > li {
+      > #menu > li {
         > a > span {
           padding-right: 0.5ex;
         }

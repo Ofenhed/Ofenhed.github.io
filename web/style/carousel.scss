@@ -7,7 +7,7 @@
     overflow: hidden !important;
     max-width: 100% !important;
     max-height: unset !important;
-    & > * {
+    > * {
       break-inside: avoid;
       max-height: 25vh !important;
     }

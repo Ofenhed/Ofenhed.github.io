@@ -210,7 +210,7 @@ body > footer {
   display: grid;
   grid-area: footer-start / footer-start / footer-end / footer-end;
   grid-auto-flow: row;
-  & > div {
+  > div {
     &[aria-current], &:target {
       background: rgba(255, 255, 0, 0.25);
     }
@@ -229,7 +229,7 @@ body > footer {
       counter-increment: footnote-text;
       content: counter(footnote-text);
     }
-    & > a.footnote-return-link {
+    > a.footnote-return-link {
       grid-column: 3;
       text-decoration: none;
       display: grid;
