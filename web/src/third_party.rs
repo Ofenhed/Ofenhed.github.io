@@ -177,9 +177,7 @@ pub(crate) fn YouTube(
         move || {
             preload_url.clone().and_then(|url| {
                 Some({
-                    view! {
-                        <Link rel="preload" as_="image" fetchpriority="low" href=url />
-                    }
+                    view! { <Link rel="preload" as_="image" fetchpriority="low" href=url /> }
                 })
             })
         }
