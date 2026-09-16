@@ -76,7 +76,10 @@ impl std::fmt::Display for YoutubeConsentType {
 mod downloader {
     use super::*;
     use reqwest::StatusCode;
-    use std::{borrow::Cow, path::PathBuf};
+    use std::{
+        borrow::Cow,
+        path::{Path, PathBuf},
+    };
     use tokio::{fs::*, io::AsyncWriteExt};
     #[derive(thiserror::Error, Debug)]
     pub enum DownloadError {
@@ -90,38 +93,46 @@ mod downloader {
     pub async fn download_youtube_thumbnail(video: &YoutubeVideo) -> Result<(), DownloadError> {
         let options = use_context::<LeptosOptions>()
             .expect("YouTube integration requires LeptosOptions as context");
+        let cache_root = Path::new("target/youtube_thumbnails");
         let target_root = PathBuf::from(format!("{}/youtube", options.site_root));
         create_dir_all(&target_root).await?;
+        create_dir_all(&cache_root).await?;
         let mut target_file = target_root;
-        target_file.push(format!("{}.jpg", video.id));
-        let Ok(mut image_file) = File::create_new(&target_file).await else {
-            return Ok(());
-        };
-        let client = reqwest::Client::new();
-        let video_id = video.id;
+        let mut cache_file = cache_root.to_path_buf();
+        for path in [&mut target_file, &mut cache_file] {
+            path.push(format!("{}.jpg", video.id));
+        }
+        'download_image: {
+            if let Ok(mut image_file) = File::create_new(&cache_file).await {
+                let client = reqwest::Client::new();
+                let video_id = video.id;
 
-        let image_source = [
-            Cow::Owned(format!(
-                "https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
-            )),
-            video.thumbnail_url.clone().unwrap_or_else(|| {
-                Cow::Owned(format!("https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"))
-            }),
-        ];
-        let mut last_status = None;
-        for source in image_source {
-            eprintln!("Downloading thumbnail for youtube/{video_id}");
-            let mut image = client.get(&*source).send().await?;
-            if image.status().is_success() {
-                while let Some(chunk) = image.chunk().await? {
-                    image_file.write_all(&chunk).await?;
+                let image_source = [
+                    Cow::Owned(format!(
+                        "https://i.ytimg.com/vi/{video_id}/maxresdefault.jpg"
+                    )),
+                    video.thumbnail_url.clone().unwrap_or_else(|| {
+                        Cow::Owned(format!("https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"))
+                    }),
+                ];
+                let mut last_status = None;
+                for source in image_source {
+                    eprintln!("Downloading thumbnail for youtube/{video_id}");
+                    let mut image = client.get(&*source).send().await?;
+                    if image.status().is_success() {
+                        while let Some(chunk) = image.chunk().await? {
+                            image_file.write_all(&chunk).await?;
+                        }
+                        break 'download_image;
+                    } else {
+                        last_status = Some(image.status())
+                    }
                 }
-                return Ok(());
-            } else {
-                last_status = Some(image.status())
+                return Err(DownloadError::InvalidHttp(last_status.unwrap()));
             }
         }
-        Err(DownloadError::InvalidHttp(last_status.unwrap()))
+        copy(cache_file, target_file).await?;
+        Ok(())
     }
 }
 
