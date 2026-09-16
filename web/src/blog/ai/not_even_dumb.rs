@@ -94,8 +94,10 @@ impl LazyRoute for NotEvenDumb {
                     </div>
                 </section> <section>
                     <h2>"Bonus"</h2>
-                    <YouTube video=youtube!("MaFTqjYjADw") />
-                    <YouTube video=youtube!("l-GJrT6LhPM" (9:16)) />
+                    <div class:videos=true class:carousel-or-grid=true>
+                        <YouTube video=youtube!("MaFTqjYjADw") />
+                        <YouTube video=youtube!("l-GJrT6LhPM" (9:16)) />
+                    </div>
                 </section>
             </BlogHolder>
         }
