@@ -39,7 +39,7 @@ $burger-background: lcars.$african-violet;
     --main-background: var(--space-main-background);
   }
   &:has(body > main > ul#blog-entries) {
-    --space-max-width: 80ch;
+    --space-max-width: min(100% - var(--menu-width), 80ch);
   }
 }
 
