@@ -1,0 +1,23 @@
+@use 'sass:list';
+
+@mixin outline($size: 1, $color: #000) {
+  $text_shadow: [];
+  @for $x from -$size through $size {
+    @for $y from -$size through $size {
+      @if $x != 0 or $y != 0 {
+        $title_shadow_this: ($x * 1px) ($y * 1px) 0 $color;
+        $text_shadow: list.append($text_shadow, $title_shadow_this);
+      }
+    }
+  }
+  text-shadow: list.join($text_shadow, [], $separator: comma, $bracketed: false);
+}
+
+@mixin strong($strength: 3, $color: #000) {
+  $text_shadow: [];
+  @for $x from 1 through $strength {
+    $title_shadow_this: 0 0 ($x * 1px) $color;
+    $text_shadow: list.append($text_shadow, $title_shadow_this);
+  }
+  text-shadow: list.join($text_shadow, [], $separator: comma, $bracketed: false);
+}
