@@ -2,11 +2,16 @@ use std::borrow::Cow;
 
 use strum::{AsRefStr, EnumString, IntoStaticStr, VariantArray};
 
-use leptos::{attr::custom::custom_attribute, either::Either, ev, html, prelude::*};
+use leptos::{
+    attr::{self, custom::custom_attribute},
+    either::Either,
+    ev, html,
+    prelude::*,
+};
 
 use crate::{
     cookie_consent::{YoutubeConsent, request_third_party_cookies},
-    helpers::{has_interested_owners, img_def, once_by_type, register_interested_owner},
+    helpers::{has_interested_owners, once_by_type, register_interested_owner},
     local_storage::get_local_storage_value,
 };
 
@@ -154,8 +159,7 @@ pub(crate) fn YouTube(
         .into_future();
         context.defer_stream(Box::pin(future));
     }
-    let preload_meta = {
-        use leptos_meta::Link;
+    let thumbnail_attrs = {
         use std::sync::{
             Arc,
             atomic::{AtomicUsize, Ordering},
@@ -167,18 +171,13 @@ pub(crate) fn YouTube(
             || (ActiveYoutubeTags(Arc::new(0.into())), None),
             |ActiveYoutubeTags(count)| count.clone(),
         );
-        let preload_url: Option<Oco<str>> = (current_active.fetch_add(1, Ordering::Relaxed) == 0)
-            .then(move || Oco::Counted(format!("/youtube/{}.jpg", video.id).into()));
+        let lazy_attr = (current_active.fetch_add(1, Ordering::Relaxed) > 0).then_some("lazy");
 
         Owner::on_cleanup(move || {
             current_active.fetch_sub(1, Ordering::Relaxed);
         });
 
-        move || {
-            preload_url.clone().map(
-                |url| view! { <Link rel="preload" as_="image" fetchpriority="low" href=url /> },
-            )
-        }
+        (attr::Attr(attr::Loading, lazy_attr),)
     };
 
     request_third_party_cookies();
@@ -213,7 +212,6 @@ pub(crate) fn YouTube(
             });
             let href = href.clone();
             view! {
-                {preload_meta.clone()}
                 <div
                     class:simple-embed=true
                     class:youtube-embed=true
@@ -245,7 +243,7 @@ pub(crate) fn YouTube(
                         alt
                         class:thumbnail=true
                         src=format!("/youtube/{}.jpg", video.id)
-                        {..img_def()}
+                        {..thumbnail_attrs.clone()}
                     />
                 </div>
             }
