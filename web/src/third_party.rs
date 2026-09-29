@@ -297,7 +297,8 @@ pub(crate) fn YouTube(
 
                         #[derive(Clone)]
                         struct AnyYoutubeCurrentlyPlaying(RwSignal<Option<usize>>);
-                        let currently_playing = once_by_type(true,
+                        let currently_playing = once_by_type(
+                            true,
                             move || (AnyYoutubeCurrentlyPlaying(RwSignal::new(None)), None),
                             |AnyYoutubeCurrentlyPlaying(signal)| signal,
                         );
@@ -329,9 +330,12 @@ pub(crate) fn YouTube(
                                 }
                             }
                         });
-                        let is_playing = Signal::derive(move ||
-                            matches!(my_state.get(), YouTubePlayerState::Playing | YouTubePlayerState::Buffering)
-                        );
+                        let is_playing = Signal::derive(move || {
+                            matches!(
+                                my_state.get(),
+                                YouTubePlayerState::Playing | YouTubePlayerState::Buffering
+                            )
+                        });
 
                         let listener = EventListener::new();
                         fn callback(
@@ -371,25 +375,25 @@ pub(crate) fn YouTube(
                                     else {
                                         return;
                                     };
-                                    if event
-                                        == Some(JsString::from(intern("infoDelivery")).into())
+                                    if event == Some(JsString::from(intern("infoDelivery")).into())
                                         && let Ok(Some(info)) =
                                             Reflect::get_str(&data, &JsString::from(intern("info")))
                                                 .map(|x| x.map(|x| x.into()))
                                         && let Ok(Some(new_player_state)) = Reflect::get_str(
                                             &info,
                                             &JsString::from(intern("playerState")),
-                                        ) {
+                                        )
+                                    {
                                         if let Some(state_f64) = new_player_state.as_f64()
                                             && let Some(state) =
-                                            YouTubePlayerState::from_repr(state_f64 as i8)
+                                                YouTubePlayerState::from_repr(state_f64 as i8)
                                         {
-                                          let mut writer = player_state.write();
-                                          if *writer == state {
-                                              writer.untrack();
-                                          } else {
-                                              *writer = state;
-                                          }
+                                            let mut writer = player_state.write();
+                                            if *writer == state {
+                                                writer.untrack();
+                                            } else {
+                                                *writer = state;
+                                            }
                                         }
                                     };
                                 }
@@ -403,10 +407,7 @@ pub(crate) fn YouTube(
                         if let Err(e) =
                             window().add_event_listener_with_event_listener(&event, &listener)
                         {
-                            console::error_2(
-                                &JsString::from("Failed to add event listener"),
-                                &e
-                            );
+                            console::error_2(&JsString::from("Failed to add event listener"), &e);
                         }
                         Owner::on_cleanup(move || {
                             if let Err(e) = window()
@@ -414,7 +415,7 @@ pub(crate) fn YouTube(
                             {
                                 console::error_2(
                                     &JsString::from("Failed to remove event listener"),
-                                    &e
+                                    &e,
                                 );
                             }
                         });
@@ -425,29 +426,37 @@ pub(crate) fn YouTube(
                             if current == my_index {
                                 return;
                             };
-                            if matches!(my_state.get_untracked(), YouTubePlayerState::Playing | YouTubePlayerState::Buffering) {
+                            if matches!(
+                                my_state.get_untracked(),
+                                YouTubePlayerState::Playing | YouTubePlayerState::Buffering
+                            ) {
                                 let Some(window) =
                                     iframe.get_untracked().and_then(|x| x.content_window())
                                 else {
                                     return;
                                 };
-                                let object = JsString::from(intern(r#"{"event": "command", "func": "pauseVideo"}"#));
+                                let object = JsString::from(intern(
+                                    r#"{"event": "command", "func": "pauseVideo"}"#,
+                                ));
                                 if let Err(e) = window.post_message(&object, "*") {
                                     console::error_1(&e);
                                 }
                             }
                         });
-                        (ev::on(ev::load, move |_| {
-                            let Some(window) =
-                                iframe.get_untracked().and_then(|x| x.content_window())
-                            else {
-                                return;
-                            };
-                            let object = JsString::from(intern(r#"{"event": "listening"}"#));
-                            if let Err(e) = window.post_message(&object, "*") {
-                                console::error_1(&e);
-                            }
-                        }), leptos::tachys::html::class::class(("playing", is_playing)))
+                        (
+                            ev::on(ev::load, move |_| {
+                                let Some(window) =
+                                    iframe.get_untracked().and_then(|x| x.content_window())
+                                else {
+                                    return;
+                                };
+                                let object = JsString::from(intern(r#"{"event": "listening"}"#));
+                                if let Err(e) = window.post_message(&object, "*") {
+                                    console::error_1(&e);
+                                }
+                            }),
+                            leptos::tachys::html::class::class(("playing", is_playing)),
+                        )
                     }
                     _ => {
                         _ = player_state;
