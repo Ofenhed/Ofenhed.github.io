@@ -354,7 +354,7 @@ pub(crate) fn YouTube(
                                 }
                                 if let Some(data) = msg.data().as_string() {
                                     let Ok(data) = JSON::parse(&data)
-                                        .and_then(|x| Object::<JsValue>::try_from_js_value(x))
+                                        .and_then(Object::<JsValue>::try_from_js_value)
                                         .map_err(|e| {
                                             console::error_2(
                                                 &JsValue::from_str("Could not parse JSON"),
@@ -383,19 +383,17 @@ pub(crate) fn YouTube(
                                             &info,
                                             &JsString::from(intern("playerState")),
                                         )
+                                        && let Some(state_f64) = new_player_state.as_f64()
+                                        && let Some(state) =
+                                            YouTubePlayerState::from_repr(state_f64 as i8)
                                     {
-                                        if let Some(state_f64) = new_player_state.as_f64()
-                                            && let Some(state) =
-                                                YouTubePlayerState::from_repr(state_f64 as i8)
-                                        {
-                                            let mut writer = player_state.write();
-                                            if *writer == state {
-                                                writer.untrack();
-                                            } else {
-                                                *writer = state;
-                                            }
+                                        let mut writer = player_state.write();
+                                        if *writer == state {
+                                            writer.untrack();
+                                        } else {
+                                            *writer = state;
                                         }
-                                    };
+                                    }
                                 }
                             }
                         }
