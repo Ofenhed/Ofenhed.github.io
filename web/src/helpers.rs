@@ -586,14 +586,18 @@ pub(crate) fn Footnotes() -> impl IntoView {
     }
 }
 
+pub(crate) fn unique_index() -> usize {
+    static COUNTER: AtomicUsize = AtomicUsize::new(1);
+    COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+}
+
 #[component]
 pub(crate) fn Footnote(
     #[prop(into, optional)] id: Option<Oco<'static, str>>,
     children: TypedChildrenFn<impl IntoView + 'static>,
 ) -> impl IntoView {
     let (active, footnotes) = footnotes();
-    static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
-    let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let uid = unique_index();
 
     let footnote_name = {
         let id = id.clone();
@@ -704,8 +708,7 @@ pub(crate) fn Abbr(
     children: TypedChildrenMut<impl IntoView + 'static>,
 ) -> impl IntoView {
     let (read_abbrs, write_abbrs) = abbrs();
-    static FOOT_IDX: AtomicUsize = AtomicUsize::new(1);
-    let uid = FOOT_IDX.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let uid = unique_index();
 
     title.upgrade_inplace();
 
