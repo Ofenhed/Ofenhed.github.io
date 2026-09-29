@@ -149,7 +149,7 @@ mod downloader {
 }
 
 #[derive(strum::FromRepr, Clone, Copy, Default, PartialEq, Eq)]
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 #[repr(i8)]
 pub(crate) enum YouTubePlayerState {
     #[default]
