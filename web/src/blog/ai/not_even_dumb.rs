@@ -75,7 +75,7 @@ impl LazyRoute for NotEvenDumb {
                         <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
                         <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
                         <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
-                        <YouTube video=youtube!("88qei5nctA0" (9:16)) />
+                        <YouTube video=youtube!("Kcp1VBaCvEY") />
                     </div>
                 </section> <section>
                     <h2>"Spelling issues"</h2>
