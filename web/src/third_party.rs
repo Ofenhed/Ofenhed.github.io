@@ -14,6 +14,13 @@ use crate::{
     helpers::{has_interested_owners, once_by_type, register_interested_owner},
     local_storage::get_local_storage_value,
 };
+cfg_select! {
+    feature = "client-side" => {
+        use js_sys::JsString;
+        use wasm_bindgen::intern;
+    }
+    _ => {}
+}
 
 #[derive(
     Default, Clone, Copy, PartialEq, Eq, AsRefStr, IntoStaticStr, VariantArray, EnumString,
@@ -141,11 +148,25 @@ mod downloader {
     }
 }
 
+#[derive(strum::FromRepr, Clone, Copy, Default, PartialEq, Eq)]
+#[cfg_attr(feature = "ssr", allow(unused))]
+#[repr(i8)]
+pub(crate) enum YouTubePlayerState {
+    #[default]
+    Unstarted = -1,
+    Ended = 0,
+    Playing = 1,
+    Paused = 2,
+    Buffering = 3,
+    VideoQueued = 5,
+}
+
 #[component]
 pub(crate) fn YouTube(
     #[prop(into)] video: YoutubeVideo,
     #[prop(optional)] max_width: Option<&'static str>,
     #[prop(optional)] max_height: Option<&'static str>,
+    #[prop(optional)] player_state: Option<WriteSignal<YouTubePlayerState>>,
 ) -> impl IntoView {
     #[cfg(feature = "ssr")]
     {
@@ -264,16 +285,58 @@ pub(crate) fn YouTube(
             });
             let iframe = NodeRef::<html::Iframe>::new();
             #[allow(clippy::let_unit_value)]
-            let notify_listening = {
+            let player_state_attrs = {
                 cfg_select! {
                     feature = "client-side" => {
-                        use js_sys::{Function, JSON, Object};
+                        use crate::helpers::unique_index;
+                        use js_sys::{Function, JSON, Object, Reflect};
                         use leptos::ev::EventDescriptor;
                         use wasm_bindgen::{closure::Closure, convert::TryFromJsValue, prelude::*};
                         use web_sys::{EventListener, console};
+                        let my_index = unique_index();
+
+                        #[derive(Clone)]
+                        struct AnyYoutubeCurrentlyPlaying(RwSignal<Option<usize>>);
+                        let currently_playing = once_by_type(true,
+                            move || (AnyYoutubeCurrentlyPlaying(RwSignal::new(None)), None),
+                            |AnyYoutubeCurrentlyPlaying(signal)| signal,
+                        );
+
+                        let my_state = RwSignal::new(YouTubePlayerState::default());
+                        Effect::new(move || {
+                            let new_state = my_state.get();
+                            if let Some(player_state) = player_state {
+                                let mut writer = player_state.write();
+                                if *writer == new_state {
+                                    writer.untrack()
+                                } else {
+                                    *writer = new_state;
+                                }
+                            }
+                            let mut current = currently_playing.write();
+                            match (*current, new_state) {
+                                (Some(index), YouTubePlayerState::Playing) if index != my_index => {
+                                    *current = Some(my_index);
+                                }
+                                (None, YouTubePlayerState::Playing) => {
+                                    *current = Some(my_index);
+                                }
+                                (Some(index), _) if index == my_index => {
+                                    *current = None;
+                                }
+                                _ => {
+                                    current.untrack();
+                                }
+                            }
+                        });
+                        let is_playing = Signal::derive(move ||
+                            matches!(my_state.get(), YouTubePlayerState::Playing | YouTubePlayerState::Buffering)
+                        );
+
                         let listener = EventListener::new();
                         fn callback(
                             iframe: NodeRef<html::Iframe>,
+                            player_state: RwSignal<YouTubePlayerState>,
                         ) -> impl FnMut(<ev::message as EventDescriptor>::EventType)
                         {
                             move |msg| {
@@ -286,17 +349,53 @@ pub(crate) fn YouTube(
                                     return;
                                 }
                                 if let Some(data) = msg.data().as_string() {
-                                    match JSON::parse(&data)
+                                    let Ok(data) = JSON::parse(&data)
                                         .and_then(|x| Object::<JsValue>::try_from_js_value(x))
-                                    {
-                                        // TODO: values can be fetched with js_sys::Reflect
-                                        Ok(data) => console::log_1(&data),
-                                        Err(e) => console::error_1(&e),
-                                    }
+                                        .map_err(|e| {
+                                            console::error_2(
+                                                &JsValue::from_str("Could not parse JSON"),
+                                                &e,
+                                            )
+                                        })
+                                    else {
+                                        return;
+                                    };
+                                    let Ok(event) =
+                                        Reflect::get_str(&data, &JsString::from(intern("event")))
+                                            .map_err(|e| {
+                                                console::error_2(
+                                                    &JsValue::from_str("Invalid event"),
+                                                    &e,
+                                                )
+                                            })
+                                    else {
+                                        return;
+                                    };
+                                    if event
+                                        == Some(JsString::from(intern("infoDelivery")).into())
+                                        && let Ok(Some(info)) =
+                                            Reflect::get_str(&data, &JsString::from(intern("info")))
+                                                .map(|x| x.map(|x| x.into()))
+                                        && let Ok(Some(new_player_state)) = Reflect::get_str(
+                                            &info,
+                                            &JsString::from(intern("playerState")),
+                                        ) {
+                                        if let Some(state_f64) = new_player_state.as_f64()
+                                            && let Some(state) =
+                                            YouTubePlayerState::from_repr(state_f64 as i8)
+                                        {
+                                          let mut writer = player_state.write();
+                                          if *writer == state {
+                                              writer.untrack();
+                                          } else {
+                                              *writer = state;
+                                          }
+                                        }
+                                    };
                                 }
                             }
                         }
-                        let callback = Closure::new(callback(iframe));
+                        let callback = Closure::new(callback(iframe, my_state));
                         let callback =
                             Function::try_from_js_value(callback.into_js_value()).unwrap();
                         listener.set_handle_event(&callback);
@@ -304,45 +403,60 @@ pub(crate) fn YouTube(
                         if let Err(e) =
                             window().add_event_listener_with_event_listener(&event, &listener)
                         {
-                            leptos::logging::error!(
-                                "Failed to add event listener: {}",
-                                e.as_string()
-                                    .map(Oco::Owned)
-                                    .unwrap_or(Oco::Borrowed("<unknown>"))
+                            console::error_2(
+                                &JsString::from("Failed to add event listener"),
+                                &e
                             );
                         }
                         Owner::on_cleanup(move || {
                             if let Err(e) = window()
                                 .remove_event_listener_with_event_listener(&event, &listener)
                             {
-                                leptos::logging::error!(
-                                    "Failed to remove event listener: {}",
-                                    e.as_string()
-                                        .map(Oco::Owned)
-                                        .unwrap_or(Oco::Borrowed("<unknown>"))
+                                console::error_2(
+                                    &JsString::from("Failed to remove event listener"),
+                                    &e
                                 );
                             }
                         });
-                        ev::on(ev::load, move |_| {
-                            use js_sys::JsString;
-                            use web_sys::console;
+                        Effect::new(move || {
+                            let Some(current) = currently_playing.get() else {
+                                return;
+                            };
+                            if current == my_index {
+                                return;
+                            };
+                            if matches!(my_state.get_untracked(), YouTubePlayerState::Playing | YouTubePlayerState::Buffering) {
+                                let Some(window) =
+                                    iframe.get_untracked().and_then(|x| x.content_window())
+                                else {
+                                    return;
+                                };
+                                let object = JsString::from(intern(r#"{"event": "command", "func": "pauseVideo"}"#));
+                                if let Err(e) = window.post_message(&object, "*") {
+                                    console::error_1(&e);
+                                }
+                            }
+                        });
+                        (ev::on(ev::load, move |_| {
                             let Some(window) =
                                 iframe.get_untracked().and_then(|x| x.content_window())
                             else {
                                 return;
                             };
-                            let object = JsString::from("{\"event\": \"listening\"}");
+                            let object = JsString::from(intern(r#"{"event": "listening"}"#));
                             if let Err(e) = window.post_message(&object, "*") {
                                 console::error_1(&e);
                             }
-                        })
+                        }), leptos::tachys::html::class::class(("playing", is_playing)))
                     }
-                    _ => {}
+                    _ => {
+                        _ = player_state;
+                    }
                 }
             };
             view! {
                 <iframe
-                    {..notify_listening}
+                    {..player_state_attrs}
                     node_ref=iframe
                     class:youtube-embed=true
                     style:aspect-ratio=ratio.clone()
