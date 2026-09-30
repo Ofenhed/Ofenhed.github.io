@@ -3,6 +3,16 @@
 
 $youtube-logo-aspect-ratio: 29/20;
 
+:root {
+  --thumbnail-font-color: #ffffff;
+  --thumbnail-fade-color-value: 0;
+  --thumbnail-fade-color: rgb(var(--thumbnail-fade-color-value), var(--thumbnail-fade-color-value), var(--thumbnail-fade-color-value));
+  @media print {
+    --thumbnail-font-color: #000000;
+    --thumbnail-fade-color-value: 255;
+  }
+}
+
 @mixin youtube-logo {
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 20"><g><path d="M14.4848 20C14.4848 20 23.5695 20 25.8229 19.4C27.0917 19.06 28.0459 18.08 28.3808 16.87C29 14.65 29 9.98 29 9.98C29 9.98 29 5.34 28.3808 3.14C28.0459 1.9 27.0917 0.94 25.8229 0.61C23.5695 0 14.4848 0 14.4848 0C14.4848 0 5.42037 0 3.17711 0.61C1.9286 0.94 0.954148 1.9 0.59888 3.14C0 5.34 0 9.98 0 9.98C0 9.98 0 14.65 0.59888 16.87C0.954148 18.08 1.9286 19.06 3.17711 19.4C5.42037 20 14.4848 20 14.4848 20Z" fill="%23FF0033"></path><path d="M19 10L11.5 5.75V14.25L19 10Z" fill="white"></path></g></svg>');
   background-repeat: no-repeat;
@@ -47,29 +57,47 @@ a:not(.no-shinies) {
   }
 }
 
+$horizontal-text-padding: 1em;
+$vertical-text-padding: (1em / 0.66);
+
+@media print {
+  div.youtube-embed {
+    width: fit-content !important;
+    height: fit-content !important;
+    max-width: unset !important;
+    max-height: unset !important;
+    aspect-ratio: unset !important;
+    > div.simple-embed {
+      width: unset;
+      height: unset;
+    }
+  }
+}
+
 div.simple-embed {
+  width: 100%;
+  height: 100%;
   display: block grid;
-  grid-template-rows: [thumb-start meta-start] auto [meta-end logo-start] minmax(10%, 3em) [logo-end] minmax(0, calc(50% - 1.5em)) [thumb-end];
-  grid-template-columns: [thumb-start meta-start] 1fr [logo-start] minmax(5%, math.div(3em, 20) * 29) [logo-end] 1fr [meta-end thumb-end];
+  grid-template-rows: [thumb-start meta-start] auto [meta-end logo-start] minmax(10%, 3em) [logo-end comment-start] minmax(0, calc(50% - 1.5em)) [thumb-end comment-end];
+  grid-template-columns: [comment-start thumb-start meta-start] 1fr [logo-start] minmax(5%, math.div(3em, 20) * 29) [logo-end] 1fr [meta-end thumb-end comment-end];
   print-color-adjust: exact !important;
   @media print {
-    max-height: 25vh !important;
-    grid-template-rows: [thumb-start meta-start] auto [meta-end logo-start] 1.5em [logo-end] 1ch [thumb-end];
-    grid-template-columns: [thumb-start meta-start] auto [logo-start] calc(0.4ch + 1.5em * ($youtube-logo-aspect-ratio)) [logo-end] 1ch [meta-end thumb-end];
+    grid-template-rows: [thumb-start meta-start] max-content [meta-end logo-start] max-content [logo-end comment-start] max-content [thumb-end comment-end];
+    grid-template-columns: [comment-start thumb-start meta-start] 30ex [logo-start] 0 [logo-end] min-content [meta-end thumb-end comment-end];
     > .logo {
       opacity: 0.5;
     }
   }
   a {
     text-decoration: none;
-    color: #ffffff;
+    color: var(--thumbnail-font-color);
   }
   > img.thumbnail {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
     object-fit: cover;
+    z-index: 1;
     width: 100%;
     height: 100%;
-    z-index: 1;
     aspect-ratio: inherited;
     overflow: hidden;
   }
@@ -81,21 +109,23 @@ div.simple-embed {
   }
   > .meta {
     grid-area: meta-start / meta-start / meta-end / meta-end;
+    height: fit-content;
 
+    $c: var(--thumbnail-fade-color-value);
     > .title {
       font-size: 100%;
       padding: 1em;
       margin-bottom: -1em;
       display: block;
-      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+      background-image: linear-gradient(to bottom, rgba($c, $c, $c, 0.6), rgba($c, $c, $c, 0));
     }
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+    background-image: linear-gradient(to bottom, rgba($c, $c, $c, 0.8), rgba($c, $c, $c, 0.6) calc(100% - $vertical-text-padding * 2), rgba($c, $c, $c, 0.3) calc(100% - $vertical-text-padding), rgba($c, $c, $c, 0));
     > .author {
       display: block;
-      padding: 1ex calc(1em / 0.66);
-      margin-bottom: calc(1em / -0.66);
+      padding: calc($horizontal-text-padding) calc($vertical-text-padding);
       @media not (pointer:fine) {
-        padding-top: calc(1em / 0.66);
+        padding-top: calc($vertical-text-padding);
+        padding-bottom: calc($vertical-text-padding);
       }
       width: fit-content;
       font-size: 66%;
@@ -106,37 +136,105 @@ div.simple-embed {
       }
     }
     z-index: 5;
-    @include text-shadow.strong($strength: 3);
+    @include text-shadow.strong($strength: 3, $color: var(--thumbnail-fade-color));
   }
-  &.youtube-embed {
-    @at-root iframe.youtube-embed, & {
-      max-width: calc(100vw - var(--main-padding) * 2);
-      max-height: 100vh;
-      box-sizing: border-box;
-    }
-    @media (pointer:fine) {
-      @at-root iframe.youtube-embed, & {
-        max-width: min(480px, 90vw);
-        max-height: min(480px, 90vh);
-      }
-    }
+  > .comment {
+    z-index: 4;
+  }
+}
 
-    > .meta > .title:after {
-      @media print {
-        content: " (youtu.be/\200B" var(--youtube-id) ")"
+div.youtube-embed {
+  > .comment, > .simple-embed > .comment {
+    grid-area: comment-start / comment-start / comment-end / comment-end;
+    color: var(--thumbnail-font-color);
+    font-style: italic;
+    $c: var(--thumbnail-fade-color-value);
+    background-image: linear-gradient(to top, rgba($c, $c, $c, 1), rgba($c, $c, $c, 0.7) calc(100% - $vertical-text-padding), rgba($c, $c, $c, 0));
+    @include text-shadow.strong($strength: 3, $color: var(--thumbnail-fade-color));
+    pointer-events: none;
+    height: fit-content;
+    text-wrap: balance;
+    margin: 0;
+    padding: calc($horizontal-text-padding) calc($vertical-text-padding);
+    z-index: 4;
+    align-self: end;
+  }
+  &:has(> iframe) {
+    display: grid;
+    grid-template-rows: [comment-start start] 1fr [logo-start] minmax(10%, 3em) [logo-end] 1fr [comment-end end];
+    grid-template-columns: [start comment-start] 1fr [logo-start] minmax(5%, math.div(3em, 20) * 29) [logo-end] 1fr [comment-end end];
+    > * {
+      grid-area: start / start / end / end;
+    }
+    &.loading {
+      background: #80808040;
+      &:after {
+        @keyframes youtube-loading {
+          0% {
+            background-position-y: -3em;
+          }
+          20% {
+            background-position-y: 0;
+          }
+          80% {
+            background-position-y: 0;
+          }
+          100% {
+            background-position-y: calc(math.div(3em, 20) * 29);
+          }
+        }
+        @include youtube-logo;
+        grid-area: logo-start / logo-start / logo-end / logo-end;
+        content: "...";
+        color: #00000000;
+        position: absolute;
+        animation: 2s ease-in-out infinite;
+        animation-name: youtube-loading;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 1;
+        display: block;
+      }
+      > * {
+        opacity: 0;
+        pointer-events: none;
       }
     }
-    > .meta > .author:before {
-      content: "@";
+  }
+  &.playing > .comment {
+    opacity: 0;
+  }
+  position: relative;
+  max-width: calc(100svw - var(--main-padding) * 2);
+  max-height: 100svh;
+  box-sizing: border-box;
+  @media (pointer:fine) {
+    @media not print {
+      max-width: min(480px, 90svw);
+      max-height: min(480px, 90svh);
     }
-    > .logo {
-      z-index: 3;
-      @include youtube-logo;
-      background-blend-mode: lighten;
-      @media print {
-        &:after {
-          content: unset;
-        }
+  }
+  > iframe {
+    width: 100%;
+    height: 100%;
+  }
+
+  > .simple-embed > .meta > .title:after {
+    @media print {
+      content: " (youtu.be/\200B" var(--youtube-id) ")"
+    }
+  }
+  > .simple-embed > .meta > .author:before {
+    content: "@";
+  }
+  > div.simple-embed > .logo {
+    z-index: 3;
+    @include youtube-logo;
+    background-blend-mode: lighten;
+    @media print {
+      &:after {
+        content: unset;
       }
     }
   }

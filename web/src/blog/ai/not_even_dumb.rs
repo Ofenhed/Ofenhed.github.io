@@ -17,7 +17,7 @@ impl BlogEntry for NotEvenDumb {
     const UID: u32 = 7;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 7, 13);
-    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 8, 30));
+    const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 9, 30));
     const VISIBILITY: Visibility = Visibility::VisibleViaTags;
 
     const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
@@ -73,7 +73,6 @@ impl LazyRoute for NotEvenDumb {
                         <YouTube video=youtube!("3fYiLXVfPa4" (9:16)) />
                         <YouTube video=youtube!("gPthZLTnzu8" (9:16)) />
                         <YouTube video=youtube!("bsl46vGpMNU" (9:16)) />
-                        <YouTube video=youtube!("fcp1m-A-QwM" (9:16)) />
                         <YouTube video=youtube!("IVBv2erRpZ0" (9:16)) />
                         <YouTube video=youtube!("Kcp1VBaCvEY") />
                     </div>
@@ -95,8 +94,15 @@ impl LazyRoute for NotEvenDumb {
                 </section> <section>
                     <h2>"Bonus"</h2>
                     <div class:videos=true class:carousel-or-grid=true>
-                        <YouTube video=youtube!("MaFTqjYjADw") />
+                        <YouTube
+                            comment="Notice how the LLM somehow fails to trigger an internal function at 1:25. This is how LLM's appear to retain memory, but also how your conversations are used against you."
+                            video=youtube!("fcp1m-A-QwM" (9:16))
+                        />
                         <YouTube video=youtube!("l-GJrT6LhPM" (9:16)) />
+                        <YouTube
+                            comment="Long video, but well worth watching."
+                            video=youtube!("MaFTqjYjADw")
+                        />
                     </div>
                 </section>
             </BlogHolder>

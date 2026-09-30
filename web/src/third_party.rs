@@ -167,6 +167,7 @@ pub(crate) fn YouTube(
     #[prop(optional)] max_width: Option<&'static str>,
     #[prop(optional)] max_height: Option<&'static str>,
     #[prop(optional)] player_state: Option<WriteSignal<YouTubePlayerState>>,
+    #[prop(optional)] comment: Option<&'static str>,
 ) -> impl IntoView {
     #[cfg(feature = "ssr")]
     {
@@ -213,8 +214,10 @@ pub(crate) fn YouTube(
     move || {
         let do_show = show_youtube_consent_dialog();
         let youtube_id = youtube_id.clone();
+        let comment = move || comment.map(|x| html::p().class(("comment", true)).child(x));
+        let (currently_playing, set_currently_playing) = signal(false);
+        let (iframe_loading, set_iframe_loading) = signal(true);
         let regular_link = || {
-            let ratio = ratio.clone();
             let author_url = video
                 .author_url
                 .clone()
@@ -233,14 +236,7 @@ pub(crate) fn YouTube(
             });
             let href = href.clone();
             view! {
-                <div
-                    class:simple-embed=true
-                    class:youtube-embed=true
-                    style:aspect-ratio=ratio.clone()
-                    style=youtube_id.clone()
-                    style:max-width=max_width
-                    style:max-height=max_height
-                >
+                <div class:simple-embed=true>
                     <span class:meta=true>
                         <a
                             href=href.clone()
@@ -266,6 +262,7 @@ pub(crate) fn YouTube(
                         src=format!("/youtube/{}.jpg", video.id)
                         {..thumbnail_attrs.clone()}
                     />
+                    {comment}
                 </div>
             }
         };
@@ -275,13 +272,14 @@ pub(crate) fn YouTube(
             Some(YoutubeConsentType::RegularYoutube) => Either::Left(""),
         };
         let ratio = ratio.clone();
-        embed_src.map_left(move |url_suffix| {
+        let embedded = embed_src.map_left(move |url_suffix| {
             let (url, set_url) = signal(None);
             Effect::new(move || {
                 set_url.set(Some(format!(
                     "https://www.youtube{url_suffix}.com/embed/{}?enablejsapi=1",
                     video.id
-                )))
+                )));
+                set_iframe_loading.set(true);
             });
             let iframe = NodeRef::<html::Iframe>::new();
             #[allow(clippy::let_unit_value)]
@@ -306,6 +304,10 @@ pub(crate) fn YouTube(
                         let my_state = RwSignal::new(YouTubePlayerState::default());
                         Effect::new(move || {
                             let new_state = my_state.get();
+                            set_currently_playing.set(matches!(
+                                new_state,
+                                YouTubePlayerState::Playing | YouTubePlayerState::Buffering
+                            ));
                             if let Some(player_state) = player_state {
                                 let mut writer = player_state.write();
                                 if *writer == new_state {
@@ -329,12 +331,6 @@ pub(crate) fn YouTube(
                                     current.untrack();
                                 }
                             }
-                        });
-                        let is_playing = Signal::derive(move || {
-                            matches!(
-                                my_state.get(),
-                                YouTubePlayerState::Playing | YouTubePlayerState::Buffering
-                            )
                         });
 
                         let listener = EventListener::new();
@@ -442,6 +438,9 @@ pub(crate) fn YouTube(
                             }
                         });
                         (
+                            ev::on(ev::DOMContentLoaded, move |_| {
+                                set_iframe_loading.set(false);
+                            }),
                             ev::on(ev::load, move |_| {
                                 let Some(window) =
                                     iframe.get_untracked().and_then(|x| x.content_window())
@@ -452,12 +451,15 @@ pub(crate) fn YouTube(
                                 if let Err(e) = window.post_message(&object, "*") {
                                     console::error_1(&e);
                                 }
+                                set_iframe_loading.set(false);
                             }),
-                            leptos::tachys::html::class::class(("playing", is_playing)),
+                            ev::on(ev::error, move |_| {
+                                set_iframe_loading.set(false);
+                            }),
                         )
                     }
                     _ => {
-                        _ = player_state;
+                        _ = (player_state, set_currently_playing);
                     }
                 }
             };
@@ -466,18 +468,28 @@ pub(crate) fn YouTube(
                     {..player_state_attrs}
                     node_ref=iframe
                     class:youtube-embed=true
-                    style:aspect-ratio=ratio.clone()
-                    style=youtube_id.clone()
-                    style:max-width=max_width
-                    style:max-height=max_height
                     src=url
                     allow="fullscreen; encrypted-media; picture-in-picture"
                     referrerpolicy="origin"
                     {..custom_attribute("frameBorder", 0)}
                 />
+                {comment}
             }
             .into_inner()
-        })
+        });
+        view! {
+            <div
+                class:youtube-embed=true
+                class:playing=currently_playing
+                class:loading=iframe_loading
+                style:aspect-ratio=ratio.clone()
+                style=youtube_id.clone()
+                style:max-width=max_width
+                style:max-height=max_height
+            >
+                {embedded}
+            </div>
+        }
     }
 }
 
