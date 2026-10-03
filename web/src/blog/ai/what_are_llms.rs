@@ -224,7 +224,7 @@ impl LazyRoute for WhatAreLLMs {
                     "Anthropomorphism is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
                 </blockquote>
                 <p>
-                    "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling them "
+                    "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling it "
                     <q title="This word means something completely different to people outside of computer science">
                         {ai} " agents"
                     </q>
@@ -287,7 +287,7 @@ impl LazyRoute for WhatAreLLMs {
                 <p>
                     "My point with this clog post is that we all perpetuate the illusion of intelligence. Terminology and framing matters, and accepting and using their terminology makes us participants. Thinking of "
                     {llms} " as " {ai}
-                    " creates a abstract entity with hard to define properties, and it becomes very easy to fall into the anthropomorphism trap. On the other hand, if you think of "
+                    " creates an abstract entity with hard to define properties, and it becomes very easy to fall into the anthropomorphism trap. On the other hand, if you think of "
                     {llm} " models as lossy text compression, it will help you understand what "
                     {llms}
                     " are actually capable of, and even somewhat what they will be capable of in the future. Most importantly, it will help you understand what it isn't; It's not your therapist; It's not intelligent; It's not self aware; It's not your friend; Any belief to the contrary is dangerous. We may some day create an actual "
