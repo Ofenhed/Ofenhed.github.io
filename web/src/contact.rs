@@ -244,7 +244,7 @@ impl LazyRoute for Contact {
                             .unwrap()
                             .dyn_into::<web_sys::CanvasRenderingContext2d>()
                             .unwrap();
-                        let index = (0..shade_to_light.len()).into_iter();
+                        let index = 0..shade_to_light.len();
                         let r = if pix {
                             // To dark
                             Either::Left(index.rev())
@@ -313,9 +313,8 @@ impl LazyRoute for Contact {
                         let light = state.qr_code[x as usize][y as usize];
 
                         let make_worm = {
-                            let len = state.for_dark.len();
-                            let make_light = (0..len).into_iter();
-                            let make_dark = (0..len).into_iter().rev();
+                            let make_light = 0..state.for_dark.len();
+                            let make_dark = make_light.clone().rev();
                             if light {
                                 Either::Left(make_dark.chain(make_light))
                             } else {
