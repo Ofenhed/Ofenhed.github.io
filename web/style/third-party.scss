@@ -153,6 +153,7 @@ div.youtube-embed {
     @include text-shadow.strong($strength: 3, $color: var(--thumbnail-fade-color));
     pointer-events: none;
     height: fit-content;
+    white-space-collapse: preserve-breaks;
     text-wrap: balance;
     margin: 0;
     padding: calc($horizontal-text-padding) calc($vertical-text-padding);
