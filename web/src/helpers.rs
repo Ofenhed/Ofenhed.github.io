@@ -1,4 +1,6 @@
-use std::{cell::LazyCell, marker::PhantomData, mem::MaybeUninit, sync::atomic::AtomicUsize};
+use std::{
+    cell::LazyCell, marker::PhantomData, mem::MaybeUninit, ops::Deref, sync::atomic::AtomicUsize,
+};
 
 use leptos::{
     attr::{
@@ -250,6 +252,34 @@ impl<I: Iterator, F: 'static + Fn(<Self as Iterator>::Item)> IntoIntervalIterato
             action,
             owner: Owner::current().unwrap().downgrade(),
         }
+    }
+}
+
+#[derive(Clone)]
+#[cfg_attr(debug_assertions, derive(Debug, PartialEq, Eq))]
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
+pub(crate) struct CachedString(Oco<'static, str>);
+impl Drop for CachedString {
+    fn drop(&mut self) {
+        wasm_bindgen::unintern(&self.0);
+    }
+}
+impl From<Oco<'static, str>> for CachedString {
+    fn from(value: Oco<'static, str>) -> Self {
+        wasm_bindgen::intern(&value);
+        Self(value)
+    }
+}
+impl From<&'static str> for CachedString {
+    fn from(value: &'static str) -> Self {
+        Oco::Borrowed(value).into()
+    }
+}
+impl Deref for CachedString {
+    type Target = Oco<'static, str>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

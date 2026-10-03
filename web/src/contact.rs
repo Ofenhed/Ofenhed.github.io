@@ -138,12 +138,16 @@ impl LazyRoute for Contact {
         #[cfg(feature = "client-side")]
         Effect::new(move |_| {
             use crate::helpers::*;
-            use leptos::logging::{log, warn};
+            use leptos::{
+                either::Either,
+                logging::{log, warn},
+            };
             use qr_settings::*;
-            use std::iter;
+            use std::{iter, sync::Arc};
             use wasm_bindgen::JsCast;
             use web_sys::js_sys::Math;
 
+            let context_2d = CachedString::from("2d");
             let worm_delay = 2.5f64;
             let animate_logo = {
                 if let Some(c) = use_context::<ReadSignal<PersistentQrLogo>>() {
@@ -156,8 +160,7 @@ impl LazyRoute for Contact {
             struct WormsState {
                 qr_code: Vec<Vec<bool>>,
                 width: usize,
-                for_dark: Box<[Oco<'static, str>]>,
-                for_light: Box<[Oco<'static, str>]>,
+                for_dark: Arc<[CachedString]>,
                 canvas_context: web_sys::CanvasRenderingContext2d,
             }
             let Some(canvas) = canvas_ref.get() else {
@@ -168,32 +171,24 @@ impl LazyRoute for Contact {
                 .chain(iter::once(0xff));
             let worm_shade_steps = (0..WORM_SHADE_STEPS)
                 .chain(iter::once(WORM_SHADE_STEPS))
-                .map(|s| s as f64 / WORM_SHADE_STEPS as f64)
-                .map(|x| x * 255f64)
-                .map(Math::round)
-                .map(|x| Math::min(255f64, x))
-                .map(|x| Math::max(0f64, x))
-                .map(|x| x as u8);
-            let [shade_to_dark, shade_to_light]: [Box<[Oco<'_, str>]>; _] = {
-                let to_str = |x: u8| Oco::Counted(format!("rgb({x},{x},{x})").into());
-                [
-                    logo_shade_steps.clone().rev().map(to_str).collect(),
-                    logo_shade_steps.map(to_str).collect(),
-                ]
-            };
-            let [worm_for_dark, worm_for_light]: [Box<[Oco<'_, str>]>; _] = {
-                let to_str = |x: u8| Oco::Counted(format!("rgb({x},{x},{x})").into());
-                [
-                    worm_shade_steps.clone().map(to_str).collect(),
-                    worm_shade_steps.rev().map(to_str).collect(),
-                ]
-            };
+                .map(|s| {
+                    Math::min(
+                        255f64,
+                        Math::max(
+                            0f64,
+                            Math::round((s as f64 / WORM_SHADE_STEPS as f64) * 255f64),
+                        ),
+                    ) as u8
+                });
+            let to_str = |x: u8| CachedString::from(Oco::Owned(format!("rgb({x},{x},{x})")));
+            let shade_to_light: Arc<[_]> = logo_shade_steps.map(to_str).collect();
+            let worm_for_dark: Arc<[_]> = worm_shade_steps.map(to_str).collect();
             let mut state = {
                 let Some(canvas) = worm_canvas_ref.get_untracked() else {
                     return;
                 };
                 let context = canvas
-                    .get_context("2d")
+                    .get_context(&context_2d)
                     .unwrap()
                     .unwrap()
                     .dyn_into::<web_sys::CanvasRenderingContext2d>()
@@ -202,12 +197,11 @@ impl LazyRoute for Contact {
                     qr_code: vec![vec![false; height]; width],
                     width,
                     for_dark: worm_for_dark,
-                    for_light: worm_for_light,
                     canvas_context: context,
                 }
             };
             let context = canvas
-                .get_context("2d")
+                .get_context(&context_2d)
                 .unwrap()
                 .unwrap()
                 .dyn_into::<web_sys::CanvasRenderingContext2d>()
@@ -237,28 +231,31 @@ impl LazyRoute for Contact {
                         MIN_SHADE_INTERVAL
                             + Math::random() * (MAX_SHADE_INTERVAL - MIN_SHADE_INTERVAL),
                     );
-                    let r = if pix {
-                        shade_to_dark.clone()
-                    } else {
-                        shade_to_light.clone()
-                    };
+                    let context_2d = context_2d.clone();
+                    let shade_to_light = shade_to_light.clone();
                     set_scoped_timeout(delay, move || {
                         let Some(canvas) = canvas_ref.get_untracked() else {
                             log!("Lost canvas");
                             return;
                         };
                         let context = canvas
-                            .get_context("2d")
+                            .get_context(&context_2d)
                             .unwrap()
                             .unwrap()
                             .dyn_into::<web_sys::CanvasRenderingContext2d>()
                             .unwrap();
-                        r.into_iter()
-                            .on_interval(interval, move |p| {
-                                context.set_fill_style_str(&p);
-                                context.fill_rect(x as f64, y as f64, 1.0, 1.0);
-                            })
-                            .into_scoped_animation_timeout();
+                        let index = (0..shade_to_light.len()).into_iter();
+                        let r = if pix {
+                            // To dark
+                            Either::Left(index.rev())
+                        } else {
+                            Either::Right(index)
+                        };
+                        r.on_interval(interval, move |p| {
+                            context.set_fill_style_str(&shade_to_light[p]);
+                            context.fill_rect(x as f64, y as f64, 1.0, 1.0);
+                        })
+                        .into_scoped_animation_timeout();
                     });
                 }
             }
@@ -315,24 +312,26 @@ impl LazyRoute for Contact {
 
                         let light = state.qr_code[x as usize][y as usize];
 
-                        let make_worm = if light {
-                            state.for_light.clone()
-                        } else {
-                            state.for_dark.clone()
+                        let make_worm = {
+                            let len = state.for_dark.len();
+                            let make_light = (0..len).into_iter();
+                            let make_dark = (0..len).into_iter().rev();
+                            if light {
+                                Either::Left(make_dark.chain(make_light))
+                            } else {
+                                Either::Right(make_light.chain(make_dark))
+                            }
                         };
                         let context = state.canvas_context.clone();
+                        let fill_style = state.for_dark.clone();
                         owner.set_scoped_timeout(
                             std::time::Duration::from_secs_f64(worm_part_delay),
                             move || {
                                 make_worm
-                                    .clone()
-                                    .into_iter()
-                                    .skip(1)
-                                    .chain(make_worm.into_iter().rev().skip(1))
                                     .on_interval(
                                         std::time::Duration::from_secs_f64(WORM_SHADE_INTERVAL),
                                         move |shade| {
-                                            context.set_fill_style_str(&shade);
+                                            context.set_fill_style_str(&fill_style[shade]);
                                             context.fill_rect(x as f64, y as f64, 1.0, 1.0);
                                         },
                                     )
