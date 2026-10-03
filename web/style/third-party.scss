@@ -144,6 +144,9 @@ div.simple-embed {
 }
 
 div.youtube-embed {
+  > .comment {
+    pointer-events: none;
+  }
   > .comment, > .simple-embed > .comment {
     grid-area: comment-start / comment-start / comment-end / comment-end;
     color: var(--thumbnail-font-color);
@@ -151,7 +154,6 @@ div.youtube-embed {
     $c: var(--thumbnail-fade-color-value);
     background-image: linear-gradient(to top, rgba($c, $c, $c, 1), rgba($c, $c, $c, 0.7) calc(100% - $vertical-text-padding), rgba($c, $c, $c, 0));
     @include text-shadow.strong($strength: 3, $color: var(--thumbnail-fade-color));
-    pointer-events: none;
     height: fit-content;
     white-space-collapse: preserve-breaks;
     text-wrap: balance;
