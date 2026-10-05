@@ -134,8 +134,7 @@ jobs:
       id: generate-ffmpeg
       if: ${{ steps.recompile-ffmpeg.outcome == 'success' && !cancelled() }}
       continue-on-error: true
-      run: |
-        false # target/release/conditionraise
+      run: target/release/conditionraise
 
     - name: Recompile targets without using ffmpeg
       id: recompile-no-ffmpeg

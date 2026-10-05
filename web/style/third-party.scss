@@ -99,6 +99,8 @@ div.simple-embed {
     > * {
       width: 100%;
       height: 100%;
+      display: block;
+      position: absolute;
     }
   }
   > img.thumbnail, > picture.thumbnail img {
