@@ -121,7 +121,7 @@ mod downloader {
             path.push(format!("{}.jpg", video.id));
         }
         'download_image: {
-            if let Ok(mut image_file) = File::create_new(&cache_file).await {
+            if let Ok(mut image_file) = File::create(&cache_file).await {
                 let client = reqwest::Client::new();
                 let video_id = video.id;
 
@@ -141,6 +141,9 @@ mod downloader {
                         while let Some(chunk) = image.chunk().await? {
                             image_file.write_all(&chunk).await?;
                         }
+                        let mut perms = image_file.metadata().await?.permissions();
+                        perms.set_readonly(true);
+                        image_file.set_permissions(perms).await?;
                         break 'download_image;
                     } else {
                         last_status = Some(image.status())
