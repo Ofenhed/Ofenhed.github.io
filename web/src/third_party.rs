@@ -101,10 +101,10 @@ mod downloader {
         InvalidHttp(StatusCode),
         #[error(transparent)]
         Io(#[from] std::io::Error),
-        #[cfg(all(feature = "ffmpeg"))]
+        #[cfg(feature = "ffmpeg")]
         #[error(transparent)]
         Join(#[from] tokio::task::JoinError),
-        #[cfg(all(feature = "ffmpeg"))]
+        #[cfg(feature = "ffmpeg")]
         #[error("ImageMagick failed with code {0}")]
         ImageMagick(i32),
     }
