@@ -126,7 +126,6 @@ jobs:
 
     - name: Recompile targets with static QR
       id: recompile-ffmpeg
-      continue-on-error: true
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,ffmpeg --lib-features hydrate,ffmpeg
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}

@@ -149,8 +149,6 @@ div.simple-embed {
 
 div.youtube-embed {
   aspect-ratio: var(--aspect-ratio);
-  max-width: var(--max-width);
-  max-height: var(--max-height);
   > .comment {
     pointer-events: none;
   }
