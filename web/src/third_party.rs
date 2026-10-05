@@ -101,9 +101,12 @@ mod downloader {
         InvalidHttp(StatusCode),
         #[error(transparent)]
         Io(#[from] std::io::Error),
-        #[cfg(all(feature = "imagemagick", feature = "ssr"))]
+        #[cfg(all(feature = "imagemagick"))]
         #[error(transparent)]
         Join(#[from] tokio::task::JoinError),
+        #[cfg(all(feature = "imagemagick"))]
+        #[error("ImageMagick failed with code {0}")]
+        ImageMagick(i32),
     }
     pub async fn download_youtube_thumbnail(video: &YoutubeVideo) -> Result<(), DownloadError> {
         let options = use_context::<LeptosOptions>()
@@ -149,7 +152,7 @@ mod downloader {
         {
             cfg_select! {
                 feature = "imagemagick" => {
-                    use std::{io::ErrorKind, sync::Arc};
+                    use std::sync::Arc;
                     use tokio::{process::Command, task::JoinSet};
                     let mut set = JoinSet::new();
                     let cache_file = Arc::new(cache_file);
@@ -159,7 +162,8 @@ mod downloader {
                         let crop_ratio = format!("{}:{}", video.width, video.height);
                         let cache_file = cache_file.clone();
                         set.spawn(async move {
-                            let process = Command::new("magick")
+                            println!("Creating file {}", output_file.display());
+                            Command::new("magick")
                                 .arg(&*cache_file)
                                 .arg("-gravity")
                                 .arg("center")
@@ -167,24 +171,20 @@ mod downloader {
                                 .arg(crop_ratio)
                                 .arg(&output_file)
                                 .status()
-                                .await;
-                            (ext, process)
+                                .await
                         });
                     }
                     while let Some(task) = set.join_next().await {
-                        let (ext, status) = task?;
-                        if ext == "jpg"
-                            && let Err(err) = &status
-                            && err.kind() == ErrorKind::NotFound
+                        let status = task??;
+                        if let Some(code) = status.code()
+                            && code != 0
                         {
-                            println!("Imagemagick not found, using jpeg only");
-                            copy(&*cache_file, &target_file).await?;
-                        } else {
-                            _ = status?;
+                            return Err(DownloadError::ImageMagick(code));
                         }
                     }
                 }
                 _ => {
+                    println!("Copying file {}", target_file.display());
                     copy(cache_file, target_file).await?;
                 }
             }
