@@ -34,6 +34,8 @@ jobs:
       wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
 
     steps:
+    - name: Install ImageMagick
+      run: sudo apt-get install -y ImageMagick
 
     - uses: actions/checkout@v7
       with:

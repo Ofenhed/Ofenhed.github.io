@@ -91,8 +91,14 @@ mod downloader {
     use std::{
         borrow::Cow,
         path::{Path, PathBuf},
+        sync::Arc,
     };
-    use tokio::{fs::*, io::AsyncWriteExt};
+    use tokio::{
+        fs::*,
+        io::AsyncWriteExt,
+        process::Command,
+        task::{JoinError, JoinSet},
+    };
     #[derive(thiserror::Error, Debug)]
     pub enum DownloadError {
         #[error(transparent)]
@@ -101,6 +107,8 @@ mod downloader {
         InvalidHttp(StatusCode),
         #[error(transparent)]
         Io(#[from] std::io::Error),
+        #[error(transparent)]
+        Join(#[from] JoinError),
     }
     pub async fn download_youtube_thumbnail(video: &YoutubeVideo) -> Result<(), DownloadError> {
         let options = use_context::<LeptosOptions>()
@@ -109,7 +117,7 @@ mod downloader {
         let target_root = PathBuf::from(format!("{}/youtube", options.site_root));
         create_dir_all(&target_root).await?;
         create_dir_all(&cache_root).await?;
-        let mut target_file = target_root;
+        let mut target_file = target_root.clone();
         let mut cache_file = cache_root.to_path_buf();
         for path in [&mut target_file, &mut cache_file] {
             path.push(format!("{}.jpg", video.id));
@@ -143,7 +151,33 @@ mod downloader {
                 return Err(DownloadError::InvalidHttp(last_status.unwrap()));
             }
         }
-        copy(cache_file, target_file).await?;
+        let mut set = JoinSet::new();
+        let cache_file = Arc::new(cache_file);
+        for ext in ["avif", "webp", "jpg"] {
+            let mut output_file = target_root.clone();
+            output_file.push(format!("{}.{ext}", video.id));
+            let crop_ratio = format!("{}:{}", video.width, video.height);
+            let cache_file = cache_file.clone();
+            set.spawn(async move {
+                let process = Command::new("magick")
+                    .arg(&*cache_file)
+                    .arg("-gravity")
+                    .arg("center")
+                    .arg("-crop")
+                    .arg(crop_ratio)
+                    .arg(&output_file)
+                    .status()
+                    .await;
+                (ext, output_file, process)
+            });
+        }
+        while let Some(task) = set.join_next().await {
+            let (ext, output_file, status) = task?;
+            if ext == "jpg" && status.is_err() {
+                println!("Imagemagick not found, using jpeg only");
+                copy(&*cache_file, output_file).await?;
+            }
+        }
         Ok(())
     }
 }
@@ -256,12 +290,15 @@ pub(crate) fn YouTube(
                         title="YouTube"
                         on:click=show_consent
                     ></a>
-                    <img
-                        alt
-                        class:thumbnail=true
-                        src=format!("/youtube/{}.jpg", video.id)
-                        {..thumbnail_attrs.clone()}
-                    />
+                    <picture class:thumbnail=true>
+                        <source type="image/avif" srcset=format!("/youtube/{}.avif", video.id) />
+                        <source type="image/webp" srcset=format!("/youtube/{}.webp", video.id) />
+                        <img
+                            alt
+                            src=format!("/youtube/{}.jpg", video.id)
+                            {..thumbnail_attrs.clone()}
+                        />
+                    </picture>
                     {comment}
                 </div>
             }

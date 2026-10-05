@@ -92,7 +92,7 @@ div.simple-embed {
     text-decoration: none;
     color: var(--thumbnail-font-color);
   }
-  > img.thumbnail {
+  > picture.thumbnail {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
     object-fit: cover;
     z-index: 1;
@@ -100,6 +100,10 @@ div.simple-embed {
     height: 100%;
     aspect-ratio: inherited;
     overflow: hidden;
+    > img {
+      width: 100%;
+      height: 100%;
+    }
   }
   > .logo {
     grid-area: logo-start / logo-start / logo-end / logo-end;
