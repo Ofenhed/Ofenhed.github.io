@@ -50,7 +50,7 @@ js-sys = { workspace = true, optional = true, features = ["std"] }
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-imagemagick = ["tokio/process"]
+imagemagick = ["tokio?/process"]
 client-side = [
   "chrono/wasmbind",
   "dep:base64",

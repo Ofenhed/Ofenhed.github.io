@@ -90,16 +90,9 @@ mod downloader {
     use reqwest::StatusCode;
     use std::{
         borrow::Cow,
-        io::ErrorKind,
         path::{Path, PathBuf},
-        sync::Arc,
     };
-    use tokio::{
-        fs::*,
-        io::AsyncWriteExt,
-        process::Command,
-        task::{JoinError, JoinSet},
-    };
+    use tokio::{fs::*, io::AsyncWriteExt};
     #[derive(thiserror::Error, Debug)]
     pub enum DownloadError {
         #[error(transparent)]
@@ -108,8 +101,9 @@ mod downloader {
         InvalidHttp(StatusCode),
         #[error(transparent)]
         Io(#[from] std::io::Error),
+        #[cfg(all(feature = "imagemagick", feature = "ssr"))]
         #[error(transparent)]
-        Join(#[from] JoinError),
+        Join(#[from] tokio::task::JoinError),
     }
     pub async fn download_youtube_thumbnail(video: &YoutubeVideo) -> Result<(), DownloadError> {
         let options = use_context::<LeptosOptions>()
@@ -152,36 +146,47 @@ mod downloader {
                 return Err(DownloadError::InvalidHttp(last_status.unwrap()));
             }
         }
-        let mut set = JoinSet::new();
-        let cache_file = Arc::new(cache_file);
-        for ext in ["avif", "webp", "jpg"] {
-            let mut output_file = target_root.clone();
-            output_file.push(format!("{}.{ext}", video.id));
-            let crop_ratio = format!("{}:{}", video.width, video.height);
-            let cache_file = cache_file.clone();
-            set.spawn(async move {
-                let process = Command::new("magick")
-                    .arg(&*cache_file)
-                    .arg("-gravity")
-                    .arg("center")
-                    .arg("-crop")
-                    .arg(crop_ratio)
-                    .arg(&output_file)
-                    .status()
-                    .await;
-                (ext, output_file, process)
-            });
-        }
-        while let Some(task) = set.join_next().await {
-            let (ext, output_file, status) = task?;
-            if ext == "jpg"
-                && let Err(err) = &status
-                && err.kind() == ErrorKind::NotFound
-            {
-                println!("Imagemagick not found, using jpeg only");
-                copy(&*cache_file, output_file).await?;
-            } else {
-                _ = status?;
+        {
+            cfg_select! {
+                feature = "imagemagick" => {
+                    use std::{io::ErrorKind, sync::Arc};
+                    use tokio::{process::Command, task::JoinSet};
+                    let mut set = JoinSet::new();
+                    let cache_file = Arc::new(cache_file);
+                    for ext in ["avif", "webp", "jpg"] {
+                        let mut output_file = target_root.clone();
+                        output_file.push(format!("{}.{ext}", video.id));
+                        let crop_ratio = format!("{}:{}", video.width, video.height);
+                        let cache_file = cache_file.clone();
+                        set.spawn(async move {
+                            let process = Command::new("magick")
+                                .arg(&*cache_file)
+                                .arg("-gravity")
+                                .arg("center")
+                                .arg("-crop")
+                                .arg(crop_ratio)
+                                .arg(&output_file)
+                                .status()
+                                .await;
+                            (ext, process)
+                        });
+                    }
+                    while let Some(task) = set.join_next().await {
+                        let (ext, status) = task?;
+                        if ext == "jpg"
+                            && let Err(err) = &status
+                            && err.kind() == ErrorKind::NotFound
+                        {
+                            println!("Imagemagick not found, using jpeg only");
+                            copy(&*cache_file, &target_file).await?;
+                        } else {
+                            _ = status?;
+                        }
+                    }
+                }
+                _ => {
+                    copy(cache_file, target_file).await?;
+                }
             }
         }
         Ok(())
