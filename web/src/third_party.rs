@@ -90,6 +90,7 @@ mod downloader {
     use reqwest::StatusCode;
     use std::{
         borrow::Cow,
+        io::ErrorKind,
         path::{Path, PathBuf},
         sync::Arc,
     };
@@ -173,9 +174,14 @@ mod downloader {
         }
         while let Some(task) = set.join_next().await {
             let (ext, output_file, status) = task?;
-            if ext == "jpg" && status.is_err() {
+            if ext == "jpg"
+                && let Err(err) = &status
+                && err.kind() == ErrorKind::NotFound
+            {
                 println!("Imagemagick not found, using jpeg only");
                 copy(&*cache_file, output_file).await?;
+            } else {
+                _ = status?;
             }
         }
         Ok(())
