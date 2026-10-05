@@ -49,7 +49,7 @@ div {
     display: block flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    max-height: calc(100svh - 1em);
+    max-height: calc(var(--max-height) - 1em);
     box-sizing: content-box;
     justify-content: space-around;
     overflow-x: auto;
@@ -71,7 +71,8 @@ div {
       @mixin no-animation-attrs {
         // Make it so that the carousel reveals itself without animation when on the first entry
         > * {
-          max-width: calc(100vw - 2 * var(--main-padding) - var(--carousel-margin)) !important;
+          max-width: calc(var(--max-width) - 2 * var(--main-padding) - var(--carousel-margin)) !important;
+          max-height: var(--max-height);
           &:first-child {
             margin-left: 0em;
             margin-right: 0em;
@@ -99,6 +100,8 @@ div {
     }
   }
   &.carousel-or-grid {
+    --max-width: unset;
+    --max-height: unset;
     @extend .carousel;
     @media (pointer:fine) {
       overflow: unset;

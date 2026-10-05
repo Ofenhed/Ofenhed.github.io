@@ -92,18 +92,16 @@ div.simple-embed {
     text-decoration: none;
     color: var(--thumbnail-font-color);
   }
-  > picture.thumbnail {
+  > .thumbnail {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
     z-index: 1;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
-    > * {
+    &, > * {
       aspect-ratio: inherit;
       width: 100%;
       height: 100%;
     }
-    > img {
+    &, > img {
       object-fit: cover;
     }
   }
@@ -216,13 +214,16 @@ div.youtube-embed {
     opacity: 0;
   }
   position: relative;
-  max-width: calc(100svw - var(--main-padding) * 2);
-  max-height: 100svh;
+  --max-width: 100svw;
+  --max-height: 100svh;
   box-sizing: border-box;
   @media (pointer:fine) {
+    --max-width: 80svb;
+    --max-height: 80svb;
+    max-height: 80svh;
     @media not print {
-      max-width: min(480px, 90svw);
-      max-height: min(480px, 90svh);
+      --max-width: max(360px, 60vmin);
+      --max-height: max(360px, 60vmin);
     }
   }
   > iframe {
