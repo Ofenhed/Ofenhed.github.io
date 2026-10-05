@@ -101,10 +101,10 @@ mod downloader {
         InvalidHttp(StatusCode),
         #[error(transparent)]
         Io(#[from] std::io::Error),
-        #[cfg(all(feature = "imagemagick"))]
+        #[cfg(all(feature = "ffmpeg"))]
         #[error(transparent)]
         Join(#[from] tokio::task::JoinError),
-        #[cfg(all(feature = "imagemagick"))]
+        #[cfg(all(feature = "ffmpeg"))]
         #[error("ImageMagick failed with code {0}")]
         ImageMagick(i32),
     }
@@ -154,7 +154,7 @@ mod downloader {
         }
         {
             cfg_select! {
-                feature = "imagemagick" => {
+                feature = "ffmpeg" => {
                     use std::sync::Arc;
                     use tokio::{process::Command, task::JoinSet};
                     let mut set = JoinSet::new();
@@ -162,16 +162,17 @@ mod downloader {
                     for ext in ["avif", "webp", "jpg"] {
                         let mut output_file = target_root.clone();
                         output_file.push(format!("{}.{ext}", video.id));
-                        let crop_ratio = format!("{}:{}", video.width, video.height);
                         let cache_file = cache_file.clone();
+                        let (w, h) = (video.width, video.height);
                         set.spawn(async move {
                             println!("Creating file {}", output_file.display());
-                            Command::new("/usr/bin/magick")
+                            Command::new("ffmpeg")
+                                .arg("-i")
                                 .arg(&*cache_file)
-                                .arg("-gravity")
-                                .arg("center")
-                                .arg("-crop")
-                                .arg(crop_ratio)
+                                .arg("-loglevel")
+                                .arg("warning")
+                                .arg("-vf")
+                                .arg(format!("crop='min(iw,ih*{w}/{h}):min(ih,iw*{h}/{w})'"))
                                 .arg(&output_file)
                                 .status()
                                 .await
@@ -284,7 +285,7 @@ pub(crate) fn YouTube(
             });
             let href = href.clone();
             let thumbnail = cfg_select! {
-                feature = "imagemagick" => {
+                feature = "ffmpeg" => {
                     view! {
                     <picture class:thumbnail=true>
                         <source type="image/avif" srcset=format!("/youtube/{}.avif", video.id) />

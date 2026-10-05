@@ -40,9 +40,6 @@ jobs:
         persist-credentials: false
         submodules: recursive
 
-    - name: Install ImageMagick
-      run: sudo apt-get update && sudo apt-get install -y imagemagick libheif-dev libavif-dev libheif-plugin-aomenc
-
     - name: Check locked cargo-leptos version
       id: write-cargo-leptos-version
       run: |
@@ -123,33 +120,33 @@ jobs:
       run: mv target/.new_contact_card target/qr/.contact_card
 
     - name: Recompile targets with static QR
-      id: recompile-imagemagick
+      id: recompile-ffmpeg
       continue-on-error: true
-      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,imagemagick --lib-features hydrate,imagemagick
+      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,ffmpeg --lib-features hydrate,ffmpeg
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
     - name: Generate static page
-      id: generate-imagemagick
-      if: ${{ steps.recompile-imagemagick.outcome == 'success' && !cancelled() }}
+      id: generate-ffmpeg
+      if: ${{ steps.recompile-ffmpeg.outcome == 'success' && !cancelled() }}
       continue-on-error: true
       run: target/release/conditionraise
 
-    - name: Recompile targets without using imagemagick
-      id: recompile-no-imagemagick
-      if: ${{ steps.generate-imagemagick.outcome == 'failure' && !cancelled() }}
+    - name: Recompile targets without using ffmpeg
+      id: recompile-no-ffmpeg
+      if: ${{ steps.generate-ffmpeg.outcome == 'failure' && !cancelled() }}
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
-    - name: Regenerate static page without using imagemagick
-      id: generate-no-imagemagick
-      if: ${{ steps.recompile-no-imagemagick.outcome == 'success' && !cancelled() }}
+    - name: Regenerate static page without using ffmpeg
+      id: generate-no-ffmpeg
+      if: ${{ steps.recompile-no-ffmpeg.outcome == 'success' && !cancelled() }}
       run: target/release/conditionraise
 
     - name: Save build cache
       uses: actions/cache/save@v6
-      if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile-imagemagick.outcome == 'success' || steps.recompile-imagemagick.outcome == 'failure' }}
+      if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile-ffmpeg.outcome == 'success' || steps.recompile-ffmpeg.outcome == 'failure' }}
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
         path: |
