@@ -41,7 +41,7 @@ jobs:
         submodules: recursive
 
     - name: Install ImageMagick
-      run: sudo apt-get update && sudo apt-get install -y imagemagick libheif
+      run: sudo apt-get update && sudo apt-get install -y imagemagick
 
     - name: Check locked cargo-leptos version
       id: write-cargo-leptos-version
