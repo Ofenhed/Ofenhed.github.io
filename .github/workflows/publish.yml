@@ -28,14 +28,10 @@ jobs:
   build:
     name: Build static files
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     outputs:
       wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
-
-    steps:
-    - name: Install ImageMagick
-      run: sudo apt update && sudo apt-get install -y imagemagick
 
     - uses: actions/checkout@v7
       with:
