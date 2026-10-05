@@ -28,7 +28,7 @@ qr-macro.workspace = true
 reqwest = { workspace = true, optional = true, features = ["stream"] }
 strum = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
-tokio = { workspace = true, features = ["rt-multi-thread", "macros", "fs", "process"], optional = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "fs"], optional = true }
 tokio-util = { workspace = true, features = ["codec"], optional = true }
 wasm-bindgen = { workspace = true, features = ["enable-interning"] }
 web-sys = { workspace = true, optional = true, features = [
@@ -50,7 +50,7 @@ js-sys = { workspace = true, optional = true, features = ["std"] }
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
-imagemagick = []
+imagemagick = ["tokio/process"]
 client-side = [
   "chrono/wasmbind",
   "dep:base64",
