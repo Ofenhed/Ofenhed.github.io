@@ -121,13 +121,14 @@ jobs:
 
     - name: Recompile targets with static QR and imagemagick
       id: recompile-imagemagick
+      continue-on-error: true
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,imagemagick --lib-features hydrate,imagemagick
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
     - name: Generate static files with imagemagick
       id: generate-imagemagick
-      if: ${{ steps.recompile-imagemagick.outcome == 'success' && !cancelled() }}
+      continue-on-error: true
       run: target/release/conditionraise
 
     - name: Recompile targets with static QR and imagemagick
@@ -145,6 +146,7 @@ jobs:
     - name: Save build cache
       uses: actions/cache/save@v6
       if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile-imagemagick.outcome == 'success' || steps.recompile-imagemagick.outcome == 'failure' }}
+      background: true
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
         path: |
@@ -154,9 +156,6 @@ jobs:
           target/oembed
           target/qr
           target/release
-
-    - name: Regenerate static files
-      run: target/release/conditionraise
 
     - name: Merge data sections
       run: cargo run --release -p wasm-data-merger -- target/site/"$LEPTOS_SITE_PKG_DIR"/*.wasm
