@@ -113,10 +113,12 @@ jobs:
       run: cargo build --release -p wasm-data-merger
 
     - name: Generate initial files
+      id: generate-qr
       if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
       run: target/release/conditionraise
 
     - name: Save successful contact card
+      if: ${{ !cancelled() && steps.generate-qr.outcome == 'success' }}
       run: mv target/.new_contact_card target/qr/.contact_card
 
     - name: Recompile targets with static QR
