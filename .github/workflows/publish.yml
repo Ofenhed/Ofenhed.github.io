@@ -119,27 +119,27 @@ jobs:
     - name: Save successful contact card
       run: mv target/.new_contact_card target/qr/.contact_card
 
-    - name: Recompile targets with static QR and imagemagick
+    - name: Recompile targets with static QR
       id: recompile-imagemagick
       continue-on-error: true
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,imagemagick --lib-features hydrate,imagemagick
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
-    - name: Generate static files with imagemagick
+    - name: Generate static page
       id: generate-imagemagick
       if: ${{ steps.recompile-imagemagick.outcome == 'success' && !cancelled() }}
       continue-on-error: true
       run: target/release/conditionraise
 
-    - name: Recompile targets with static QR and imagemagick
+    - name: Recompile targets without using imagemagick
       id: recompile-no-imagemagick
       if: ${{ steps.generate-imagemagick.outcome == 'failure' && !cancelled() }}
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
-    - name: Regenerate static files without imagemagick
+    - name: Regenerate static page without using imagemagick
       id: generate-no-imagemagick
       if: ${{ steps.recompile-no-imagemagick.outcome == 'success' && !cancelled() }}
       run: target/release/conditionraise
