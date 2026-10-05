@@ -163,7 +163,7 @@ mod downloader {
                         let cache_file = cache_file.clone();
                         set.spawn(async move {
                             println!("Creating file {}", output_file.display());
-                            Command::new("magick")
+                            Command::new("/usr/bin/magick")
                                 .arg(&*cache_file)
                                 .arg("-gravity")
                                 .arg("center")
