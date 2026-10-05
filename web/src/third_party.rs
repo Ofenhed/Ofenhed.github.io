@@ -169,6 +169,7 @@ mod downloader {
                             Command::new("ffmpeg")
                                 .arg("-i")
                                 .arg(&*cache_file)
+                                .arg("-y") // Allow overwrite
                                 .arg("-loglevel")
                                 .arg("warning")
                                 .arg("-frames:v")

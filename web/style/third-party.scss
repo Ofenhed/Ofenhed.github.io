@@ -96,14 +96,13 @@ div.simple-embed {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
     z-index: 1;
     overflow: hidden;
-    &, > * {
-      aspect-ratio: inherit;
+    > * {
       width: 100%;
       height: 100%;
     }
-    &, > img {
-      object-fit: cover;
-    }
+  }
+  > img.thumbnail, > picture.thumbnail img {
+    object-fit: cover;
   }
   > .logo {
     grid-area: logo-start / logo-start / logo-end / logo-end;
@@ -149,6 +148,9 @@ div.simple-embed {
 }
 
 div.youtube-embed {
+  aspect-ratio: var(--aspect-ratio);
+  max-width: var(--max-width);
+  max-height: var(--max-height);
   > .comment {
     pointer-events: none;
   }
