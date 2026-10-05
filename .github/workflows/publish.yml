@@ -147,7 +147,6 @@ jobs:
     - name: Save build cache
       uses: actions/cache/save@v6
       if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile-imagemagick.outcome == 'success' || steps.recompile-imagemagick.outcome == 'failure' }}
-      background: true
       with:
         key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
         path: |
