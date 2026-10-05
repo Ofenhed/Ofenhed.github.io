@@ -275,6 +275,31 @@ pub(crate) fn YouTube(
                 }
             });
             let href = href.clone();
+            let thumbnail = cfg_select! {
+                feature = "imagemagick" => {
+                    view! {
+                    <picture class:thumbnail=true>
+                        <source type="image/avif" srcset=format!("/youtube/{}.avif", video.id) />
+                        <source type="image/webp" srcset=format!("/youtube/{}.webp", video.id) />
+                        <img
+                            alt
+                            src=format!("/youtube/{}.jpg", video.id)
+                            {..thumbnail_attrs.clone()}
+                        />
+                    </picture>
+                    }
+                }
+                _ => {
+                    view! {
+                    <img
+                        alt
+                        class:thumbnail=true
+                        src=format!("/youtube/{}.jpg", video.id)
+                        {..thumbnail_attrs.clone()}
+                    />
+                    }
+                }
+            };
             view! {
                 <div class:simple-embed=true>
                     <span class:meta=true>
@@ -296,15 +321,7 @@ pub(crate) fn YouTube(
                         title="YouTube"
                         on:click=show_consent
                     ></a>
-                    <picture class:thumbnail=true>
-                        <source type="image/avif" srcset=format!("/youtube/{}.avif", video.id) />
-                        <source type="image/webp" srcset=format!("/youtube/{}.webp", video.id) />
-                        <img
-                            alt
-                            src=format!("/youtube/{}.jpg", video.id)
-                            {..thumbnail_attrs.clone()}
-                        />
-                    </picture>
+                    {thumbnail}
                     {comment}
                 </div>
             }

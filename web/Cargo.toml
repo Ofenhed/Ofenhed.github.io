@@ -50,6 +50,7 @@ js-sys = { workspace = true, optional = true, features = ["std"] }
 [features]
 default = []
 hydrate = ["leptos/hydrate", "client-side"]
+imagemagick = []
 client-side = [
   "chrono/wasmbind",
   "dep:base64",
