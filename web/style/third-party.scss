@@ -94,15 +94,17 @@ div.simple-embed {
   }
   > picture.thumbnail {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
-    object-fit: cover;
     z-index: 1;
     width: 100%;
     height: 100%;
-    aspect-ratio: inherited;
     overflow: hidden;
-    > img {
+    > * {
+      aspect-ratio: inherit;
       width: 100%;
       height: 100%;
+    }
+    > img {
+      object-fit: cover;
     }
   }
   > .logo {
@@ -144,6 +146,7 @@ div.simple-embed {
   }
   > .comment {
     z-index: 4;
+    pointer-events: none;
   }
 }
 
