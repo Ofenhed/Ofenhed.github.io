@@ -556,7 +556,7 @@ pub(crate) fn YouTube(
                 class:youtube-embed=true
                 class:playing=currently_playing
                 class:loading=iframe_loading
-                style:aspect-ratio=ratio.clone()
+                style=("--aspect-ratio", ratio.clone())
                 style=youtube_id.clone()
                 style:max-width=max_width
                 style:max-height=max_height

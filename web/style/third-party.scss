@@ -78,7 +78,7 @@ div.simple-embed {
   width: 100%;
   height: 100%;
   display: block grid;
-  grid-template-rows: [thumb-start meta-start] fit-content(calc(50% - 1.5em)) [meta-end logo-start] minmax(10%, 3em) [logo-end comment-start] fit-content(calc(50% - 1.5em)) [thumb-end comment-end];
+  grid-template-rows: [thumb-start meta-start] minmax(auto, 1fr) [meta-end logo-start] minmax(10%, 3em) [logo-end comment-start] minmax(auto, 1fr) [thumb-end comment-end];
   grid-template-columns: [comment-start thumb-start meta-start] 1fr [logo-start] minmax(5%, math.div(3em, 20) * 29) [logo-end] 1fr [meta-end thumb-end comment-end];
   print-color-adjust: exact !important;
   @media print {
@@ -96,14 +96,9 @@ div.simple-embed {
     grid-area: thumb-start / thumb-start / thumb-end / thumb-end;
     z-index: 1;
     overflow: hidden;
-    > * {
-      width: 100%;
-      height: 100%;
-      display: block;
-      position: absolute;
-    }
   }
   > img.thumbnail, > picture.thumbnail img {
+    aspect-ratio: var(--aspect-ratio);
     object-fit: cover;
   }
   > .logo {
