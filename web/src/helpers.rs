@@ -370,6 +370,30 @@ pub(crate) fn register_interested_owner<T: Clone + Sync + Send + 'static>() {
     }
 }
 
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
+pub(crate) fn during_hydration() -> Signal<bool> {
+    #[derive(Clone)]
+    struct DuringHydration(Signal<bool>);
+    once_by_type(
+        true,
+        || {
+            let during_hydration = {
+                cfg_select! {
+                    feature = "client-side" => {
+                        let context = Owner::current_shared_context().unwrap();
+                        let (during_hydration, set_hydration) = signal(context.during_hydration());
+                        Effect::new(move || set_hydration.set(false));
+                        during_hydration.into()
+                    }
+                    _ => Signal::from(true),
+                }
+            };
+            (DuringHydration(during_hydration), Some(during_hydration))
+        },
+        |DuringHydration(during)| during,
+    )
+}
+
 /// Same as `<noscript>`, except that this element is automatically removed after hydration. This
 /// is done to circumvent a bug where <noscript><style></style></noscript> changes the style of the
 /// document when scripts are available.

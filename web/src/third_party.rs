@@ -11,7 +11,7 @@ use leptos::{
 
 use crate::{
     cookie_consent::{YoutubeConsent, request_third_party_cookies},
-    helpers::{has_interested_owners, once_by_type, register_interested_owner},
+    helpers::{during_hydration, has_interested_owners, once_by_type, register_interested_owner},
     local_storage::get_local_storage_value,
 };
 cfg_select! {
@@ -265,6 +265,7 @@ pub(crate) fn YouTube(
         "--youtube-id",
         Oco::Counted(format!("\"{}\"", video.id).into()),
     );
+    let from_hydrated = during_hydration().get_untracked();
     move || {
         let do_show = show_youtube_consent_dialog();
         let youtube_id = youtube_id.clone();
@@ -289,11 +290,14 @@ pub(crate) fn YouTube(
                 }
             });
             let href = href.clone();
+
             let thumbnail = cfg_select! {
                 feature = "ffmpeg" => {
                     view! {
                     <picture class:thumbnail=true>
-                        <source type="image/avif" srcset=format!("/youtube/{}.avif", video.id) />
+                        <Show when=move || !from_hydrated>
+                            <source type="image/avif" srcset=format!("/youtube/{}.avif", video.id) />
+                        </Show>
                         <source type="image/webp" srcset=format!("/youtube/{}.webp", video.id) />
                         <img
                             alt
