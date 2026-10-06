@@ -1,7 +1,7 @@
 use crate::{
     blog::{
         BlogHolder,
-        ai::not_even_dumb::NotEvenDumb,
+        ai::NotEvenDumb,
         blog_entry_href,
         metadata::{BlogEntry, Locale, Tag, date},
     },
@@ -49,7 +49,7 @@ impl LazyRoute for WhatAreLLMs {
 
     fn view(this: Self) -> AnyView {
         idle_preload::<NotEvenDumb>();
-        let not_even_dumb_link = || blog_entry_href::<NotEvenDumb>();
+        let not_even_stupid_link = || blog_entry_href::<NotEvenDumb>();
         let ai = || {
             view! {
                 <Abbr no_expand=true title="Artificial Intelligence">
@@ -261,9 +261,9 @@ impl LazyRoute for WhatAreLLMs {
                         " is the source of that intelligence, no more than your fax machine is the source of the intelligence it prints. Interestingly, on the same note, they aren't even "
                         <mark>"stupid"</mark>"; they're something else"
                         <Footnote id=Oco::Borrowed(
-                            "not-even-dumb",
+                            "not-even-stupid",
                         )>
-                            "I've collected " <a href=not_even_dumb_link>"a couple of videos"</a>
+                            "I've collected " <a href=not_even_stupid_link>"a couple of videos"</a>
                             " to demonstrate what I mean by this, but I would recommend reading the rest of this clog post first."
                         </Footnote>"."
                     </li>
