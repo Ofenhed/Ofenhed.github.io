@@ -1,6 +1,7 @@
 extern crate proc_macro;
 use proc_macro::{Delimiter, Group, Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
 use std::{
+    borrow::Cow,
     iter::{Extend as _, once},
     sync::Arc,
 };
@@ -17,14 +18,25 @@ fn err_tokens(err: impl std::fmt::Display) -> TokenStream {
 
 #[proc_macro]
 pub fn minify_js(input: TokenStream) -> TokenStream {
-    let js: String = input
+    let js: Cow<'static, str> = input
         .into_iter()
         .map(|tree| {
             tree.span()
                 .source_text()
                 .unwrap_or_else(move || tree.to_string())
         })
-        .collect();
+        .fold(None, |state: Option<String>, elem| {
+            let mut state = if let Some(mut state) = state {
+                state.push_str(" ");
+                state
+            } else {
+                String::new()
+            };
+            state.push_str(&elem);
+            Some(state)
+        })
+        .map(Cow::Owned)
+        .unwrap_or(Cow::Borrowed(""));
     let cm = Arc::<swc_common::SourceMap>::default();
 
     let c = swc::Compiler::new(cm.clone());
@@ -39,6 +51,7 @@ pub fn minify_js(input: TokenStream) -> TokenStream {
                     compress: swc::BoolOrDataConfig::from_bool(true),
                     mangle: swc::BoolOrDataConfig::from_bool(true),
                     module: swc::config::IsModule::Bool(false),
+                    toplevel: Some(false),
                     ..Default::default()
                 },
                 swc::JsMinifyExtras::default(),
