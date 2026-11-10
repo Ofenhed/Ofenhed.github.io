@@ -76,12 +76,29 @@ jobs:
       continue-on-error: true
       run: curl --proto '=https' --tlsv1.2 -LsSf "https://github.com/leptos-rs/cargo-leptos/releases/download/v$(cat $cargo_leptos_version_file)/cargo-leptos-installer.sh" | sh
 
+    - name: Restore cargo-leptos
+      id: cargo-leptos-restore
+      if: ${{ steps.install-cargo-leptos.outcome != 'success' && !cancelled() }}
+      uses: actions/cache/restore@v6
+      with:
+        key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
+        path: |
+          ~/.cargo/bin/cargo-leptos
+
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      if: ${{ steps.install-cargo-leptos.outcome != 'success' && !cancelled() }}
+      if: ${{ !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
+
+    - name: Save leptos cache
+      if: ${{ steps.cargo-leptos-build.outcome == 'success' }}
+      uses: actions/cache/save@v6
+      with:
+        key: ${{ steps.cargo-leptos-restore.outputs.cache-primary-key }}
+        path: |
+          ~/.cargo/bin/cargo-leptos
 
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
