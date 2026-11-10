@@ -221,7 +221,8 @@ impl LazyRoute for WhatAreLLMs {
                 "As you may have noticed, this list is kind of problematic in the sense where it quickly deteriorated from sources of intelligence to pillars upholding the illusion of intelligence."
                 <h2>"Anthropomorphism"</h2>
                 <blockquote cite="Oxford English Dictionary, 1st ed. \"anthropomorphism, n.\" Oxford University Press (Oxford), 1885">
-                    <dfn>"Anthropomorphism"</dfn>" is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
+                    <dfn>"Anthropomorphism"</dfn>
+                    " is the ascribing of human personality, appearance, conduct, cognition, or other attributes to non-human entities, often including non-human animals."
                 </blockquote>
                 <p>
                     "Let's break down some of this anthropomorphism, and why I find it problematic. I have skipped some obvious ones, such as calling it "
