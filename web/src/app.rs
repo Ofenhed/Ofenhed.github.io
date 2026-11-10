@@ -110,6 +110,7 @@ pub(crate) fn NoInitTransition() -> impl IntoView {
         use leptos::nonce::use_nonce;
         let script = js_macro::minify_js! {
             addEventListener("DOMContentLoaded", (event) => {
+                document.body.setAttribute("data-js-loaded", "");
                 var testReady = null,
                     newTimer = () => {
                     if (window.requestIdleCallback) {
