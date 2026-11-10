@@ -10,6 +10,7 @@ homepage = "https://conditionraise.se"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+any_spawner = { workspace = true, optional = true }
 axum = { workspace = true, optional = true, features = ["tokio", "http1"] }
 base64 = { workspace = true, optional = true }
 console_error_panic_hook = { workspace = true, optional = true }
@@ -49,7 +50,7 @@ js-sys = { workspace = true, optional = true, features = ["std"] }
 
 [features]
 default = []
-hydrate = ["leptos/hydrate", "client-side"]
+hydrate = ["leptos/hydrate", "client-side", "dep:any_spawner"]
 ffmpeg = ["tokio?/process"]
 client-side = [
   "chrono/wasmbind",

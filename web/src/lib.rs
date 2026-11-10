@@ -19,6 +19,7 @@ pub use app::shell;
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
     use app::*;
+    use leptos::prelude::Notify;
 
     #[cfg(feature = "console-panic")]
     {
@@ -127,5 +128,12 @@ pub fn hydrate() {
             }))
         });
     }
-    leptos::mount::hydrate_lazy(App);
+    _ = any_spawner::Executor::init_wasm_bindgen();
+    leptos::task::spawn_local(async move {
+        let owner = leptos::mount::hydrate_from_async(leptos::tachys::dom::body(), App).await;
+        if let (_, Some(signal)) = crate::helpers::during_hydration_internal() {
+            signal.notify();
+        }
+        owner.forget();
+    });
 }

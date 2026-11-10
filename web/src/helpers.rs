@@ -369,7 +369,7 @@ pub(crate) fn register_interested_owner<T: Clone + Sync + Send + 'static>() {
 }
 
 #[cfg_attr(not(feature = "client-side"), allow(unused))]
-fn during_hydration_internal() -> (Signal<bool>, Option<WriteSignal<()>>) {
+pub(crate) fn during_hydration_internal() -> (Signal<bool>, Option<WriteSignal<()>>) {
     #[derive(Clone)]
     struct DuringHydration(Signal<bool>, Option<WriteSignal<()>>);
     once_by_type(
@@ -406,17 +406,7 @@ pub(crate) fn during_hydration_now() -> bool {
 
 #[cfg_attr(not(feature = "client-side"), allow(unused))]
 pub(crate) fn during_hydration() -> Signal<bool> {
-    let (during, retry) = during_hydration_internal();
-    if during.get_untracked()
-        && let Some(retry) = retry
-    {
-        Owner::current().unwrap().child().with(move || {
-            Owner::on_cleanup(move || {
-                retry.notify();
-            })
-        });
-    }
-    during
+    during_hydration_internal().0
 }
 
 /// Same as `<noscript>`, except that this element is automatically removed after hydration. This
