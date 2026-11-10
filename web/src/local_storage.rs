@@ -6,6 +6,8 @@ use leptos::{
 };
 use strum::{EnumString, IntoStaticStr, VariantArray};
 
+use crate::helpers::during_hydration;
+
 #[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub(crate) enum LocalStorageError {
     #[cfg_attr(not(feature = "client-side"), expect(unused))]
@@ -72,38 +74,26 @@ pub(crate) fn get_local_storage_value<T: LocalStorageAccessor>()
 -> Result<Signal<Option<T::Data>>, LocalStorageError> {
     let LocalStorageChanged(reader, _) =
         use_context().ok_or(LocalStorageError::NoContextProvided)?;
-    let (read, write) = signal(None);
-    cfg_select! {
-        feature = "client-side" => {
-            let assign_from_local = move || {
-                if let Some(value) = get_current_local_storage_value::<T>().ok().flatten() {
-                    write.set(Some(value));
-                } else {
-                    let mut w = write.write();
-                    if w.is_some() {
-                        *w = None;
-                    } else {
-                        w.untrack();
-                    }
-                }
-            };
-            if let Some(context) = Owner::current_shared_context()
-                && !context.during_hydration()
-            {
-                assign_from_local();
-            }
-            Effect::new(move || {
+    let during_hydration = during_hydration();
+    Ok(Signal::derive(move || {
+        cfg_select! {
+            feature = "client-side" => {
                 reader.track();
-                assign_from_local();
-            });
+                if during_hydration.get() {
+                    None
+                } else {
+                    get_current_local_storage_value::<T>().ok().flatten()
+                }
+            }
+            _ => {
+                _ = (reader, during_hydration);
+                None
+            }
         }
-        _ => {
-            _ = (reader, write, LocalStorageError::NoContextProvided);
-        }
-    }
-    Ok(read.into())
+    }))
 }
 
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 pub(crate) fn set_local_storage_value<T: LocalStorageAccessor>(
     value: T::Data,
 ) -> Result<(), LocalStorageError> {

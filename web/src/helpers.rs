@@ -94,9 +94,7 @@ impl ScopedTimeout for Owner {
             }
             fn callback(self) {
                 if let Some(owner) = self.owner.upgrade() {
-                    if let Some(context) = Owner::current_shared_context()
-                        && context.during_hydration()
-                    {
+                    if during_hydration_now() {
                         _ = self.request_idle_callback();
                         return;
                     }
@@ -371,27 +369,54 @@ pub(crate) fn register_interested_owner<T: Clone + Sync + Send + 'static>() {
 }
 
 #[cfg_attr(not(feature = "client-side"), allow(unused))]
-pub(crate) fn during_hydration() -> Signal<bool> {
+fn during_hydration_internal() -> (Signal<bool>, Option<WriteSignal<()>>) {
     #[derive(Clone)]
-    struct DuringHydration(Signal<bool>);
+    struct DuringHydration(Signal<bool>, Option<WriteSignal<()>>);
     once_by_type(
         true,
         || {
-            let during_hydration = {
+            let (during_hydration, retry) = {
                 cfg_select! {
                     feature = "client-side" => {
-                        let context = Owner::current_shared_context().unwrap();
-                        let (during_hydration, set_hydration) = signal(context.during_hydration());
-                        Effect::new(move || set_hydration.set(false));
-                        during_hydration.into()
+                        let is_hydrating =
+                            move || Owner::current_shared_context().unwrap().during_hydration();
+                        let (during_hydration, set_hydration) = signal(is_hydrating());
+                        let (retry_hydration, set_retry) = signal(());
+                        Effect::new(move || {
+                            if is_hydrating() {
+                                retry_hydration.track();
+                                return;
+                            }
+                            set_hydration.set(false);
+                        });
+                        (during_hydration.into(), Some(set_retry))
                     }
-                    _ => Signal::from(true),
+                    _ => (Signal::from(true), None),
                 }
             };
-            (DuringHydration(during_hydration), Some(during_hydration))
+            (DuringHydration(during_hydration, retry), None)
         },
-        |DuringHydration(during)| during,
+        |DuringHydration(during, retry)| (during, retry),
     )
+}
+
+pub(crate) fn during_hydration_now() -> bool {
+    during_hydration_internal().0.get_untracked()
+}
+
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
+pub(crate) fn during_hydration() -> Signal<bool> {
+    let (during, retry) = during_hydration_internal();
+    if during.get_untracked()
+        && let Some(retry) = retry
+    {
+        Owner::current().unwrap().child().with(move || {
+            Owner::on_cleanup(move || {
+                retry.notify();
+            })
+        });
+    }
+    during
 }
 
 /// Same as `<noscript>`, except that this element is automatically removed after hydration. This
