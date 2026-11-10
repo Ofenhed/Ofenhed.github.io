@@ -19,7 +19,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  cargo_leptos_version: ./.cargo-leptos-version
+  cargo_leptos_version_file: ./.cargo-leptos-version
   rust_version: ./.rust-version
   gh_action_fmt_branch: github-actions-automatic-formatting-${{ github.ref_name }}
   LEPTOS_SITE_PKG_DIR: pk${{ github.run_number }}
@@ -46,7 +46,7 @@ jobs:
     - name: Check locked cargo-leptos version
       id: write-cargo-leptos-version
       run: |
-        awk '/\[\[package\]\]/ { right_place=0; checksum = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /checksum\s*=/ { checksum=$0 }; { if (right_place && checksum != null) { print(checksum); exit }  }' < Cargo.lock | tee "$cargo_leptos_version"
+        awk '/\[\[package\]\]/ { right_place=0; version = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /version\s*=/ { version=$0 }; { if (right_place && version != null) { print(version); exit }  }' < Cargo.lock | grep -Po '(?<=")[^"]+(?=")' | tee "$cargo_leptos_version_file"
 
     - name: Use nightly rust
       run: rustup override set nightly
@@ -71,29 +71,17 @@ jobs:
           target/qr
           target/release
 
-    - name: Restore cargo-leptos
-      id: cargo-leptos-restore
-      if: ${{ !cancelled() }}
-      uses: actions/cache/restore@v6
-      with:
-        key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
-        path: |
-          ~/.cargo/bin/cargo-leptos
+    - name: Install cargo-leptos
+      id: install-cargo-leptos
+      continue-on-error: true
+      run: curl --proto '=https' --tlsv1.2 -LsSf "https://github.com/leptos-rs/cargo-leptos/releases/download/v$(cat $cargo_leptos_version_file)/cargo-leptos-installer.sh" | sh
 
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      if: ${{ !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
+      if: ${{ steps.install-cargo-leptos.outcome != 'success' && !cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
-
-    - name: Save leptos cache
-      if: ${{ steps.cargo-leptos-build.outcome == 'success' && !cancelled() }}
-      uses: actions/cache/save@v6
-      with:
-        key: ${{ steps.cargo-leptos-restore.outputs.cache-primary-key }}
-        path: |
-          ~/.cargo/bin/cargo-leptos
 
     - name: Add wasm target
       run: rustup target add wasm32-unknown-unknown
@@ -111,9 +99,6 @@ jobs:
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
-
-    - name: Compile build tools
-      run: cargo build --release -p wasm-data-merger
 
     - name: Generate initial files
       id: generate-qr
