@@ -114,6 +114,13 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
             }
         }
     };
+    let update_value = move |consent: YoutubeConsentType| {
+        if youtube_consent.and_then(|x| x.get_untracked()) != Some(consent) {
+            set_local_storage_value::<YoutubeConsentType>(consent)
+        } else {
+            Ok(())
+        }
+    };
     view! {
         <fieldset class:youtube=true>
             <legend {..prefix_symbol('\u{1F576}')}>"No tracking or cookies"</legend>
@@ -121,12 +128,10 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 <input
                     type="radio"
                     name="youtube-tracking"
-                    checked=current_content(YoutubeConsentType::PlainLink)
-                    on:change=|e| {
+                    prop:checked=current_content(YoutubeConsentType::PlainLink)
+                    on:change=move |e| {
                         if event_target_checked(&e)
-                            && let Err(e) = set_local_storage_value::<
-                                YoutubeConsentType,
-                            >(YoutubeConsentType::PlainLink)
+                            && let Err(e) = update_value(YoutubeConsentType::PlainLink)
                         {
                             error!("Could not save consent data: {e}");
                         }
@@ -145,12 +150,10 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 <input
                     type="radio"
                     name="youtube-tracking"
-                    checked=current_content(YoutubeConsentType::NoCookieDomain)
-                    on:change=|e| {
+                    prop:checked=current_content(YoutubeConsentType::NoCookieDomain)
+                    on:change=move |e| {
                         if event_target_checked(&e)
-                            && let Err(e) = set_local_storage_value::<
-                                YoutubeConsentType,
-                            >(YoutubeConsentType::NoCookieDomain)
+                            && let Err(e) = update_value(YoutubeConsentType::NoCookieDomain)
                         {
                             error!("Could not save consent data: {e}");
                         }
@@ -164,12 +167,10 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
                 <input
                     type="radio"
                     name="youtube-tracking"
-                    checked=current_content(YoutubeConsentType::RegularYoutube)
-                    on:change=|e| {
+                    prop:checked=current_content(YoutubeConsentType::RegularYoutube)
+                    on:change=move |e| {
                         if event_target_checked(&e)
-                            && let Err(e) = set_local_storage_value::<
-                                YoutubeConsentType,
-                            >(YoutubeConsentType::RegularYoutube)
+                            && let Err(e) = update_value(YoutubeConsentType::RegularYoutube)
                         {
                             error!("Could not save consent data: {e}");
                         }
