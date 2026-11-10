@@ -1,3 +1,0 @@
-[submodule "wasm-data-merger"]
-	path = wasm-data-merger
-	url = https://github.com/Ofenhed/wasm-data-merger

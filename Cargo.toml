@@ -8,7 +8,6 @@ members = [
  "oembed-type",
  "qr",
  "qr-macro",
- "wasm-data-merger",
  "web",
  ]
 resolver = "3"
