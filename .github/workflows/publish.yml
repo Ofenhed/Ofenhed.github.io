@@ -74,7 +74,15 @@ jobs:
     - name: Install cargo-leptos
       id: install-cargo-leptos
       continue-on-error: true
-      run: curl --proto '=https' --tlsv1.2 -LsSf "https://github.com/leptos-rs/cargo-leptos/releases/download/v$(cat $cargo_leptos_version_file)/cargo-leptos-installer.sh" | sh
+      run: |
+        if leptos_installer=$(curl --proto '=https' --tlsv1.2 -LsSf "https://github.com/leptos-rs/cargo-leptos/releases/download/v$(cat $cargo_leptos_version_file)/cargo-leptos-installer.sh"); then
+          echo "Installer downloaded:"
+          sha256sum <<<"$leptos_installer"
+          echo
+          sh <<<"$leptos_installer"
+        else
+          exit 1
+        fi
 
     - name: Restore cargo-leptos
       id: cargo-leptos-restore
@@ -87,7 +95,7 @@ jobs:
 
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      if: ${{ !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
+      if: ${{ steps.install-cargo-leptos.outcome != 'success' && !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
         CARGO_TARGET_DIR: ./target
