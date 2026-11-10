@@ -27,7 +27,7 @@ pub fn minify_js(input: TokenStream) -> TokenStream {
         })
         .fold(None, |state: Option<String>, elem| {
             let mut state = if let Some(mut state) = state {
-                state.push_str(" ");
+                state.push(' ');
                 state
             } else {
                 String::new()
