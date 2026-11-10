@@ -92,7 +92,10 @@ mod downloader {
         borrow::Cow,
         path::{Path, PathBuf},
     };
-    use tokio::{fs::*, io::AsyncWriteExt};
+    use tokio::{
+        fs::{self, File},
+        io::AsyncWriteExt,
+    };
     #[derive(thiserror::Error, Debug)]
     pub enum DownloadError {
         #[error(transparent)]
@@ -113,8 +116,8 @@ mod downloader {
             .expect("YouTube integration requires LeptosOptions as context");
         let cache_root = Path::new("target/youtube_thumbnails");
         let target_root = PathBuf::from(format!("{}/youtube", options.site_root));
-        create_dir_all(&target_root).await?;
-        create_dir_all(&cache_root).await?;
+        fs::create_dir_all(&target_root).await?;
+        fs::create_dir_all(&cache_root).await?;
         let mut target_file = target_root.clone();
         let mut cache_file = cache_root.to_path_buf();
         for path in [&mut target_file, &mut cache_file] {
@@ -194,7 +197,20 @@ mod downloader {
                 }
                 _ => {
                     println!("Copying file {}", target_file.display());
-                    copy(cache_file, target_file).await?;
+                    loop {
+                        match fs::copy(&cache_file, &target_file).await {
+                            Ok(_) => break,
+                            Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+                                if !fs::try_exists(&target_file).await? {
+                                    return Err(e.into());
+                                }
+                                fs::remove_file(&target_file).await?;
+                            }
+                            Err(e) => {
+                                return Err(e.into());
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -312,7 +328,7 @@ pub(crate) fn YouTube(
                         }
                     }
                     _ => {
-                        _ = from_hydrated;
+                        let _: () = from_hydrated;
                         view! {
                         <img
                             alt
