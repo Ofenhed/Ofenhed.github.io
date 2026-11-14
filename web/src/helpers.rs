@@ -192,7 +192,7 @@ pub(crate) fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'sta
     owner.set_scoped_timeout(timeout, action)
 }
 
-#[cfg_attr(feature = "ssr", allow(unused))]
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 pub(crate) struct IntervalIterator<I, F> {
     it: I,
     interval: std::time::Duration,
