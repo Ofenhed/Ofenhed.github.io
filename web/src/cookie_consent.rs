@@ -63,8 +63,8 @@ impl LazyRoute for CookieConsent {
         Self(YoutubeConsent::data())
     }
 
-    async fn preload() {
-        YoutubeConsent::preload().await
+    fn preload() -> impl Future<Output = ()> {
+        YoutubeConsent::preload()
     }
 
     fn view(_this: Self) -> AnyView {

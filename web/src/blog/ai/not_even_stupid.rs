@@ -44,8 +44,8 @@ impl LazyRoute for NotEvenStupid {
         Self
     }
 
-    async fn preload() {
-        crate::cookie_consent::YoutubeConsent::preload().await;
+    fn preload() -> impl Future<Output = ()> {
+        crate::cookie_consent::YoutubeConsent::preload()
     }
 
     fn view(this: Self) -> AnyView {
