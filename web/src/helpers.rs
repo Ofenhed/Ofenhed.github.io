@@ -23,7 +23,7 @@ use wasm_bindgen::JsValue;
 /// Can be used to block phone number detection for browsers that ignore the meta tag
 pub(crate) const ZWNJ: char = '\u{200C}';
 
-#[cfg_attr(not(feature = "client-side"), allow(unused))]
+#[cfg(feature = "client-side")]
 pub(crate) trait ScopedTimeout {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce());
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce());
@@ -35,17 +35,20 @@ pub(crate) trait ScopedTimeout {
     );
 }
 
+#[cfg(feature = "client-side")]
 impl ScopedTimeout for Owner {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce()) {
         let owner = self.downgrade();
-        set_timeout(
+        let _handle = set_timeout(
             move || {
                 if let Some(owner) = owner.upgrade() {
                     owner.with(action);
                 }
             },
             timeout,
-        )
+        );
+        #[cfg(feature = "leptos-new-request-idle-callback")]
+        _handle.expect("set_timeout always succeeds");
     }
 
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce()) {
@@ -80,7 +83,14 @@ impl ScopedTimeout for Owner {
                     let cb = self.callback_handle.clone();
                     Signal::derive(move || unsafe { cb.get_untracked().assume_init_read() })
                 });
-                let handle = request_idle_callback_with_handle({
+                let request_idle =
+                    cfg_select! {
+                        feature = "leptos-new-request-idle-callback" => {
+                            leptos::leptos_dom::helpers::request_idle_callback
+                        }
+                        _ => leptos::leptos_dom::helpers::request_idle_callback_with_handle,
+                    };
+                let handle = request_idle({
                     let this = ArcRwSignal::new(Some(self));
                     move || {
                         if let Some(cb) = this.write_untracked().take() {
@@ -94,7 +104,7 @@ impl ScopedTimeout for Owner {
             }
             fn callback(self) {
                 if let Some(owner) = self.owner.upgrade() {
-                    if during_hydration_now() {
+                    if during_hydration().get_untracked() {
                         _ = self.request_idle_callback();
                         return;
                     }
@@ -175,7 +185,7 @@ pub(crate) fn document_visible() -> Signal<bool> {
     )
 }
 
-#[cfg_attr(not(feature = "client-side"), expect(unused))]
+#[cfg(feature = "client-side")]
 pub(crate) fn set_scoped_timeout(timeout: std::time::Duration, action: impl 'static + FnOnce()) {
     let Some(owner) = Owner::current() else {
         return;
@@ -191,7 +201,7 @@ pub(crate) struct IntervalIterator<I, F> {
     owner: WeakOwner,
 }
 
-#[cfg_attr(not(feature = "client-side"), allow(unused))]
+#[cfg(feature = "client-side")]
 impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIterator<I, F> {
     #[allow(dead_code)]
     pub(crate) fn into_scoped_timeout(mut self) {
@@ -334,6 +344,7 @@ impl<T: Clone + Sync + Send + 'static> InterestedOwners<T> {
         )
     }
 }
+#[cfg_attr(not(feature = "client-side"), allow(unused))]
 pub(crate) fn has_interested_owners<T: Clone + Sync + Send + 'static>() -> Memo<bool> {
     let owners = InterestedOwners::<T>::singleton();
     Memo::new(move |_| {
@@ -398,10 +409,6 @@ pub(crate) fn during_hydration_internal() -> (Signal<bool>, Option<WriteSignal<(
         },
         |DuringHydration(during, retry)| (during, retry),
     )
-}
-
-pub(crate) fn during_hydration_now() -> bool {
-    during_hydration_internal().0.get_untracked()
 }
 
 #[cfg_attr(not(feature = "client-side"), allow(unused))]

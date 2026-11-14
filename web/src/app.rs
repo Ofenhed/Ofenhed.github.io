@@ -52,6 +52,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     }
 }
 
+#[derive(Clone, Copy)]
 struct BuildInfo;
 
 #[lazy_route]
@@ -231,7 +232,7 @@ pub(crate) fn App() -> impl IntoView {
                             <span>"Clog"</span>
                         </A>
                     </li>
-                    <Show when=move || should_show_cookie_consent_link.get()>
+                    <Show when=should_show_cookie_consent_link>
                         <li>
                             <A {..preload_mouse_enter::<CookieConsent>()} href="/cookies">
                                 <span>"Cookies"</span>

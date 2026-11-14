@@ -1,7 +1,7 @@
 use leptos::{logging::error, prelude::*, task};
 use leptos_router::{LazyRoute, lazy_route};
 
-use crate::helpers::{Abbr, BoxType, NoScript, NoWasm, prefix_symbol};
+use crate::helpers::{Abbr, BoxType, NoScript, NoWasm, during_hydration, prefix_symbol};
 use crate::local_storage::{
     LocalStorageAccessor, LocalStorageKey, get_local_storage_value, set_local_storage_value,
 };
@@ -13,7 +13,8 @@ impl LocalStorageAccessor for YoutubeConsentType {
     type Data = YoutubeConsentType;
 }
 
-pub(crate) struct CookieConsent;
+#[derive(Clone, Copy)]
+pub(crate) struct CookieConsent(YoutubeConsent);
 
 #[derive(Clone)]
 struct ShowCookieConsentLink(Signal<bool>);
@@ -25,29 +26,29 @@ impl LocalStorageAccessor for ShowCookieConsentLink {
 #[derive(Clone)]
 struct CookieConsentPageLoaded(WriteSignal<bool>);
 
-fn show_cookie_consent_page() {
-    if let Some(CookieConsentPageLoaded(loaded)) = use_context() {
-        loaded.set(true);
-    }
-}
-
 pub(crate) fn request_third_party_cookies() {
-    let ShowCookieConsentLink(signal) = use_context().unwrap();
-    if !signal.get_untracked() {
-        task::spawn(CookieConsent::preload());
+    #[cfg(feature = "client-side")]
+    {
+        let ShowCookieConsentLink(signal) = use_context().unwrap();
+        if !signal.get_untracked() {
+            task::spawn_local(CookieConsent::preload());
+        }
+        _ = set_local_storage_value::<ShowCookieConsentLink>(true);
     }
-    _ = set_local_storage_value::<ShowCookieConsentLink>(true);
-    show_cookie_consent_page();
 }
 
 pub(crate) fn provide_cookie_consent_context() {
     let requested = get_local_storage_value::<ShowCookieConsentLink>().ok();
+    let during_hydration = during_hydration();
 
     let (cookie_page_loaded, set_cookie_page_loaded) = signal(false);
     provide_context(CookieConsentPageLoaded(set_cookie_page_loaded));
 
     provide_context(ShowCookieConsentLink(Signal::derive(move || {
-        requested.and_then(|x| x.get()).unwrap_or(false) || cookie_page_loaded.get()
+        if cookie_page_loaded.get() {
+            return true;
+        }
+        requested.and_then(|x| x.get()).unwrap_or(false) && !during_hydration.get()
     })));
 }
 
@@ -59,11 +60,24 @@ pub(crate) fn should_show_cookie_consent_link() -> Signal<bool> {
 #[lazy_route]
 impl LazyRoute for CookieConsent {
     fn data() -> Self {
-        Self
+        Self(YoutubeConsent::data())
+    }
+
+    async fn preload() {
+        YoutubeConsent::preload().await
     }
 
     fn view(_this: Self) -> AnyView {
-        show_cookie_consent_page();
+        if let Some(CookieConsentPageLoaded(is_cookie_consent)) = use_context() {
+            leptos::logging::log!("Set current to cookie consent");
+            is_cookie_consent.set(true);
+            Owner::on_cleanup(move || {
+                leptos::logging::log!("Cleaning up cookie consent");
+                is_cookie_consent.set(false);
+            });
+        } else {
+            leptos::logging::log!("Showing cookie consent without loaded context");
+        }
         let no_script = || {
             view! {
                 <p>
@@ -85,7 +99,7 @@ impl LazyRoute for CookieConsent {
                 </p>
                 <fieldset>
                     <legend class:with-youtube-logo=true>YouTube</legend>
-                    <YoutubeConsent />
+                    {move || Suspend::new(YoutubeConsent::view(_this.0)) }
                 </fieldset>
                 <div {..BoxType::Thought
                     .attr()}>
@@ -97,31 +111,39 @@ impl LazyRoute for CookieConsent {
     }
 }
 
-#[component]
-pub(crate) fn YoutubeConsent() -> impl IntoView {
-    let youtube_consent = get_local_storage_value::<YoutubeConsentType>()
-        .map_err(|err| {
-            leptos::logging::warn!("Local storage error: {err}");
-            err
-        })
-        .ok();
-    let current_content = |value: YoutubeConsentType| {
-        move || {
-            if let Some(current) = youtube_consent.and_then(|x| x.get()) {
-                value == current
-            } else {
-                false
+#[derive(Clone, Copy)]
+pub(crate) struct YoutubeConsent;
+
+#[lazy_route]
+impl LazyRoute for YoutubeConsent {
+    fn data() -> Self {
+        Self
+    }
+
+    fn view(_this: Self) -> AnyView {
+        let youtube_consent = get_local_storage_value::<YoutubeConsentType>()
+            .map_err(|err| {
+                leptos::logging::warn!("Local storage error: {err}");
+                err
+            })
+            .ok();
+        let current_content = |value: YoutubeConsentType| {
+            move || {
+                if let Some(current) = youtube_consent.and_then(|x| x.get()) {
+                    value == current
+                } else {
+                    false
+                }
             }
-        }
-    };
-    let update_value = move |consent: YoutubeConsentType| {
-        if youtube_consent.and_then(|x| x.get_untracked()) != Some(consent) {
-            set_local_storage_value::<YoutubeConsentType>(consent)
-        } else {
-            Ok(())
-        }
-    };
-    view! {
+        };
+        let update_value = move |consent: YoutubeConsentType| {
+            if youtube_consent.and_then(|x| x.get_untracked()) != Some(consent) {
+                set_local_storage_value::<YoutubeConsentType>(consent)
+            } else {
+                Ok(())
+            }
+        };
+        view! {
         <fieldset class:youtube=true>
             <legend {..prefix_symbol('\u{1F576}')}>"No tracking or cookies"</legend>
             <label tabindex="0">
@@ -194,5 +216,6 @@ pub(crate) fn YoutubeConsent() -> impl IntoView {
             </div>
 
         </fieldset>
+    }.into_any()
     }
 }

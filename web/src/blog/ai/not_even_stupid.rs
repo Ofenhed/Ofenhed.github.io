@@ -44,6 +44,10 @@ impl LazyRoute for NotEvenDumb {
         Self
     }
 
+    async fn preload() {
+        crate::cookie_consent::YoutubeConsent::preload().await;
+    }
+
     fn view(this: Self) -> AnyView {
         let ai = || {
             view! {

@@ -8,10 +8,11 @@ use leptos::{
     ev, html,
     prelude::*,
 };
+use leptos_router::LazyRoute;
 
 use crate::{
     cookie_consent::{YoutubeConsent, request_third_party_cookies},
-    helpers::{has_interested_owners, once_by_type, register_interested_owner},
+    helpers::{during_hydration, has_interested_owners, once_by_type, register_interested_owner},
     local_storage::get_local_storage_value,
 };
 cfg_select! {
@@ -111,9 +112,10 @@ mod downloader {
         #[error("ImageMagick failed with code {0}")]
         ImageMagick(i32),
     }
-    pub async fn download_youtube_thumbnail(video: &YoutubeVideo) -> Result<(), DownloadError> {
-        let options = use_context::<LeptosOptions>()
-            .expect("YouTube integration requires LeptosOptions as context");
+    pub async fn download_youtube_thumbnail(
+        options: LeptosOptions,
+        video: &YoutubeVideo,
+    ) -> Result<(), DownloadError> {
         let cache_root = Path::new("target/youtube_thumbnails");
         let target_root = PathBuf::from(format!("{}/youtube", options.site_root));
         fs::create_dir_all(&target_root).await?;
@@ -243,10 +245,14 @@ pub(crate) fn YouTube(
     {
         let context = Owner::current().unwrap().shared_context().unwrap();
         let video = video.clone();
+        let options =
+            use_context().expect("LeptosOptions must be part of context for YouTube in SSR");
         let future = async move {
-            downloader::download_youtube_thumbnail(&video)
-                .await
-                .unwrap()
+            let _download_result = downloader::download_youtube_thumbnail(options, &video).await;
+            #[cfg(debug_assertions)]
+            if let Err(e) = _download_result {
+                leptos::logging::error!("Could not download YouTube thumbnail: {e}");
+            }
         }
         .into_future();
         context.defer_stream(Box::pin(future));
@@ -622,7 +628,8 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
     let node = YoutubeDialog::singleton();
     let wants_youtube = {
         let has = has_interested_owners::<YoutubeConsentType>();
-        move || has.get()
+        let hybernating = during_hydration();
+        move || !hybernating.get() && has.get()
     };
     let saved_value = get_local_storage_value::<YoutubeConsentType>().unwrap_or(Signal::from(None));
     Effect::new(move |prev| {
@@ -642,7 +649,9 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
                 </form>
                 <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
                 <span>"How do you want to interact with YouTube on this web page?"</span>
-                <YoutubeConsent />
+                <Transition fallback=|| ()>
+                    {move || Suspend::new(YoutubeConsent::view(YoutubeConsent::data())) }
+                </Transition>
             </dialog>
         </Show>
     }

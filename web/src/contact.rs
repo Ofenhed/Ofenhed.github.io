@@ -114,6 +114,7 @@ pub(crate) struct PersistentQrLogo {
     log_written: bool,
 }
 
+#[derive(Copy, Clone)]
 pub(crate) struct Contact;
 
 #[lazy_route]
