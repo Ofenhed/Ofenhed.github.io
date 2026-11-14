@@ -82,13 +82,12 @@ impl ScopedTimeout for Owner {
                     let cb = self.callback_handle.clone();
                     Signal::derive(move || unsafe { cb.get_untracked().assume_init_read() })
                 });
-                let request_idle =
-                    cfg_select! {
-                        feature = "leptos-new-request-idle-callback" => {
-                            leptos::leptos_dom::helpers::request_idle_callback
-                        }
-                        _ => leptos::leptos_dom::helpers::request_idle_callback_with_handle,
-                    };
+                let request_idle = cfg_select! {
+                    feature = "leptos-new-request-idle-callback" => {
+                        leptos::leptos_dom::helpers::request_idle_callback
+                    }
+                    _ => leptos::leptos_dom::helpers::request_idle_callback_with_handle,
+                };
                 let handle = request_idle({
                     let this = ArcRwSignal::new(Some(self));
                     move || {
