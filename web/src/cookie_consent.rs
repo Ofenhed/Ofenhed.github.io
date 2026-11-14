@@ -1,4 +1,4 @@
-use leptos::{logging::error, prelude::*, task};
+use leptos::{logging::error, prelude::*};
 use leptos_router::{LazyRoute, lazy_route};
 
 use crate::helpers::{Abbr, BoxType, NoScript, NoWasm, during_hydration, prefix_symbol};
@@ -31,7 +31,7 @@ pub(crate) fn request_third_party_cookies() {
     {
         let ShowCookieConsentLink(signal) = use_context().unwrap();
         if !signal.get_untracked() {
-            task::spawn_local(CookieConsent::preload());
+            leptos::task::spawn_local(CookieConsent::preload());
         }
         _ = set_local_storage_value::<ShowCookieConsentLink>(true);
     }
@@ -69,14 +69,10 @@ impl LazyRoute for CookieConsent {
 
     fn view(_this: Self) -> AnyView {
         if let Some(CookieConsentPageLoaded(is_cookie_consent)) = use_context() {
-            leptos::logging::log!("Set current to cookie consent");
             is_cookie_consent.set(true);
             Owner::on_cleanup(move || {
-                leptos::logging::log!("Cleaning up cookie consent");
                 is_cookie_consent.set(false);
             });
-        } else {
-            leptos::logging::log!("Showing cookie consent without loaded context");
         }
         let no_script = || {
             view! {
