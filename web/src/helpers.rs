@@ -1,13 +1,11 @@
-use std::{
-    cell::LazyCell, marker::PhantomData, mem::MaybeUninit, ops::Deref, sync::atomic::AtomicUsize,
-};
+use std::{cell::LazyCell, marker::PhantomData, ops::Deref, sync::atomic::AtomicUsize};
 
 use leptos::{
     attr::{
         Attr, AttributeValue, Loading,
         custom::{CustomAttr, custom_attribute},
     },
-    ev, html, logging,
+    ev, html,
     prelude::*,
     tachys::view::iterators::StaticVec,
     task,
@@ -16,7 +14,6 @@ use leptos_router::{
     LazyRoute, MatchNestedRoutes, any_nested_route::IntoAnyNestedRoute as _, hooks::use_location,
 };
 use strum::IntoStaticStr;
-use wasm_bindgen::JsValue;
 
 /// Zero Width Non-Joiner
 ///
@@ -53,7 +50,7 @@ impl ScopedTimeout for Owner {
 
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce()) {
         let owner = self.downgrade();
-        request_animation_frame(move || {
+        let _ = request_animation_frame(move || {
             if let Some(owner) = owner.upgrade() {
                 owner.with(action);
             }
@@ -72,11 +69,13 @@ impl ScopedTimeout for Owner {
         struct IdleCallback<T> {
             action: ArcRwSignal<Option<T>>,
             owner: WeakOwner,
-            callback_handle: ArcRwSignal<MaybeUninit<IdleCallbackHandle>>,
+            callback_handle: ArcRwSignal<std::mem::MaybeUninit<IdleCallbackHandle>>,
             derived: Option<Signal<IdleCallbackHandle>>,
         }
         impl<T: 'static + FnOnce()> IdleCallback<T> {
-            fn request_idle_callback(mut self) -> Result<Signal<IdleCallbackHandle>, JsValue> {
+            fn request_idle_callback(
+                mut self,
+            ) -> Result<Signal<IdleCallbackHandle>, wasm_bindgen::JsValue> {
                 let callback_handle = self.callback_handle.clone();
                 let mut saved_handle = callback_handle.write_untracked();
                 let repl = *self.derived.get_or_insert_with(|| {
@@ -118,7 +117,7 @@ impl ScopedTimeout for Owner {
         let ic = IdleCallback {
             action: action.clone(),
             owner: owner.clone(),
-            callback_handle: ArcRwSignal::new(MaybeUninit::uninit()),
+            callback_handle: ArcRwSignal::new(std::mem::MaybeUninit::uninit()),
             derived: None,
         };
         let idle_timeout = ic.request_idle_callback();
@@ -207,7 +206,7 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
     pub(crate) fn into_scoped_timeout(mut self) {
         let Some(i) = self.it.next() else { return };
         let Some(owner) = self.owner.upgrade() else {
-            logging::warn!("Lost iterator owner");
+            leptos::logging::warn!("Lost iterator owner");
             return;
         };
         let interval = self.interval;
@@ -219,7 +218,7 @@ impl<I: 'static + Iterator, F: 'static + Fn(<I as Iterator>::Item)> IntervalIter
     pub(crate) fn into_scoped_animation_timeout(mut self) {
         let Some(i) = self.it.next() else { return };
         let Some(owner) = self.owner.upgrade() else {
-            logging::warn!("Lost iterator owner");
+            leptos::logging::warn!("Lost iterator owner");
             return;
         };
         let interval = self.interval;
