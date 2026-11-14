@@ -11,9 +11,9 @@ use leptos::prelude::*;
 use leptos_router::{LazyRoute, lazy_route};
 
 #[derive(Clone, Copy)]
-pub(crate) struct NotEvenDumb;
+pub(crate) struct NotEvenStupid;
 
-impl BlogEntry for NotEvenDumb {
+impl BlogEntry for NotEvenStupid {
     const UID: u32 = 7;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 7, 13);
@@ -39,7 +39,7 @@ impl BlogEntry for NotEvenDumb {
 }
 
 #[lazy_route]
-impl LazyRoute for NotEvenDumb {
+impl LazyRoute for NotEvenStupid {
     fn data() -> Self {
         Self
     }

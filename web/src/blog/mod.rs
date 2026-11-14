@@ -80,7 +80,7 @@ fn current_url_with(f: impl Fn()) -> String {
 #[inline(always)]
 pub fn with_blogs<B: BlogEntryHandler>(mut b: B) -> impl Iterator<Item = B::Result> {
     [
-        b.with_blog::<ai::NotEvenDumb>(),
+        b.with_blog::<ai::NotEvenStupid>(),
         b.with_blog::<ai::WhatAreLLMs>(),
         b.with_blog::<chat_control::ChatControl>(),
         b.with_blog::<emails::ChatControlReplyV>(),

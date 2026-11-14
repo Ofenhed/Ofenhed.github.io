@@ -1,7 +1,7 @@
 use crate::{
     blog::{
         BlogHolder,
-        ai::NotEvenDumb,
+        ai::NotEvenStupid,
         blog_entry_href,
         metadata::{BlogEntry, Locale, Tag, date},
     },
@@ -48,8 +48,8 @@ impl LazyRoute for WhatAreLLMs {
     }
 
     fn view(this: Self) -> AnyView {
-        idle_preload::<NotEvenDumb>();
-        let not_even_stupid_link = || blog_entry_href::<NotEvenDumb>();
+        idle_preload::<NotEvenStupid>();
+        let not_even_stupid_link = || blog_entry_href::<NotEvenStupid>();
         let ai = || {
             view! {
                 <Abbr no_expand=true title="Artificial Intelligence">
