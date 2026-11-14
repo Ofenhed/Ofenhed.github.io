@@ -160,7 +160,7 @@ dependencies = [
 [[package]]
 name = "any_spawner"
 version = "0.3.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "futures",
  "thiserror 2.0.21",
@@ -1164,7 +1164,7 @@ dependencies = [
 [[package]]
 name = "const_str_slice_concat"
 version = "0.1.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 
 [[package]]
 name = "convert_case"
@@ -1708,7 +1708,7 @@ checksum = "0e9c71c2167ca323c882b99918929403426e2373ea17242ff5653e0d5e1058be"
 [[package]]
 name = "either_of"
 version = "0.1.9"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "paste",
  "pin-project-lite",
@@ -3365,7 +3365,7 @@ dependencies = [
 [[package]]
 name = "hydration_context"
 version = "0.4.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "futures",
  "js-sys",
@@ -4014,7 +4014,7 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 [[package]]
 name = "leptos"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "any_spawner",
  "base64 0.23.1",
@@ -4055,7 +4055,7 @@ dependencies = [
 [[package]]
 name = "leptos_axum"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "any_spawner",
  "axum",
@@ -4078,7 +4078,7 @@ dependencies = [
 [[package]]
 name = "leptos_config"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "config",
  "serde",
@@ -4089,7 +4089,7 @@ dependencies = [
 [[package]]
 name = "leptos_dom"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "js-sys",
  "or_poisoned 0.1.0 (git+https://github.com/Ofenhed/leptos?branch=user_preload)",
@@ -4121,7 +4121,7 @@ dependencies = [
 [[package]]
 name = "leptos_hot_reload"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "anyhow",
  "camino",
@@ -4138,7 +4138,7 @@ dependencies = [
 [[package]]
 name = "leptos_integration_utils"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "futures",
  "hydration_context",
@@ -4156,7 +4156,7 @@ dependencies = [
 [[package]]
 name = "leptos_macro"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "attribute-derive",
  "convert_case 0.12.0",
@@ -4175,7 +4175,7 @@ dependencies = [
 [[package]]
 name = "leptos_meta"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "futures",
  "indexmap",
@@ -4189,7 +4189,7 @@ dependencies = [
 [[package]]
 name = "leptos_router"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "any_spawner",
  "either_of",
@@ -4213,7 +4213,7 @@ dependencies = [
 [[package]]
 name = "leptos_router_macro"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4223,7 +4223,7 @@ dependencies = [
 [[package]]
 name = "leptos_server"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "any_spawner",
  "base64 0.23.1",
@@ -4659,7 +4659,7 @@ checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 [[package]]
 name = "next_tuple"
 version = "0.1.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 
 [[package]]
 name = "nix"
@@ -4872,7 +4872,7 @@ dependencies = [
 [[package]]
 name = "oco_ref"
 version = "0.2.1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "serde",
  "thiserror 2.0.21",
@@ -4948,7 +4948,7 @@ checksum = "8c04f5d74368e4d0dfe06c45c8627c81bd7c317d52762d118fb9b3076f6420fd"
 [[package]]
 name = "or_poisoned"
 version = "0.1.0"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 
 [[package]]
 name = "ordered-float"
@@ -5735,7 +5735,7 @@ dependencies = [
 [[package]]
 name = "reactive_graph"
 version = "0.3.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "any_spawner",
  "async-lock",
@@ -5758,7 +5758,7 @@ dependencies = [
 [[package]]
 name = "reactive_stores"
 version = "0.5.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "guardian",
  "indexmap",
@@ -5774,7 +5774,7 @@ dependencies = [
 [[package]]
 name = "reactive_stores_macro"
 version = "0.5.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "convert_case 0.12.0",
  "proc-macro2",
@@ -6357,7 +6357,7 @@ dependencies = [
 [[package]]
 name = "server_fn"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "axum",
  "base64 0.23.1",
@@ -6398,7 +6398,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "const_format",
  "convert_case 0.12.0",
@@ -6412,7 +6412,7 @@ dependencies = [
 [[package]]
 name = "server_fn_macro_default"
 version = "0.9.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "server_fn_macro",
  "syn 3.0.10",
@@ -8526,7 +8526,7 @@ dependencies = [
 [[package]]
 name = "tachys"
 version = "0.3.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "any_spawner",
  "async-trait",
@@ -8686,7 +8686,7 @@ dependencies = [
 [[package]]
 name = "throw_error"
 version = "0.4.0-rc1"
-source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#48432ae56a55198a785daa8ae8580167cf3b1c6d"
+source = "git+https://github.com/Ofenhed/leptos?branch=user_preload#fe475427853ef952b19dc629d13ca8b0fb359c87"
 dependencies = [
  "pin-project-lite",
 ]
