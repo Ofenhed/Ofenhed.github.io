@@ -121,7 +121,7 @@ jobs:
     - name: Compile file generator
       id: compile
       if: ${{ !cancelled() && !failure() && hashFiles('target/.new_contact_card') != hashFiles('target/qr/.contact_card') }}
-      run: cargo leptos build --split --server-only --release --bin-features ssr,statics
+      run: cargo leptos build --split --server-only --release --bin-features ssr,statics,leptos-new-request-idle-callback
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
@@ -136,7 +136,7 @@ jobs:
 
     - name: Recompile targets with static QR
       id: recompile-ffmpeg
-      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,ffmpeg --lib-features hydrate,ffmpeg
+      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,ffmpeg,leptos-new-request-idle-callback --lib-features hydrate,ffmpeg,leptos-new-request-idle-callback
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
@@ -149,7 +149,7 @@ jobs:
     - name: Recompile targets without using ffmpeg
       id: recompile-no-ffmpeg
       if: ${{ steps.generate-ffmpeg.outcome == 'failure' && !cancelled() }}
-      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
+      run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,leptos-new-request-idle-callback
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
