@@ -95,7 +95,7 @@ impl LazyRoute for CookieConsent {
                 </p>
                 <fieldset>
                     <legend class:with-youtube-logo=true>YouTube</legend>
-                    {move || Suspend::new(YoutubeConsent::view(_this.0)) }
+                    {move || Suspend::new(YoutubeConsent::view(_this.0))}
                 </fieldset>
                 <div {..BoxType::Thought
                     .attr()}>
@@ -140,78 +140,79 @@ impl LazyRoute for YoutubeConsent {
             }
         };
         view! {
-        <fieldset class:youtube=true>
-            <legend {..prefix_symbol('\u{1F576}')}>"No tracking or cookies"</legend>
-            <label tabindex="0">
-                <input
-                    type="radio"
-                    name="youtube-tracking"
-                    prop:checked=current_content(YoutubeConsentType::PlainLink)
-                    on:change=move |e| {
-                        if event_target_checked(&e)
-                            && let Err(e) = update_value(YoutubeConsentType::PlainLink)
-                        {
-                            error!("Could not save consent data: {e}");
+            <fieldset class:youtube=true>
+                <legend {..prefix_symbol('\u{1F576}')}>"No tracking or cookies"</legend>
+                <label tabindex="0">
+                    <input
+                        type="radio"
+                        name="youtube-tracking"
+                        prop:checked=current_content(YoutubeConsentType::PlainLink)
+                        on:change=move |e| {
+                            if event_target_checked(&e)
+                                && let Err(e) = update_value(YoutubeConsentType::PlainLink)
+                            {
+                                error!("Could not save consent data: {e}");
+                            }
                         }
-                    }
-                />
-                "A regular link to youtube"
-            </label>
-            <div {..BoxType::Info
-                .attr()}>
-                "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend {..prefix_symbol('\u{1F575}')}>"Data is shared with YouTube"</legend>
-            <label tabindex="0">
-                <input
-                    type="radio"
-                    name="youtube-tracking"
-                    prop:checked=current_content(YoutubeConsentType::NoCookieDomain)
-                    on:change=move |e| {
-                        if event_target_checked(&e)
-                            && let Err(e) = update_value(YoutubeConsentType::NoCookieDomain)
-                        {
-                            error!("Could not save consent data: {e}");
+                    />
+                    "A regular link to youtube"
+                </label>
+                <div {..BoxType::Info
+                    .attr()}>
+                    "It does have a thumbnail, but you will not download it from YouTube. This also requests than no referrer information is sent to YouTube if you click on a video."
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend {..prefix_symbol('\u{1F575}')}>"Data is shared with YouTube"</legend>
+                <label tabindex="0">
+                    <input
+                        type="radio"
+                        name="youtube-tracking"
+                        prop:checked=current_content(YoutubeConsentType::NoCookieDomain)
+                        on:change=move |e| {
+                            if event_target_checked(&e)
+                                && let Err(e) = update_value(YoutubeConsentType::NoCookieDomain)
+                            {
+                                error!("Could not save consent data: {e}");
+                            }
                         }
-                    }
-                />
-                "Embedded with reduced cookies (using "
-                <q class:nobrplz=true>"youtube-nocookies.com"</q>
-                ")."
-            </label>
-            <label tabindex="0">
-                <input
-                    type="radio"
-                    name="youtube-tracking"
-                    prop:checked=current_content(YoutubeConsentType::RegularYoutube)
-                    on:change=move |e| {
-                        if event_target_checked(&e)
-                            && let Err(e) = update_value(YoutubeConsentType::RegularYoutube)
-                        {
-                            error!("Could not save consent data: {e}");
-                        }
-                    }
-                />
-                "Embedded (no reduction of cookies or other tracking)"
-            </label>
-            <div {..BoxType::Info
-                .attr()}>
-                "These options will send data to YouTube each time you visit a page "
-                <i>"with an embedded video"</i> ", " <b>"even without you playing any videos"</b>
-                ". It could allow YouTube to track which pages you are reading (even though the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
-                <a
-                    href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode"
-                    tabindex="-1"
-                >
-                    "Google Support for "
+                    />
+                    "Embedded with reduced cookies (using "
                     <q class:nobrplz=true>"youtube-nocookies.com"</q>
-                </a>
-                ". It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
-            </div>
+                    ")."
+                </label>
+                <label tabindex="0">
+                    <input
+                        type="radio"
+                        name="youtube-tracking"
+                        prop:checked=current_content(YoutubeConsentType::RegularYoutube)
+                        on:change=move |e| {
+                            if event_target_checked(&e)
+                                && let Err(e) = update_value(YoutubeConsentType::RegularYoutube)
+                            {
+                                error!("Could not save consent data: {e}");
+                            }
+                        }
+                    />
+                    "Embedded (no reduction of cookies or other tracking)"
+                </label>
+                <div {..BoxType::Info
+                    .attr()}>
+                    "These options will send data to YouTube each time you visit a page "
+                    <i>"with an embedded video"</i> ", "
+                    <b>"even without you playing any videos"</b>
+                    ". It could allow YouTube to track which pages you are reading (even though the referrer sent to YouTube won't show which page you're visiting, but it can be deduced). The reduced cookies version will still store data in your local storage, and might still deploy tracking cookies; The intent is to embed videos without affecting your watch history or recommendations, see "
+                    <a
+                        href="https://support.google.com/youtube/answer/171780?hl=en#zippy=%2Cturn-on-privacy-enhanced-mode"
+                        tabindex="-1"
+                    >
+                        "Google Support for "
+                        <q class:nobrplz=true>"youtube-nocookies.com"</q>
+                    </a>
+                    ". It comes with the drawback that YouTube actively blocks unathenticated users from using a VPN, but that's an issue you can ignore if it's not causing you issues."
+                </div>
 
-        </fieldset>
-    }.into_any()
+            </fieldset>
+        }.into_any()
     }
 }

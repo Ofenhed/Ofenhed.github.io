@@ -650,7 +650,7 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
                 <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
                 <span>"How do you want to interact with YouTube on this web page?"</span>
                 <Transition fallback=|| ()>
-                    {move || Suspend::new(YoutubeConsent::view(YoutubeConsent::data())) }
+                    {move || Suspend::new(YoutubeConsent::view(YoutubeConsent::data()))}
                 </Transition>
             </dialog>
         </Show>
