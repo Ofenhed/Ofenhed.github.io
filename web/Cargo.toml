@@ -52,11 +52,13 @@ js-sys = { workspace = true, optional = true, features = ["std"] }
 default = []
 hydrate = ["leptos/hydrate", "client-side", "dep:any_spawner"]
 ffmpeg = ["tokio?/process"]
+leptos-new-request-idle-callback = []
 client-side = [
   "chrono/wasmbind",
   "dep:base64",
   "dep:js-sys",
   "dep:web-sys",
+  "leptos/lazy",
 ]
 static-qr = ["dep:base64", "ssr"]
 console-panic = ["dep:console_error_panic_hook"]
@@ -118,7 +120,7 @@ bin-default-features = false
 # The features to use when compiling the lib target
 #
 # Optional. Can be over-ridden with the command line parameter --lib-features
-lib-features = ["hydrate"]
+lib-features = ["hydrate", "leptos-new-request-idle-callback"]
 
 # If the --no-default-features flag should be used when compiling the lib target
 #
