@@ -86,7 +86,7 @@ jobs:
 
     - name: Restore cargo-leptos
       id: cargo-leptos-restore
-      if: ${{ steps.install-cargo-leptos.outcome != 'success' && !cancelled() }}
+      if: ${{ steps.install-cargo-leptos.outcome != 'success' && !failure() && !cancelled() }}
       uses: actions/cache/restore@v6
       with:
         key: ${{ runner.os }}-cargo-leptos-${{ hashFiles(env.cargo_leptos_version) }}
