@@ -18,7 +18,7 @@ impl BlogEntry for ChatControlReplyV {
 
     const PUBLISH_DATE: DateTime<Utc> = date(2025, 9, 4);
 
-    const LOCALE: Option<Locale> = Some(Locale::Swedish);
+    const LOCALE: Locale = Locale::Swedish;
 
     const TITLE: &'static str = "RE: Chat Control";
     const AUTHOR: &'static str = "Hanna Gedin & Jonas Sjöstedt (Charlotta Tjärdahl)";

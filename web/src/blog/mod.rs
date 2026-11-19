@@ -449,7 +449,7 @@ pub struct BlogEntryMeta {
     description: Option<&'static str>,
     publish_date: DateTime<Utc>,
     last_updated: Option<DateTime<Utc>>,
-    locale: Option<Locale>,
+    locale: Locale,
     path_locale: bool,
     visibility: Visibility,
     title: &'static str,
@@ -520,11 +520,6 @@ pub(crate) fn BlogHolder<'a, B: BlogEntry>(
             </time>
         }
     };
-    let locale = || {
-        B::LOCALE.map(|x| {
-            view! { <Meta property="og:locale" content=into_static_str(x) /> }
-        })
-    };
 
     #[cfg(feature = "client-side")]
     if let Some(context) = Owner::current_shared_context()
@@ -544,9 +539,9 @@ pub(crate) fn BlogHolder<'a, B: BlogEntry>(
         description => Some(view! { <Meta property="og:description" content=description /> }),
     };
     view! {
-        <article>
+        <article lang=into_static_str(B::LOCALE)>
             <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
-            {locale()}
+            <Meta property="og:locale" content=B::LOCALE.og_locale() />
             <Meta property="og:title" content=B::TITLE />
             {description()}
             <Meta
@@ -651,18 +646,6 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
             .map(|pin| Either::Right(custom_attribute("pinned", pin)))
             .unwrap_or(Either::Left(()))
     };
-    let lang = move |meta: &BlogEntryMeta| {
-        meta.locale
-            .map(|x| {
-                let s = into_static_str(x);
-                let lang = match s.replace("_", "-") {
-                    new if new == s => Cow::Borrowed(s),
-                    new => Cow::Owned(new),
-                };
-                Either::Right(view! { <{..} lang=lang /> })
-            })
-            .unwrap_or(Either::Left(()))
-    };
     let info = |meta: &BlogEntryMeta| {
         let update = meta.last_updated.map(|time| {
             let mut date: Oco<'static, str> = Oco::Owned(time.date_naive().to_string());
@@ -705,7 +688,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li {..article_pinned(&entry)}>
-                    <article {..lang(&entry)}>
+                    <article lang=into_static_str(entry.locale)>
                         <A on:click=on_click href=entry.gen_href()>
                             {entry.title.to_owned()}
                         </A>

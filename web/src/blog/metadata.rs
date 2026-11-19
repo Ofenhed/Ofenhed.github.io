@@ -27,10 +27,37 @@ impl Tag {
 #[derive(Clone, Copy, PartialEq, Eq, Hash, IntoStaticStr, VariantArray, EnumString)]
 #[strum(serialize_all = "kebab-case")]
 pub enum Locale {
-    #[strum(serialize = "sv_SE", serialize = "sv")]
+    #[strum(serialize = "sv-SE", serialize = "sv")]
     Swedish,
-    #[strum(serialize = "en_US", serialize = "en")]
+    #[strum(serialize = "en-US", serialize = "en")]
     EnglishSimplified,
+}
+
+impl Locale {
+    pub const fn og_locale_inner(self) -> &'static str {
+        match self {
+            Locale::Swedish => "sv_SE",
+            Locale::EnglishSimplified => "en_US",
+        }
+    }
+    cfg_select! {
+        debug_assertions => {
+            #[inline(always)]
+            pub fn og_locale(self) -> &'static str {
+                let og_locale = self.og_locale_inner();
+                assert_eq!(
+                    og_locale.replace('_', "-"),
+                    crate::helpers::into_static_str(self)
+                );
+                og_locale
+            }
+        }
+        _ => {
+            pub const fn og_locale(self) -> &'static str {
+                self.og_locale_inner()
+            }
+        }
+    }
 }
 
 impl PossibleRouteMatch for Locale {
@@ -98,7 +125,7 @@ pub trait BlogEntry: LazyRoute + Clone + Sync {
     const AUTHOR: &'static str = crate::AUTHOR;
     const TAGS: &'static [Tag];
 
-    const LOCALE: Option<Locale> = None;
+    const LOCALE: Locale = Locale::EnglishSimplified;
 
     const PATH_LOCALE: bool = false;
     const VISIBILITY: Visibility = Visibility::Visible;

@@ -3,7 +3,7 @@ use crate::{
         BlogHolder,
         ai::NotEvenStupid,
         blog_entry_href,
-        metadata::{BlogEntry, Locale, Tag, date},
+        metadata::{BlogEntry, Tag, date},
     },
     helpers::{Abbr, BoxType, Footnote, Url, idle_preload},
 };
@@ -20,8 +20,6 @@ impl BlogEntry for WhatAreLLMs {
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 6);
 
     const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 8, 24));
-
-    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "An intuitive understanding of LLMs";
     const DESCRIPTION: &'static str = "A way to look at LLMs to understand their potential and limitations, and my take on why that understanding is (intentionally) so difficult to achieve.";

@@ -1,7 +1,7 @@
 use crate::{
     blog::{
         BlogHolder,
-        metadata::{BlogEntry, Locale, Tag, Visibility, date},
+        metadata::{BlogEntry, Tag, Visibility, date},
     },
     helpers::Abbr,
     third_party::{YouTube, youtube},
@@ -19,8 +19,6 @@ impl BlogEntry for NotEvenStupid {
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 7, 13);
     const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 9, 30));
     const VISIBILITY: Visibility = Visibility::VisibleViaTags;
-
-    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "LLMs are not even stupid...";
     const DESCRIPTION: &'static str = "...they're something else entirely.";

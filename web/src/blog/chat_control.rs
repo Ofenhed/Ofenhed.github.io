@@ -4,7 +4,7 @@ use crate::{
     blog::{
         BlogHolder,
         emails::ChatControlReplyV,
-        metadata::{BlogEntry, Locale, Tag, date},
+        metadata::{BlogEntry, Tag, date},
     },
     helpers::{Abbr, BoxType, Footnote, Url, idle_preload},
 };
@@ -19,8 +19,6 @@ impl BlogEntry for ChatControl {
     const UID: u32 = 5;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2025, 8, 27);
-
-    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "In opposition of ChatControl (Open letter)";
 

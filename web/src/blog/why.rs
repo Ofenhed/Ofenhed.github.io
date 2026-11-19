@@ -1,7 +1,7 @@
 use crate::{
     blog::{
         BlogHolder,
-        metadata::{BlogEntry, Locale, Tag, date},
+        metadata::{BlogEntry, Tag, date},
     },
     helpers::Abbr,
 };
@@ -16,8 +16,6 @@ impl BlogEntry for WhyBlog {
     const UID: u32 = 1;
 
     const PUBLISH_DATE: DateTime<Utc> = date(2026, 6, 22);
-
-    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "Another voice on the internet";
 

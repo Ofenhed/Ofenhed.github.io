@@ -1,6 +1,6 @@
 use crate::blog::{
     BlogHolder,
-    metadata::{BlogEntry, Locale, Tag, Visibility, date},
+    metadata::{BlogEntry, Tag, Visibility, date},
 };
 use chrono::{DateTime, Utc};
 use leptos::prelude::*;
@@ -16,8 +16,6 @@ impl BlogEntry for Unremarkable {
 
     const LAST_UPDATED: Option<DateTime<Utc>> = Some(date(2026, 6, 8));
     const VISIBILITY: Visibility = Visibility::Hidden;
-
-    const LOCALE: Option<Locale> = Some(Locale::EnglishSimplified);
 
     const TITLE: &'static str = "(un)Remarkable 2";
 

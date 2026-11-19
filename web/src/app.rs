@@ -28,7 +28,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     provide_context(options.clone());
     view! {
         <!DOCTYPE html>
-        <html lang="sv">
+        <html lang="en-US">
             <head>
                 <link as="style" rel="preload" href=css_path.clone() />
                 <link rel="modulepreload" href=split_path />

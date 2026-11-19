@@ -57,8 +57,8 @@ impl PossibleRouteMatch for BlogEntryMeta {
         let matched_num = &path[param_offset..param_len + param_offset];
         match u32::from_str(matched_num) {
             Ok(id) if id == self.uid => {
-                if let (Some(locale), true) = (self.locale, self.path_locale) {
-                    locale
+                if self.path_locale {
+                    self.locale
                         .test(&path[param_offset + param_len..])
                         .map(|m| {
                             let remaining_offset =
@@ -90,8 +90,8 @@ impl PossibleRouteMatch for BlogEntryMeta {
     }
     fn generate_path(&self, path: &mut Vec<PathSegment>) {
         path.push(PathSegment::Static(Cow::Owned(self.uid.to_string())));
-        if let (Some(locale), true) = (self.locale, self.path_locale) {
-            locale.generate_path(path)
+        if self.path_locale {
+            self.locale.generate_path(path)
         }
     }
 }
