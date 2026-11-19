@@ -1,7 +1,7 @@
 use leptos::{attr::custom::custom_attribute, html, prelude::*};
 use leptos_meta::{Meta, MetaTags, Title, provide_meta_context};
 use leptos_router::{
-    Lazy, LazyRoute, SsrMode,
+    Lazy, LazyRoute, MatchNestedRoutes, SsrMode,
     components::{A, Route, Router, Routes},
     hooks::use_location,
     lazy_route, path,
@@ -98,6 +98,27 @@ pub(crate) fn NotFound() -> impl IntoView {
     view! {
         <h1>"404 error"</h1>
         <p>"Something hilarious about trained monkeys. So relatable. No evil here."</p>
+    }
+}
+
+#[component]
+pub(crate) fn AiStrategy() -> impl MatchNestedRoutes + Clone + 'static {
+    cfg_select!{
+        feature = "ssr" => {
+            view! {
+                <Route
+                    path=path!("/ai-strategy")
+                    view=|| view! {
+                        <NotFound />
+                        <Meta http_equiv="refresh" content="0; https://youtube.com/watch?v=Z_mzYS-ET8o" />
+                    }
+                    ssr=SsrMode::Static(StaticRoute::new())
+                />
+            }.into_inner()
+        }
+        _ => {
+            leptos_router::any_nested_route::IntoAnyNestedRoute::into_any_nested_route(())
+        }
     }
 }
 
@@ -255,6 +276,7 @@ pub(crate) fn App() -> impl IntoView {
                         ssr=SsrMode::Static(StaticRoute::new())
                     />
                     <Blog />
+                    <AiStrategy />
                 </Routes>
             </main>
             <Footnotes />
