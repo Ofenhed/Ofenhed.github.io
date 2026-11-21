@@ -14,6 +14,7 @@ use crate::{
     cookie_consent::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
+    error::ReloadErrorHandler,
     helpers::{Footnotes, build_number, idle_preload, preload_mouse_enter},
     local_storage::provide_local_storage_context,
     third_party::ThirdPartyConsentDialogs,
@@ -267,22 +268,24 @@ pub(crate) fn App() -> impl IntoView {
                 </menu>
             </nav>
             <main {..data_path()}>
-                <Routes fallback>
-                    <Route path=path!("/") view=contact ssr=SsrMode::Static(StaticRoute::new()) />
-                    <Route
-                        path=path!("/build")
-                        view=build_info
-                        ssr=SsrMode::Static(StaticRoute::new())
-                    />
-                    <Route
-                        path=path!("/cookies")
-                        view=cookie_consent
-                        ssr=SsrMode::Static(StaticRoute::new())
-                    />
-                    <Blog />
-                    <AiStrategy path=path!("/ai-strategy") />
-                    <AiStrategy path=path!("/ai-policy") />
-                </Routes>
+                <ReloadErrorHandler>
+                    <Routes fallback>
+                        <Route path=path!("/") view=contact ssr=SsrMode::Static(StaticRoute::new()) />
+                        <Route
+                            path=path!("/build")
+                            view=build_info
+                            ssr=SsrMode::Static(StaticRoute::new())
+                        />
+                        <Route
+                            path=path!("/cookies")
+                            view=cookie_consent
+                            ssr=SsrMode::Static(StaticRoute::new())
+                        />
+                        <Blog />
+                        <AiStrategy path=path!("/ai-strategy") />
+                        <AiStrategy path=path!("/ai-policy") />
+                    </Routes>
+                </ReloadErrorHandler>
             </main>
             <Footnotes />
             <ThirdPartyConsentDialogs />
