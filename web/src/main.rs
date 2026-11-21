@@ -62,7 +62,7 @@ async fn main() {
 
     #[cfg(feature = "statics")]
     {
-        use leptos_static_files::prelude::*;
+        use leptos_static::{StaticRouteGenerator, add_404, generate_static_files_list};
         let app = {
             let leptos_options = leptos_options.clone();
             move || shell(leptos_options.clone())

@@ -191,14 +191,12 @@ pub(crate) fn BlogPagingLinks() -> impl IntoView {
     let maybe_ignore = ();
     #[cfg(feature = "statics")]
     let maybe_ignore = {
-        let leptos_static_files::NoGenerateStatic(ignore) =
-            use_context().expect("This should be defined by static_files");
         Signal::derive(move || {
             let CurrentPage(page) = use_context().expect("Current page always defined here");
             let page = page + 1;
             let last_page = num_pages();
             if last_page < page {
-                *ignore.write_untracked() = true;
+                leptos_static::set_skip_static_file_generation(true);
             }
         })
     };
