@@ -16,7 +16,7 @@ any_spawner = { version = "0.3" }
 axum = { version = "0.8.1", default-features = false }
 base64 = "0.22.1"
 chrono = { version = "0.4.44", default-features = false, features = ["std", "alloc"] }
-cargo-leptos = "0.3.10"
+cargo-leptos = "0.3.12"
 console_error_panic_hook = "0.1.7"
 futures = { version = "0.3", default-features = false }
 image = { version = "0.25", default-features = false, features = ["png"] }
@@ -53,8 +53,12 @@ web-sys = { version = "0.3.98", default-features = false }
 
 [patch.crates-io]
 any_spawner = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
+hydration_context = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
 leptos = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
 leptos_axum = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
+leptos_config = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
+leptos_hot_reload = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
+leptos_integration_utils = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
 leptos_meta = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
 leptos_router = { git = "https://github.com/Ofenhed/leptos", branch = "user_preload" }
 
