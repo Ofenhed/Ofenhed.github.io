@@ -27,8 +27,7 @@ pub fn ReloadErrorHandler(children: TypedChildren<impl IntoView + 'static>) -> i
                 'reload_with_hash: {
                     let stored_build_number = get_local_storage_value::<LastPanicBuildNumber>()
                         .ok()
-                        .map(|x| x.get_untracked())
-                        .flatten();
+                        .and_then(|x| x.get_untracked());
 
                     if let Some(build_number) = BUILD_NUMBER
                         && stored_build_number.as_deref() != Some(build_number)

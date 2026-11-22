@@ -17,7 +17,7 @@ console_error_panic_hook = { workspace = true, optional = true }
 chrono.workspace = true
 futures = { workspace = true, features = ["alloc"] }
 image = { workspace = true, optional = true }
-js-macro.workspace = true
+js-macro = { workspace = true, optional = true }
 leptos = { workspace = true }
 leptos_axum = { workspace = true, optional = true }
 leptos_meta.workspace = true
@@ -64,6 +64,7 @@ console-panic = ["dep:console_error_panic_hook"]
 debug-reload-panics = []
 ssr = [
   "dep:image",
+  "dep:js-macro",
   "dep:reqwest",
   "dep:tokio",
   "dep:tokio-util",

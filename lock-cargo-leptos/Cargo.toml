@@ -3,5 +3,5 @@ name = "lock-cargo-leptos"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
+[dev-dependencies]
 cargo-leptos.workspace = true

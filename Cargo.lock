@@ -3966,7 +3966,6 @@ version = "0.1.0"
 dependencies = [
  "swc 55.0.0",
  "swc_common 18.0.1",
- "thiserror 2.0.21",
 ]
 
 [[package]]

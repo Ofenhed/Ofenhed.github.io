@@ -7,6 +7,5 @@ edition = "2024"
 proc-macro = true
 
 [dependencies]
-thiserror.workspace = true
 swc.workspace = true
 swc_common.workspace = true
