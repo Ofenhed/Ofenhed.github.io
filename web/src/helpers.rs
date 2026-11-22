@@ -36,7 +36,7 @@ pub(crate) trait ScopedTimeout {
 impl ScopedTimeout for Owner {
     fn set_scoped_timeout(&self, timeout: std::time::Duration, action: impl 'static + FnOnce()) {
         let owner = self.downgrade();
-        let _handle = set_timeout(
+        let handle = set_timeout(
             move || {
                 if let Some(owner) = owner.upgrade() {
                     owner.with(action);
@@ -44,8 +44,9 @@ impl ScopedTimeout for Owner {
             },
             timeout,
         );
-        #[cfg(feature = "leptos-new-request-idle-callback")]
-        _handle.expect("set_timeout always succeeds");
+        if let Err(e) = handle {
+            web_sys::console::error_2(&"Failed to create timeout".into(), &e);
+        }
     }
 
     fn request_scoped_animation_frame(&self, action: impl 'static + FnOnce()) {
@@ -82,13 +83,7 @@ impl ScopedTimeout for Owner {
                     let cb = self.callback_handle.clone();
                     Signal::derive(move || unsafe { cb.get_untracked().assume_init_read() })
                 });
-                let request_idle = cfg_select! {
-                    feature = "leptos-new-request-idle-callback" => {
-                        leptos::leptos_dom::helpers::request_idle_callback
-                    }
-                    _ => leptos::leptos_dom::helpers::request_idle_callback_with_handle,
-                };
-                let handle = request_idle({
+                let handle = leptos::leptos_dom::helpers::request_idle_callback({
                     let this = ArcRwSignal::new(Some(self));
                     move || {
                         if let Some(cb) = this.write_untracked().take() {

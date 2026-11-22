@@ -67,13 +67,7 @@ pub fn ReloadErrorHandler(children: TypedChildren<impl IntoView + 'static>) -> i
                 }
             }
         }
-        view! {
-            "An unknown error occured"
-        }
+        view! { "An unknown error occured" }
     };
-    view! {
-        <ErrorBoundary fallback=on_error>
-        {(children.into_inner())()}
-        </ErrorBoundary>
-    }
+    view! { <ErrorBoundary fallback=on_error>{(children.into_inner())()}</ErrorBoundary> }
 }

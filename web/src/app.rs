@@ -270,7 +270,11 @@ pub(crate) fn App() -> impl IntoView {
             <main {..data_path()}>
                 <ReloadErrorHandler>
                     <Routes fallback>
-                        <Route path=path!("/") view=contact ssr=SsrMode::Static(StaticRoute::new()) />
+                        <Route
+                            path=path!("/")
+                            view=contact
+                            ssr=SsrMode::Static(StaticRoute::new())
+                        />
                         <Route
                             path=path!("/build")
                             view=build_info
