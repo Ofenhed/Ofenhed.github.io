@@ -22,17 +22,12 @@ use crate::{
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     let css_path = options.css_path();
-    let split_path = format!(
-        "/{}/__wasm_split.______________________.js",
-        options.site_pkg_dir
-    );
     provide_context(options.clone());
     view! {
         <!DOCTYPE html>
         <html lang="en-US">
             <head>
                 <link as="style" rel="preload" href=css_path.clone() />
-                <link rel="modulepreload" href=split_path />
                 <meta charset="utf-8" />
                 <meta name="referrer" content="no-referrer" />
                 <MetaTags />
