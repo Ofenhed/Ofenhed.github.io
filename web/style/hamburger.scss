@@ -13,9 +13,13 @@
 
 #navigation {
   z-index: 1000;
+  position: relative;
   padding: 0;
   margin: 0;
   grid-area: menu-start / menu-start / menu-end / menu-end;
+  #menu {
+    margin-top: calc(var(--hamburger-size) + var(--open-burger-leak-down) + var(--menu-margin) * 2);
+  }
   @include nav.open() {
     & {
       background: var(--menu-background);
@@ -75,6 +79,7 @@
 
 #hamburger {
   z-index: 1100;
+  position: absolute;
   display: block;
   cursor: pointer;
   --slice-height: 2px;
