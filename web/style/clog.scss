@@ -112,12 +112,14 @@ ul#blog-entries {
 }
 
 @mixin lcar-close-button {
-  content: 'Close';
-  direction: rtl;
+  content: '\2190';
+  transform: scale(200%);
+  text-align: right;
   color: #000;
   position: absolute;
   bottom: var(--menu-margin);
-  width: calc(var(--menu-width) - var(--menu-margin) * 2);
+  left: var(--menu-margin);
+  width: calc((var(--menu-width) - var(--menu-margin) * 2 - 0.5ex)*2/3);
   margin-top: calc(((var(--hamburger-size) + var(--open-burger-leak-down)) - 1em) / 2);
   display: inline-block;
   text-transform: var(--menu-link-transform);
@@ -243,11 +245,18 @@ ul#blog-entries {
               > .slice {
                 background: color.adjust($burger-background, $lightness: 5%);
               }
+              @media not (prefers-reduced-motion: reduce) {
+                > .slice:nth-child(2):after {
+                  --menu-width: 0px;
+                }
+              }
             }
             > .slice:nth-child(2) {
               &:after {
                 @include lcar-close-button;
+                transition: var(--default-transition);
                 @media (any-hover: hover) {
+                  transition: var(--default-transition), width var(--default-transition-time) ease-in-out var(--default-transition-time);
                   color: $burger-background;
                 }
               }
