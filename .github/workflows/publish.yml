@@ -82,10 +82,10 @@ jobs:
 
     - name: Check locked cargo-leptos version
       wait: checkout
-      background: true
       id: write-cargo-leptos-version
       run: |
         awk '/\[\[package\]\]/ { right_place=0; version = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /version\s*=/ { version=$0 }; { if (right_place && version != null) { print(version); exit }  }' < Cargo.lock | grep -Po '(?<=")[^"]+(?=")' | tee "$cargo_leptos_version_file"
+      background: true
 
     - name: Log rust version
       run: rustc --version | tee "$rust_version"
