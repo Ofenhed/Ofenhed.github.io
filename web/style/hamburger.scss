@@ -2,11 +2,6 @@
 @use 'nav.scss';
 @use 'hamburger-easter-egg.scss';
 
-@media (prefers-reduced-motion: no-preference) {
-  #menu {
-    transition: 150ms all 100ms ease-out;
-  }
-}
 :root {
   --hamburger-size: clamp(1em, 10vmin, 32px);
 }
@@ -17,9 +12,6 @@
   padding: 0;
   margin: 0;
   grid-area: menu-start / menu-start / menu-end / menu-end;
-  #menu {
-    margin-top: calc(var(--hamburger-size) + var(--open-burger-leak-down) + var(--menu-margin) * 2);
-  }
   @include nav.open() {
     & {
       background: var(--menu-background);

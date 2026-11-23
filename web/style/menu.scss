@@ -10,10 +10,7 @@
   --menu-longest-word: 7;
   --menu-widest-word: calc((var(--menu-longest-word) + 1) * 1ch);
   --body-cols: [menu-start] var(--menu-width) [menu-end] 1fr [main-start footer-start] var(--main-width) [footer-end main-end] 1fr;
-  --default-menu-cols: [menu-start] 1fr [label-start] auto [label-end] 1fr [menu-end];
-  --default-menu-rows: [menu-start] 1fr [label-start] auto [label-end] 1fr [menu-end];
-  --menu-cols: var(--default-menu-cols);
-  --menu-rows: var(--default-menu-rows);
+  --menu-bottom-right-fr: 1fr;
   --menu-link-transform: none;
 
   @media print {
@@ -27,8 +24,6 @@
   @media screen and (min-width: 60ch) {
     --main-width: calc(100svw - var(--open-menu-width));
   }
-  --lcar-menu-cols: [menu-start] 1fr [label-start] auto [label-end menu-end];
-  --lcar-menu-rows: [menu-start] 1fr [label-start] auto [label-end menu-end];
 }
 
 #menu {
@@ -52,17 +47,18 @@
   }
   width: var(--open-menu-width);
   display: grid;
-  grid-template-columns: var(--menu-cols);
+  grid-template-columns: [menu-start] 1fr [label-start] auto [label-end] var(--menu-bottom-right-fr) [menu-end];
   grid-auto-rows: max-content;
   gap: var(--menu-margin);
-
+  margin-top: calc(var(--hamburger-size) + var(--open-burger-leak-down) + var(--menu-margin) * 2);
   > li {
     grid-area: auto / menu-start / auto / menu-end;
     height: 3em;
     margin: 0 var(--menu-margin);
     display: grid;
     grid-template-columns: subgrid;
-    grid-template-rows: var(--menu-rows);
+    gap: 0;
+    grid-template-rows: [menu-start] 1fr [label-start] auto [label-end] var(--menu-bottom-right-fr)  [menu-end];
     list-style: none;
     > a {
       text-transform: var(--menu-link-transform);
@@ -70,6 +66,8 @@
       display: grid;
       grid-template-columns: subgrid;
       grid-template-rows: subgrid;
+      margin: 0;
+      text-align: right;
       > span {
         display: block;
         grid-area: label-start / label-start / label-end / label-end;

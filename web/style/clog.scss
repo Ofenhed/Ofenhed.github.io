@@ -104,7 +104,7 @@ ul#blog-entries {
     @media screen {
       --main-width: var(--space-width);
       --main-background: var(--space-main-background);
-      --menu-cols: var(--lcar-menu-cols);
+      --menu-bottom-right-fr: 0fr;
       --menu-rows: var(--lcar-menu-rows);
       --menu-link-transform: uppercase;
     }
@@ -258,10 +258,6 @@ ul#blog-entries {
       }
       #menu {
         > li {
-          > a {
-            text-align: right;
-            margin: 0;
-          }
           $colors: (1: lcars.$bluey, 2: lcars.$red, 3: lcars.$lima-bean);
           @each $index, $color in $colors {
             &:nth-child(#{$index}) {
