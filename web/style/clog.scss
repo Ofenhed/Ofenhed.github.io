@@ -114,12 +114,13 @@ ul#blog-entries {
 @mixin lcar-close-button {
   content: '\2190';
   transform: scale(200%);
+  transform-origin: center right;
   text-align: right;
   color: #000;
   position: absolute;
   bottom: var(--menu-margin);
   left: var(--menu-margin);
-  width: calc((var(--menu-width) - var(--menu-margin) * 2 - 0.5ex)*2/3);
+  width: calc((var(--menu-width) - var(--menu-margin) * 2 - 0.5ex));
   margin-top: calc(((var(--hamburger-size) + var(--open-burger-leak-down)) - 1em) / 2);
   display: inline-block;
   text-transform: var(--menu-link-transform);
