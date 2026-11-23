@@ -660,7 +660,7 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
                 </form>
                 <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
                 <span>"How do you want to interact with YouTube on this web page?"</span>
-                {suspended_youtube.clone()}
+                {suspended_youtube}
             </dialog>
         </Show>
     }
