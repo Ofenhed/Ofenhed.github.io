@@ -124,7 +124,7 @@ jobs:
         path: |
           ~/.cargo/bin/cargo-leptos
 
-    - wait: [rust-nightly, cache-primes-restore]
+    - wait: [rustup-target, cache-primes-restore]
 
     - name: Log rust version
       run: rustc --version | tee "$rust_version"
