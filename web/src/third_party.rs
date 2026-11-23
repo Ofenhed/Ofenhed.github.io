@@ -627,9 +627,10 @@ fn show_youtube_consent_dialog() -> impl Clone + Fn(ev::MouseEvent) {
 pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
     let node = YoutubeDialog::singleton();
     let wants_youtube = {
-        let has = has_interested_owners::<YoutubeConsentType>();
+        let interest = has_interested_owners::<YoutubeConsentType>();
+        let decided = get_local_storage_value::<YoutubeConsentType>().unwrap_or(Signal::from(None));
         let hybernating = during_hydration();
-        move || !hybernating.get() && has.get()
+        move || !hybernating.get() && interest.get() && decided.with(|x| x.is_none())
     };
     let saved_value = get_local_storage_value::<YoutubeConsentType>().unwrap_or(Signal::from(None));
     Effect::new(move |prev| {
@@ -641,6 +642,16 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
         }
         show
     });
+    let suspended_youtube = move || {
+        // This makes it so that the dialog is only loaded (or preloaded) when it's actually wanted
+        wants_youtube().then(|| {
+            view! {
+                <Transition fallback=|| ()>
+                    {move || Suspend::new(YoutubeConsent::view(YoutubeConsent::data()))}
+                </Transition>
+            }
+        })
+    };
     view! {
         <Show when=wants_youtube>
             <dialog node_ref=node closedby="any" class:cookie-consent=true>
@@ -649,7 +660,7 @@ pub(crate) fn ThirdPartyConsentDialogs() -> impl IntoView {
                 </form>
                 <h1>Settings for <span class:with-youtube-logo=true>YouTube</span></h1>
                 <span>"How do you want to interact with YouTube on this web page?"</span>
-                {move || Suspend::new(YoutubeConsent::view(YoutubeConsent::data()))}
+                { suspended_youtube.clone() }
             </dialog>
         </Show>
     }
