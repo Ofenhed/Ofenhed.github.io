@@ -60,6 +60,8 @@ jobs:
 
     outputs:
       wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
+      cache-key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
+      cache-fallback-key: ${{ steps.cache-primes-restore.outputs.cache-matched-key }}
 
     steps:
     - name: Install ffmpeg
@@ -240,14 +242,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      background: true
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
         persist-credentials: false
         submodules: recursive
 
+    - name: Restore build cache
+      id: cache-primes-restore
+      uses: actions/cache/restore@v6
+      background: true
+      with:
+        key: ${{ needs.build.outputs.cache-key }}
+        restore-keys: |
+          ${{ needs.build.outputs.cache-fallback-key }}
+        path: |
+          target/front
+          target/oembed
+          target/qr
+          target/release
+
     - name: Restore tool cache
       id: cache-tools-restore
       continue-on-error: true
+      background: true
       uses: actions/cache/restore@v6
       with:
         key: ${{ runner.os }}-check-tools-${{ hashFiles('**/Cargo.lock') }}
@@ -259,25 +277,13 @@ jobs:
           ~/.cargo/bin/twiggy
 
     - name: Use nightly rust
+      background: true
       run: rustup override set nightly && rustup component add rustfmt clippy
+
+    - wait_all:
 
     - name: Log rust version
       run: rustc --version | tee "$rust_version"
-
-    - name: Restore build cache
-      id: cache-primes-restore
-      uses: actions/cache/restore@v6
-      with:
-        key: ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-${{ hashFiles('**/Cargo.lock', env.rust_version) }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-lock-${{ hashFiles('**/Cargo.toml') }}-
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target/front
-          target/oembed
-          target/qr
-          target/release
 
     - name: Check if leptosfmt was cached
       id: leptosfmt-cached
@@ -289,21 +295,16 @@ jobs:
       continue-on-error: true
       run: test -f ~/.cargo/bin/twiggy
 
-    - name: Install leptosfmt
-      if: ${{ steps.leptosfmt-cached.outcome == 'failure' && !cancelled() }}
-      run: cargo install leptosfmt --locked
-      env:
-        CARGO_TARGET_DIR: ./target
-
-    - name: Install twiggy
-      if: ${{ steps.twiggy-cached.outcome == 'failure' && !cancelled() }}
-      run: cargo install twiggy --locked
+    - name: Install leptosfmt and twiggy
+      if: ${{ (steps.leptosfmt-cached.outcome == 'failure' || steps.twiggy-cached.outcome == 'failure') && !cancelled() }}
+      run: cargo install ${{ case(steps.leptosfmt-cached.outcome == 'failure', 'leptosfmt', '') }} ${{ case(steps.twiggy-cached.outcome == 'failure', 'twiggy', '') }} --locked
       env:
         CARGO_TARGET_DIR: ./target
 
     - name: Save tool cache
       uses: actions/cache/save@v6
       if: ${{ steps.cache-tools-restore.outcome == 'failure' && !cancelled() }}
+      background: true
       with:
         key: ${{ steps.cache-tools-restore.outputs.cache-primary-key }}
         path: |
@@ -351,6 +352,7 @@ jobs:
     - name: Clippy analysis
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
       run: cargo clippy --no-deps --release --all-features -- -Dwarnings
+      background: true
       env:
         contact_card: "No call me, clippy"
 
@@ -364,14 +366,17 @@ jobs:
 
     - name: Check twiggy top
       run: twiggy top target/new/conditionraise.wasm
+      background: true
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
     - name: Check twiggy monos
       run: twiggy monos target/new/conditionraise.wasm
+      background: true
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
     - name: Check twiggy garbage
       run: twiggy garbage --all target/new/conditionraise.wasm
+      background: true
       if: ${{ steps.setup-completed.outcome == 'success' && !cancelled() }}
 
     - name: Download artifact from latest build
@@ -403,6 +408,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      id: checkout
+      background: true
       with:
         ref: ${{ github.ref }}
         submodules: recursive
@@ -412,6 +419,8 @@ jobs:
       with:
         artifact-ids: ${{ needs.check.outputs.formatting }}
         path: ${{ runner.temp }}/formatting
+
+    - wait: checkout
 
     - name: Upload branch
       run: |
