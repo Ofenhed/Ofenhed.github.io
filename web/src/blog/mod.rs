@@ -16,7 +16,7 @@ use crate::{
         path::format_path,
         str_uid::blog_entry_uid,
     },
-    helpers::{ForRoute, ZWNJ, into_static_str, reset_footnote},
+    helpers::{ForRoute, ZWNJ, into_static_str, lang_tag, reset_footnote},
 };
 use chrono::{DateTime, Utc};
 use leptos::{
@@ -537,7 +537,7 @@ pub(crate) fn BlogHolder<'a, B: BlogEntry>(
         description => Some(view! { <Meta property="og:description" content=description /> }),
     };
     view! {
-        <article lang=into_static_str(B::LOCALE)>
+        <article {..lang_tag(into_static_str(B::LOCALE))}>
             <Title formatter=|title: String| format!("{title} - Captains Log") text=B::TITLE />
             <Meta property="og:locale" content=B::LOCALE.og_locale() />
             <Meta property="og:title" content=B::TITLE />
@@ -686,7 +686,7 @@ pub fn BlogEntryList(#[prop(into)] entries: Signal<Vec<BlogEntryMeta>>) -> impl 
         <ul id="blog-entries">
             <For each=move || entries.get() key=|x: &BlogEntryMeta| x.uid let(entry)>
                 <li {..article_pinned(&entry)}>
-                    <article lang=into_static_str(entry.locale)>
+                    <article {..lang_tag(into_static_str(entry.locale))}>
                         <A on:click=on_click href=entry.gen_href()>
                             {entry.title.to_owned()}
                         </A>

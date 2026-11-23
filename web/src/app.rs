@@ -15,7 +15,7 @@ use crate::{
         CookieConsent, provide_cookie_consent_context, should_show_cookie_consent_link,
     },
     error::ReloadErrorHandler,
-    helpers::{Footnotes, build_number, idle_preload, preload_mouse_enter},
+    helpers::{Footnotes, build_number, idle_preload, lang_tag, preload_mouse_enter},
     local_storage::provide_local_storage_context,
     third_party::ThirdPartyConsentDialogs,
 };
@@ -25,7 +25,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
     provide_context(options.clone());
     view! {
         <!DOCTYPE html>
-        <html lang="en-US">
+        <html {..lang_tag("en-US")}>
             <head>
                 <link as="style" rel="preload" href=css_path.clone() />
                 <meta charset="utf-8" />

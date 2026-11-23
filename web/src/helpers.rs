@@ -2,7 +2,7 @@ use std::{cell::LazyCell, marker::PhantomData, ops::Deref, sync::atomic::AtomicU
 
 use leptos::{
     attr::{
-        Attr, AttributeValue, Loading,
+        self, Attr, AttributeValue, Lang, Loading,
         custom::{CustomAttr, custom_attribute},
     },
     ev, html,
@@ -873,6 +873,26 @@ pub(crate) fn split_prefix<'a>(s: &'a str, prefix: &'_ str) -> Option<(&'a str, 
     } else {
         None
     }
+}
+
+pub(crate) fn lang_tag(new_lang: &'static str) -> Attr<Lang, impl Fn() -> Option<&'static str>> {
+    #[derive(Clone)]
+    struct CurrentLang(&'static str, WeakOwner);
+    attr::lang(move || {
+        if let Some(CurrentLang(current, owner)) = use_context()
+            && let Some(owner) = owner.upgrade()
+            && new_lang == current
+        {
+            if owner == Owner::current().unwrap() {
+                Some(new_lang)
+            } else {
+                None
+            }
+        } else {
+            provide_context(CurrentLang(new_lang, Owner::current().unwrap().downgrade()));
+            Some(new_lang)
+        }
+    })
 }
 
 #[cfg(test)]
