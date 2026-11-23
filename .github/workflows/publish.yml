@@ -67,14 +67,13 @@ jobs:
       run: sudo apt-get update && sudo apt-get install ffmpeg
       background: true
 
-    - name: Use nightly rust
-      id: rust-nightly
-      run: rustup override set nightly
+    - name: Use nightly rust with wasm32 target
+      id: rustup-target
+      run: rustup override set nightly && rustup target add wasm32-unknown-unknown
       background: true
 
     - uses: actions/checkout@v7
       id: checkout
-      background: true
       with:
         ref: ${{ case(github.event_name == 'workflow_dispatch', inputs.ref, github.ref) }}
         persist-credentials: false
@@ -84,17 +83,9 @@ jobs:
       id: write-cargo-leptos-version
       run: |
         awk '/\[\[package\]\]/ { right_place=0; version = null }; /name\s*=\s*"cargo-leptos"/ { right_place=1; }; /version\s*=/ { version=$0 }; { if (right_place && version != null) { print(version); exit }  }' < Cargo.lock | grep -Po '(?<=")[^"]+(?=")' | tee "$cargo_leptos_version_file"
-      wait: checkout
-      background: true
-
-    - name: Log rust version
-      run: rustc --version | tee "$rust_version"
-      wait: rust-nightly
-      background: true
 
     - name: Restore build cache
       id: cache-primes-restore
-      wait: checkout
       background: true
       uses: actions/cache/restore@v6
       with:
@@ -113,9 +104,7 @@ jobs:
 
     - name: Install cargo-leptos
       id: install-cargo-leptos
-      wait: write-cargo-leptos-version
       continue-on-error: true
-      background: true
       run: |
         if leptos_installer=$(curl --proto '=https' --tlsv1.2 -LsSf "https://github.com/leptos-rs/cargo-leptos/releases/download/v$(cat $cargo_leptos_version_file)/cargo-leptos-installer.sh"); then
           echo "Installer downloaded:"
@@ -128,8 +117,6 @@ jobs:
 
     - name: Restore cargo-leptos
       id: cargo-leptos-restore
-      wait: install-cargo-leptos
-      background: true
       if: ${{ steps.install-cargo-leptos.outcome != 'success' && !failure() && !cancelled() }}
       uses: actions/cache/restore@v6
       with:
@@ -137,10 +124,13 @@ jobs:
         path: |
           ~/.cargo/bin/cargo-leptos
 
+    - wait: [rust-nightly, cache-primes-restore]
+
+    - name: Log rust version
+      run: rustc --version | tee "$rust_version"
+
     - name: Build leptos toolkit
       id: cargo-leptos-build
-      wait: cargo-leptos-restore
-      background: true
       if: ${{ steps.install-cargo-leptos.outcome != 'success' && !steps.cargo-leptos-restore.outputs.cache-hit && !cancelled() }}
       run: cargo install cargo-leptos --locked
       env:
@@ -148,7 +138,6 @@ jobs:
 
     - name: Save leptos cache
       if: ${{ steps.cargo-leptos-build.outcome == 'success' }}
-      wait: cargo-leptos-build
       background: true
       uses: actions/cache/save@v6
       with:
@@ -156,15 +145,8 @@ jobs:
         path: |
           ~/.cargo/bin/cargo-leptos
 
-    - name: Add wasm target
-      wait: rust-nightly
-      background: true
-      run: rustup target add wasm32-unknown-unknown
-
     - name: Write contact card hash
       id: write-contact-card-hash
-      wait: checkout
-      background: true
       run: |
         mkdir -p target/qr
         cat >target/.new_contact_card <<<"$(sha256sum <<<"$contact_card" | awk '{ print $1 }')"
@@ -173,8 +155,6 @@ jobs:
 
     - name: Compile file generator
       id: compile
-      wait: [write-contact-card-hash, rust-nightly, cargo-leptos-build]
-      background: true
       if: ${{ !cancelled() && !failure() && hashFiles('target/.new_contact_card') != hashFiles('target/qr/.contact_card') }}
       run: cargo leptos build --split --server-only --release --bin-features ssr,statics
       env:
@@ -182,38 +162,30 @@ jobs:
 
     - name: Generate initial files
       id: generate-qr
-      wait: compile
-      background: true
       if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
       run: target/release/conditionraise
 
     - name: Save successful contact card
       id: save-generated-qr
-      wait: generate-qr
-      background: true
       if: ${{ !cancelled() && steps.generate-qr.outcome == 'success' }}
       run: mv target/.new_contact_card target/qr/.contact_card
 
+    - wait: install-ffmpeg
+
     - name: Recompile targets with static QR
       id: recompile-ffmpeg
-      wait: [save-generated-qr, install-ffmpeg]
-      background: true
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,ffmpeg --lib-features hydrate,ffmpeg
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
 
     - name: Generate static page
       id: generate-ffmpeg
-      wait: recompile-ffmpeg
-      background: true
       if: ${{ steps.recompile-ffmpeg.outcome == 'success' && !cancelled() }}
       continue-on-error: true
       run: target/release/conditionraise
 
     - name: Recompile targets without using ffmpeg
       id: recompile-no-ffmpeg
-      wait: generate-ffmpeg
-      background: true
       if: ${{ steps.generate-ffmpeg.outcome == 'failure' && !cancelled() }}
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr
       env:
@@ -221,14 +193,11 @@ jobs:
 
     - name: Regenerate static page without using ffmpeg
       id: generate-no-ffmpeg
-      wait: recompile-no-ffmpeg
-      background: true
       if: ${{ steps.recompile-no-ffmpeg.outcome == 'success' && !cancelled() }}
       run: target/release/conditionraise
 
     - name: Save build cache
       uses: actions/cache/save@v6
-      wait: recompile-ffmpeg
       background: true
       if: ${{ steps.compile.outcome == 'success' || steps.compile.outcome == 'failure' || steps.recompile-ffmpeg.outcome == 'success' || steps.recompile-ffmpeg.outcome == 'failure' }}
       with:
@@ -243,7 +212,6 @@ jobs:
 
     - name: Upload site root
       uses: actions/upload-pages-artifact@v5
-      wait: generate-no-ffmpeg
       background: true
       id: deployment
       with:
@@ -252,7 +220,6 @@ jobs:
     - name: Save wasm file
       uses: actions/upload-artifact@v7
       id: upload-wasm-file
-      wait: generate-no-ffmpeg
       background: true
       with:
         name: wasm-file
@@ -260,7 +227,6 @@ jobs:
         retention-days: 1
 
     - name: Log compiled sizes
-      wait: generate-no-ffmpeg
       background: true
       run: find target/site/ -exec du -sh {} \; | sort -hr
 
