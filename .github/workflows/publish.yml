@@ -16,6 +16,9 @@ on:
       ref:
         required: true
         type: string
+      cache_cleanup:
+        required: true
+        type: bool
 
 env:
   CARGO_TERM_COLOR: always
@@ -25,10 +28,35 @@ env:
   LEPTOS_SITE_PKG_DIR: pk${{ github.run_number }}
 
 jobs:
+  cleanup:
+    name: Cleanup caches
+
+    runs-on: ubuntu-26.04
+
+    permissions:
+      actions: write
+
+    steps:
+      - name: Cleanup
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.cache_cleanup }}
+        run: |
+          cache_keys=$(gh cache list --key "$cache_prefix" --json id --jq '.[].id')
+          set +e
+          echo "Deleting caches"
+          for cache_key in $cache_keys; do
+            gh cache delete -- "$cache_key"
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          cache_prefix: ${{ runner.os }}-cargo-lock-
+
   build:
     name: Build static files
 
     runs-on: ubuntu-26.04
+    needs: cleanup
 
     outputs:
       wasm: ${{ steps.upload-wasm-file.outputs.artifact-id }}
