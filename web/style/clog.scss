@@ -113,7 +113,6 @@ ul#blog-entries {
 
 @mixin lcar-close-button {
   content: '\2190';
-  transform: scale(200%);
   transform-origin: center right;
   text-align: right;
   color: #000;
@@ -249,6 +248,9 @@ ul#blog-entries {
               @media not (prefers-reduced-motion: reduce) {
                 > .slice:nth-child(2):after {
                   --menu-width: 0px;
+                  @media not (any-hover: hover) {
+                    opacity: 0;
+                  }
                 }
               }
             }
@@ -257,6 +259,7 @@ ul#blog-entries {
                 @include lcar-close-button;
                 transition: var(--default-transition);
                 @media (any-hover: hover) {
+                  transform: scale(200%);
                   transition: var(--default-transition), width var(--default-transition-time) ease-in-out var(--default-transition-time);
                   color: $burger-background;
                 }
