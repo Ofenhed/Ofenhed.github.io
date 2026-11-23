@@ -260,7 +260,7 @@ ul#blog-entries {
                 transition: var(--default-transition);
                 @media (any-hover: hover) {
                   transform: scale(200%);
-                  transition: var(--default-transition), width var(--default-transition-time) ease-in-out var(--default-transition-time);
+                  transition: var(--default-transition), width var(--default-transition-time) ease-in-out calc(var(--default-transition-time) / 2);
                   color: $burger-background;
                 }
               }
