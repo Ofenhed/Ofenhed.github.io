@@ -172,13 +172,13 @@ jobs:
       if: ${{ !cancelled() && steps.generate-qr.outcome == 'success' }}
       run: mv target/.new_contact_card target/qr/.contact_card
 
-    - wait: install-ffmpeg
-
     - name: Recompile targets with static QR
       id: recompile-ffmpeg
       run: cargo leptos build --split --release --bin-features ssr,statics,static-qr,ffmpeg --lib-features hydrate,ffmpeg
       env:
         contact_card: ${{ secrets.CONTACT_CARD }}
+
+    - wait: install-ffmpeg
 
     - name: Generate static page
       id: generate-ffmpeg
